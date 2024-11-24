@@ -5,6 +5,8 @@
 
 # Makefile
 Makefile
+# Build
+build/
 
 # User-specific files
 *.rsuser
