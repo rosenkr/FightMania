@@ -7,7 +7,7 @@
 
 namespace Ichi::Managers
 {
-    void logManager::init()
+    void LogManager::init()
     {
         auto consoleSink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         consoleSink->set_pattern("%^[%Y-%m-%d %H:%M:%S.%e] %v%$");
@@ -20,7 +20,7 @@ namespace Ichi::Managers
         spdlog::register_logger(logger);
     }
 
-    void logManager::shutdown()
+    void LogManager::shutdown()
     {
         spdlog::shutdown();
     }

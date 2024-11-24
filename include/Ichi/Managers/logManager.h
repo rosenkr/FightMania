@@ -3,14 +3,14 @@
 
 namespace Ichi::Managers
 {
-    class logManager
+    class LogManager
     {
     public:
         void init();
         void shutdown();
 
-        logManager() = default;
-        ~logManager() = default;
+        LogManager() = default;
+        ~LogManager() = default;
     };
 } // namespace Ichi::Managers
 
