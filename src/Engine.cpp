@@ -13,7 +13,7 @@ namespace ichi {
     }
 
     void Engine::shutdown() {
-        TextureManager::getInstance()->shutdown();
+        TextureManager::shutdown();
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
         SDL_Quit();
