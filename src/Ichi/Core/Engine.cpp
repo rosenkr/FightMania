@@ -4,7 +4,18 @@
 
 namespace ichi::core
 {
+    // singleton
     Engine *Engine::instance = nullptr;
+
+    Engine &Engine::getInstance()
+    {
+        if (!instance)
+        {
+            instance = new Engine();
+        }
+
+        return *instance;
+    }
 
     bool Engine::init()
     {

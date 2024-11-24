@@ -11,7 +11,7 @@ namespace ichi::core
     {
     public:
         // Singleton instance
-        static Engine *getInstance() { return instance = (instance != nullptr) ? instance : new Engine(); }
+        static Engine &getInstance();
         SDL_Renderer *getRenderer() const { return renderer; };
         void run();
 
@@ -27,7 +27,7 @@ namespace ichi::core
         void shutdown();
         void quit() { isRunning = false; }
 
-        Engine() {}
+        Engine();
     };
 }
 #endif
