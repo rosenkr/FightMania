@@ -1,14 +1,17 @@
-//
-//  c++_empty
-//
+#include "Ichi/Managers/logManager.cpp"
 
-#include <iostream>
-#include <string>
+#include "Ichi/log.h"
+
+Ichi::Managers::logManager manager;
 
 int main(int argc, char *argv[])
 {
-	std::string s1 = "Hejsan";
-	std::cout << s1 << std::endl;
 
+	manager.init();
+
+	std::string s = "SVEJSAN";
+	ICHI_INFO("HEJSAN {}", s);
+
+	manager.shutdown();
 	return 0;
 }
