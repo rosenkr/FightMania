@@ -2,6 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-	ichi::core::Engine::getInstance()->run();
+	auto instance = ichi::core::Engine::getInstance();
+	instance.run();
 	return 0;
 }
