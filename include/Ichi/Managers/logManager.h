@@ -1,4 +1,5 @@
 #ifndef LOGMANAGER_H
+#define LOGMANAGER_H
 
 namespace Ichi::Managers
 {
