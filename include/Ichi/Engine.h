@@ -1,9 +1,11 @@
 #ifndef ENGINE_H
 #define ENGINE_H
-#define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 768
+
 #include <SDL2/SDL.h>
-namespace Ichi
+#include "Ichi/log.h"
+#include "Ichi/Managers/logManager.h"
+
+namespace Ichi::Core
 {
     class Engine
     {
@@ -11,18 +13,21 @@ namespace Ichi
         // Singleton instance
         static Engine *getInstance() { return instance = (instance != nullptr) ? instance : new Engine(); }
         SDL_Renderer *getRenderer() const { return renderer; };
-        void init();
-        void shutdown();
-        void quit() { isRunning = false; }
         void run();
-        bool getIsRunning() { return isRunning; }
 
     private:
-        SDL_Window *window;
+        // Window window;
         SDL_Renderer *renderer;
-        Engine() {}
+        Ichi::Managers::LogManager logManager;
         bool isRunning = true;
+
         static Engine *instance;
+
+        bool init();
+        void shutdown();
+        void quit() { isRunning = false; }
+
+        Engine() {}
     };
 }
 #endif

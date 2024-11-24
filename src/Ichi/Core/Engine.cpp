@@ -1,31 +1,62 @@
-#include "Ichi/log.h"
-#include "Ichi/Engine.h"
+#include "Ichi/engine.h"
+
 // #include "TextureManager.h"
 
-namespace Ichi
+namespace Ichi::Core
 {
     Engine *Engine::instance = nullptr;
 
-    // TODO: add logging success/failure checks on renderer/window with spdlog, change to bool return type for use by run()?
-    void Engine::init()
+    bool Engine::init()
     {
-        if (!SDL_Init(SDL_INIT_EVERYTHING))
+        if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         {
+            ICHI_ERROR("Error initializing SDL {}", SDL_GetError());
+            return false;
         }
-        window = SDL_CreateWindow("FightMania", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-        renderer = SDL_CreateRenderer(window, -1, 0);
+
+        SDL_version version;
+        SDL_VERSION(&version);
+        ICHI_INFO("SDL {}.{}.{}", (int32_t)version.major, (int32_t)version.minor, (int32_t)version.patch);
+
+        // renderer = SDL_CreateRenderer(window, -1, 0);
+
+        // init managers
+
         isRunning = true;
+        return true;
     }
 
     void Engine::shutdown()
     {
+        ICHI_INFO("Ichi-Engine got shutdown");
+
+        isRunning = false;
+
+        // shutdown Everything exept logmanager
 
         SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
 
         SDL_Quit();
+
+        logManager.shutdown();
     }
 
-    // TODO: add run impl
-    void run() {}
-}
+    void Engine::run()
+    {
+        logManager.init();
+
+        if (!init())
+        {
+            shutdown();
+            return;
+        }
+
+        while (isRunning)
+        {
+            // call to window
+            break;
+        }
+
+        shutdown();
+    }
+} // namespace Ichi::Core
