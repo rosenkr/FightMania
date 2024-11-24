@@ -1,8 +1,8 @@
-#include "Ichi/engine.h"
+#include "Ichi/Core/engine.h"
 
 // #include "TextureManager.h"
 
-namespace Ichi::Core
+namespace ichi::core
 {
     Engine *Engine::instance = nullptr;
 
@@ -59,4 +59,4 @@ namespace Ichi::Core
 
         shutdown();
     }
-} // namespace Ichi::Core
+} // namespace ichi::core

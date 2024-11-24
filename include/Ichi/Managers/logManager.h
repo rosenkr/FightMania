@@ -1,7 +1,7 @@
 #ifndef LOGMANAGER_H
 #define LOGMANAGER_H
 
-namespace Ichi::Managers
+namespace ichi::managers
 {
     class LogManager
     {
@@ -12,6 +12,6 @@ namespace Ichi::Managers
         LogManager() = default;
         ~LogManager() = default;
     };
-} // namespace Ichi::Managers
+} // namespace ichi::managers
 
 #endif

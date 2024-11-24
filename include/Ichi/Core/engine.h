@@ -5,7 +5,7 @@
 #include "Ichi/log.h"
 #include "Ichi/Managers/logManager.h"
 
-namespace Ichi::Core
+namespace ichi::core
 {
     class Engine
     {
@@ -18,7 +18,7 @@ namespace Ichi::Core
     private:
         // Window window;
         SDL_Renderer *renderer;
-        Ichi::Managers::LogManager logManager;
+        ichi::managers::LogManager logManager;
         bool isRunning = true;
 
         static Engine *instance;

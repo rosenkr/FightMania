@@ -1,7 +1,7 @@
 #ifndef VECTOR2D_H
 #define VECTOR2D_H
 #include <cmath>
-namespace Ichi
+namespace ichi
 {
     class Vector2D
     {

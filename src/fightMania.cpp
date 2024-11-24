@@ -1,17 +1,7 @@
-#include "Ichi/Managers/logManager.cpp"
-
-#include "Ichi/log.h"
-
-Ichi::Managers::logManager manager;
+#include "Ichi/Core/engine.h"
 
 int main(int argc, char *argv[])
 {
-
-	manager.init();
-
-	std::string s = "SVEJSAN";
-	ICHI_INFO("HEJSAN {}", s);
-
-	manager.shutdown();
+	ichi::core::Engine::getInstance()->run();
 	return 0;
 }

@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace Ichi::Managers
+namespace ichi::managers
 {
     void LogManager::init()
     {
@@ -25,4 +25,4 @@ namespace Ichi::Managers
         spdlog::shutdown();
     }
 
-} // namespace Ichi::Managers
+} // namespace Ichi::managers
