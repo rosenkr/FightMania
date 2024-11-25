@@ -1,5 +1,6 @@
 #include "Ichi/Core/window.h"
 #include "Ichi/Core/engine.h"
+
 namespace ichi::core
 {
     Window::Window()
@@ -40,11 +41,18 @@ namespace ichi::core
 
     void Window::draw()
     {
+        /*ICHI_INFO("Left: {} \t Right: {}\t Middle: {} \t X1: {} \t X2: {}",
+                  input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT),
+                  input::Mouse::buttonIsDown(input::Mouse::MouseButton::RIGHT),
+                  input::Mouse::buttonIsDown(input::Mouse::MouseButton::MIDDLE),
+                  input::Mouse::buttonIsDown(input::Mouse::MouseButton::X1),
+                  input::Mouse::buttonIsDown(input::Mouse::MouseButton::X2));*/
         // SceneManager.draw
     }
 
     void Window::update()
     {
+        input::Mouse::update();
         // SceneManager.update
     }
 
