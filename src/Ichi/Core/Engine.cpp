@@ -23,6 +23,7 @@ namespace ichi::core
 
         // init managers
         ichi::input::Mouse::init();
+        ichi::input::Keyboard::init();
 
         isRunning = true;
         return true;

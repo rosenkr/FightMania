@@ -47,12 +47,19 @@ namespace ichi::core
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::MIDDLE),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::X1),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::X2));*/
+        ICHI_INFO("W: {} \t A: {}\t S: {} \t D: {} \t SPACE: {}",
+                  input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_W),
+                  input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_A),
+                  input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_S),
+                  input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_D),
+                  input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_SPACE));
         // SceneManager.draw
     }
 
     void Window::update()
     {
         input::Mouse::update();
+        input::Keyboard::update();
         // SceneManager.update
     }
 
