@@ -1,4 +1,4 @@
-#include "Ichi/input/mouse.h"
+#include "Ichi/Input/mouse.h"
 #include "SDL2/SDL.h"
 #include "Ichi/log.h"
 #include <algorithm>
