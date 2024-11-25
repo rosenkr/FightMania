@@ -3,7 +3,7 @@
 namespace ichi::core {
     class AnimatedSprite{
         public: 
-        // Define operator< for Sprite comparison, usage in textureManager std::map
+        // Define operator< for Sprite comparison, usage in textureManager std::map (could also use hash/unsorted instead of tree/sorted map to avoid having to overload <)
         bool operator<(const AnimatedSprite& other) const {
             return id < other.id;
         }
