@@ -28,23 +28,23 @@ namespace ichi::input
         Uint32 state = SDL_GetMouseState(&x, &y);
         for (int i = 0; i <= Mouse::ButtonCount; i++)
         {
-            buttons[i] = state & SDL_BUTTON(i);
+            buttons[i] = state & SDL_BUTTON(i + 1);
         }
     }
 
     bool Mouse::buttonIsDown(MouseButton button)
     {
-        return buttons[static_cast<int>(button)];
+        return buttons[static_cast<int>(button) - 1];
     }
 
     bool Mouse::buttonIsPressed(MouseButton button)
     {
-        return buttons[static_cast<int>(button)] && !lastButtons[static_cast<int>(button)];
+        return buttons[static_cast<int>(button) - 1] && !lastButtons[static_cast<int>(button) - 1];
     }
 
     bool Mouse::buttonIsReleased(MouseButton button)
     {
-        return !buttons[static_cast<int>(button)] && lastButtons[static_cast<int>(button)];
+        return !buttons[static_cast<int>(button) - 1] && lastButtons[static_cast<int>(button) - 1];
     }
 
 } // namespace ichi::input
