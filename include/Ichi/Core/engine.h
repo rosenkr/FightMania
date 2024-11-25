@@ -27,7 +27,7 @@ namespace ichi::core
         void shutdown();
         void quit() { isRunning = false; }
 
-        Engine();
+        Engine() {};
     };
 }
 #endif
