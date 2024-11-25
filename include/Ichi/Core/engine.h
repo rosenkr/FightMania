@@ -13,6 +13,7 @@ namespace ichi::core
         // Singleton instance
         static Engine &getInstance();
         SDL_Renderer *getRenderer() const { return renderer; };
+        void quit() { isRunning = false; }
         void run();
 
     private:
@@ -25,7 +26,6 @@ namespace ichi::core
 
         bool init();
         void shutdown();
-        void quit() { isRunning = false; }
 
         Engine();
     };
