@@ -3,6 +3,6 @@
 int main(int argc, char *argv[])
 {
 	auto instance = ichi::core::Engine::getInstance();
-	instance.run();
+	instance->run();
 	return 0;
 }
