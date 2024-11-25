@@ -1,6 +1,5 @@
 #include "Ichi/Core/engine.h"
-
-// #include "TextureManager.h"
+#include "Ichi/Core/textureManager.h"
 
 namespace ichi::core
 {
@@ -36,6 +35,8 @@ namespace ichi::core
         isRunning = false;
 
         // shutdown Everything exept logmanager
+
+        ichi::core::textureManager::shutdown();
 
         SDL_DestroyRenderer(renderer);
 
