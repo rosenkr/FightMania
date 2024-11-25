@@ -22,6 +22,8 @@ namespace ichi::core
         // renderer = SDL_CreateRenderer(window, -1, 0);
 
         // init managers
+        ichi::input::Mouse::init();
+        ichi::input::Keyboard::init();
 
         isRunning = true;
         return true;

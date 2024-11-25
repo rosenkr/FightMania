@@ -5,6 +5,8 @@
 #include "Ichi/log.h"
 #include "Ichi/Managers/logManager.h"
 #include "Ichi/Core/window.h"
+#include "Ichi/Input/mouse.h"
+#include "Ichi/Input/keyboard.h"
 
 namespace ichi::core
 {
