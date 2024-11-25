@@ -3,6 +3,10 @@
 #include "Ichi/log.h"
 namespace ichi::core::textureManager { 
 
+    // static in this context means effectively private
+    static std::map<Sprite, SDL_Texture*> textureMap;
+    static std::map<AnimatedSprite, std::vector<SDL_Texture*>> animatedTextureMap;
+
     // Creates texture from image file, adds it to map, returns true on success
     bool addTextureFor(const Sprite& s, const std::string& filePath) {
         SDL_Surface* surf = IMG_Load(filePath.c_str());

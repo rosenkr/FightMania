@@ -18,7 +18,5 @@ namespace ichi::core::textureManager {
     void shutdown(); // Clear all textures
     void draw(const Sprite& s, int x, int y);
     //void draw(const AnimatedSprite& s, int x, int y);
-    std::map<Sprite, SDL_Texture*> textureMap;
-    std::map<AnimatedSprite, std::vector<SDL_Texture*>> animatedTextureMap;
 }
 #endif
