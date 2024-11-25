@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include "Ichi/log.h"
 #include "Ichi/Managers/logManager.h"
+#include "Ichi/Core/window.h"
 
 namespace ichi::core
 {
@@ -11,13 +12,13 @@ namespace ichi::core
     {
     public:
         // Singleton instance
-        static Engine &getInstance();
+        static Engine *getInstance() { return instance = (instance != nullptr) ? instance : new Engine(); }
         SDL_Renderer *getRenderer() const { return renderer; };
         void quit() { isRunning = false; }
         void run();
 
     private:
-        // Window window;
+        Window window;
         SDL_Renderer *renderer;
         ichi::managers::LogManager logManager;
         bool isRunning = true;
@@ -27,7 +28,8 @@ namespace ichi::core
         bool init();
         void shutdown();
 
-        Engine();
+        Engine() = default;
+        ~Engine() = default;
     };
 }
 #endif

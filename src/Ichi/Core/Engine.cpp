@@ -7,16 +7,6 @@ namespace ichi::core
     // singleton
     Engine *Engine::instance = nullptr;
 
-    Engine &Engine::getInstance()
-    {
-        if (!instance)
-        {
-            instance = new Engine();
-        }
-
-        return *instance;
-    }
-
     bool Engine::init()
     {
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -64,8 +54,9 @@ namespace ichi::core
 
         while (isRunning)
         {
-            // call to window
-            break;
+            window.handleEvents();
+            window.update();
+            window.draw();
         }
 
         shutdown();
