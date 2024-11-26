@@ -1,6 +1,6 @@
 #include "Ichi/Core/window.h"
 #include "Ichi/Core/engine.h"
-#include "Ichi/input/controllerHandler.h"
+#include "Ichi/Input/controllerHandler.h"
 
 namespace ichi::core
 {
