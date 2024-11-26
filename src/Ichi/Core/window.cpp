@@ -1,5 +1,6 @@
 #include "Ichi/Core/window.h"
 #include "Ichi/Core/engine.h"
+#include "Ichi/input/controllerHandler.h"
 
 namespace ichi::core
 {
@@ -26,11 +27,11 @@ namespace ichi::core
                 break;
 
             case SDL_CONTROLLERDEVICEADDED:
-                // input::Joystick::OnJoystickConnected(e.cdevice);
+                input::ControllerHandler::onControllerConnect(e.cdevice);
                 break;
 
             case SDL_CONTROLLERDEVICEREMOVED:
-                // input::Joystick::OnJoystickDisconnected(e.cdevice);
+                input::ControllerHandler::onControllerDisconnect(e.cdevice);
                 break;
             default:
                 break;
@@ -41,18 +42,28 @@ namespace ichi::core
 
     void Window::draw()
     {
-        /*ICHI_INFO("Left: {} \t Right: {}\t Middle: {} \t X1: {} \t X2: {}",
+        /*ICHI_TRACE("Left: {} \t Right: {}\t Middle: {} \t X1: {} \t X2: {}",
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::RIGHT),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::MIDDLE),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::X1),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::X2));*/
-        ICHI_INFO("W: {} \t A: {}\t S: {} \t D: {} \t SPACE: {}",
+        /*ICHI_TRACE("W: {} \t A: {}\t S: {} \t D: {} \t SPACE: {}",
                   input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_W),
                   input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_A),
                   input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_S),
                   input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_D),
-                  input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_SPACE));
+                  input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_SPACE));*/
+        if (input::ControllerHandler::isControllerAvailable(0) && input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::Guide) != 0)
+            ICHI_TRACE("Left stick x: {}\t y:{} Right stick x: {}\t y:{} \t A:{}\t B:{}\t X:{}\t Y:{}",
+                       input::ControllerHandler::getJoystick(0, input::ControllerHandler::Joystick::LeftStickHorizontal),
+                       input::ControllerHandler::getJoystick(0, input::ControllerHandler::Joystick::LeftStickVertical),
+                       input::ControllerHandler::getJoystick(0, input::ControllerHandler::Joystick::RightStickHorizontal),
+                       input::ControllerHandler::getJoystick(0, input::ControllerHandler::Joystick::RightStickVertical),
+                       input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::A),
+                       input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::B),
+                       input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::X),
+                       input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::Y));
         // SceneManager.draw
     }
 
@@ -60,6 +71,7 @@ namespace ichi::core
     {
         input::Mouse::update();
         input::Keyboard::update();
+        input::ControllerHandler::update();
         // SceneManager.update
     }
 
