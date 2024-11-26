@@ -1,7 +1,9 @@
 #ifndef HITBOX_H
 #define HITBOX_H
-#include <SDL2/SDL.h>
 #include "point.h"
+
+#include <SDL2/SDL.h>
+#include <functional>
 
 namespace ichi::core
 {
@@ -25,4 +27,14 @@ namespace ichi::core
         bool isTangible = false;
     };
 }
+
+namespace std
+{
+    template <>
+    struct hash<ichi::core::Hitbox>
+    {
+        size_t operator()(const ichi::core::Hitbox &hitbox) const;
+    };
+}
+
 #endif
