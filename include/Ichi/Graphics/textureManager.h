@@ -1,12 +1,13 @@
 #ifndef TEXTUREMANAGER_H
 #define TEXTUREMANAGER_H
 
-#include <unordered_map>
-#include <string>
-#include <vector>
 #include "Ichi/Core/engine.h"
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/Graphics/animatedSprite.h"
+
+#include <unordered_map>
+#include <string>
+#include <vector>
 
 namespace ichi::graphics::textureManager
 {
