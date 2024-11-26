@@ -1,7 +1,7 @@
 #ifndef TEXTUREMANAGER_H
 #define TEXTUREMANAGER_H
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include "Ichi/Core/engine.h"
