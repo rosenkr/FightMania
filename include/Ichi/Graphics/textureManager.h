@@ -14,10 +14,8 @@ namespace ichi::graphics::textureManager
     bool addTextureFor(const AnimatedSprite &as, const std::string &filePath);
     void dropTextureFor(const Sprite &s);
     void dropTexturesFor(const AnimatedSprite &as);
-    SDL_Texture getTextureFor(const Sprite &s);
-    SDL_Texture getTextureFor(const AnimatedSprite &s);
+    SDL_Texture *getTextureFor(const Sprite &s);
+    std::vector<SDL_Texture *> getTexturesFor(const AnimatedSprite &s);
     void shutdown(); // Clear all textures
-    void draw(const Sprite &s, int x, int y);
-    // void draw(const AnimatedSprite& s, int x, int y);
 }
 #endif

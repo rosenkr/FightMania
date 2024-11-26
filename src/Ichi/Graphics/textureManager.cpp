@@ -87,22 +87,13 @@ namespace ichi::graphics::textureManager
         animatedTextureMap.clear();
     }
 
-    void draw(const Sprite &s, int x, int y)
+    SDL_Texture *getTextureFor(const Sprite &s)
     {
-        int w, h, success;
-        SDL_QueryTexture(textureMap[s], NULL, NULL, &w, &h); // Assign an images width and height to params
-        SDL_Rect srcRect = {0, 0, w, h};                     // Take the whole image.
-        SDL_Rect dstRect = {x, y, w, h};
-        success = SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), textureMap[s], &srcRect, &dstRect);
-        if (success == 0)
-        {
-            ICHI_INFO("RenderCopy: Successfully drew sprite");
-        }
-        else
-        {
-            ICHI_ERROR("RenderCopy: Failed to draw sprite {}", SDL_GetError());
-        }
+        return textureMap.at(s);
     }
 
-    // Todo: Draw for AnimatedSprite?
+    std::vector<SDL_Texture *> getTexturesFor(const AnimatedSprite &s)
+    {
+        return animatedTextureMap[s];
+    }
 }
