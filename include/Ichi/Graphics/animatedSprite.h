@@ -1,18 +1,30 @@
 #ifndef ANIMATEDSPRITE_H
 #define ANIMATEDSPRITE_H
+
+#include "Ichi/Graphics/sprite.h"
+#include "Ichi/Core/hitbox.h"
+
+#include <map>
+#include <string>
+#include <vector>
+
 namespace ichi::graphics
 {
-    class AnimatedSprite
+    class AnimatedSprite : public graphics::Sprite
     {
     public:
-        // Define operator< for Sprite comparison, usage in textureManager std::map (could also use hash/unsorted instead of tree/sorted map to avoid having to overload <)
-        bool operator<(const AnimatedSprite &other) const
-        {
-            return id < other.id;
-        }
+        AnimatedSprite(core::Hitbox hb, graphics::Sprite::Layer layer, std::vector<std::string> strings, std::vector<Uint32> floats);
+
+        void update();
+        void draw();
+        const SDL_Texture &getFrame(int frame);
 
     private:
-        int id; // Temporary
+        // in milliseconds
+        std::map<int, Uint32> frameTime;
+        Uint32 lastUpdated;
+        int currentFrame = 0;
+        int frameCount;
     };
 }
 #endif
