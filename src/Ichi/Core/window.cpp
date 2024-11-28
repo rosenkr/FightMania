@@ -75,4 +75,4 @@ namespace ichi::core
         // SceneManager.update
     }
 
-} // namespace ichi::cores
+} // namespace ichi::core
