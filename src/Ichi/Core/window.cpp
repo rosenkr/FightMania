@@ -4,9 +4,10 @@
 
 namespace ichi::core
 {
+
     Window::Window()
     {
-        window = SDL_CreateWindow(WINDOW_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+        SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
     }
 
     Window::~Window()
@@ -42,6 +43,10 @@ namespace ichi::core
 
     void Window::draw()
     {
+        SDL_RenderClear(Engine::getInstance()->getRenderer());
+
+        s.draw();
+
         /*ICHI_TRACE("Left: {} \t Right: {}\t Middle: {} \t X1: {} \t X2: {}",
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::RIGHT),
@@ -65,6 +70,8 @@ namespace ichi::core
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::X),
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::Y));
         // SceneManager.draw
+
+        SDL_RenderPresent(Engine::getInstance()->getRenderer());
     }
 
     void Window::update()
