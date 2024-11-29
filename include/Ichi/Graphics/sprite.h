@@ -28,6 +28,7 @@ namespace ichi::graphics
         const core::Hitbox &getHitbox() const { return hitbox; }
 
         Sprite(core::Hitbox, Layer, std::string);
+        Sprite(core::Hitbox h, Layer l) : hitbox(h), layer(l) {}
 
         void draw();
 
