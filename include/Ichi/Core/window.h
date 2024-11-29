@@ -3,8 +3,8 @@
 
 #include "SDL2/SDL.h"
 
-#define WINDOW_WIDTH 1920
-#define WINDOW_HEIGHT 1080
+#define WINDOW_WIDTH 384
+#define WINDOW_HEIGHT 224
 #define WINDOW_NAME "Fight-Mania"
 
 // temp
