@@ -40,9 +40,4 @@ namespace ichi::graphics
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hitbox.toSdlRect());
     }
 
-    bool Sprite::operator<(const Sprite &other) const
-    {
-        return layer < other.layer;
-    }
-
 } // namespace ichi::graphics

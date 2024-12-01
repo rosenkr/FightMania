@@ -24,23 +24,22 @@ namespace ichi::graphics
             UICOMPONENT = 6,
         };
 
-        Layer getLayer() const { return layer; }
-        const core::Hitbox &getHitbox() const { return hitbox; }
-
         Sprite(core::Hitbox, Layer, std::string);
         Sprite(core::Hitbox h, Layer l) : hitbox(h), layer(l) {}
 
         void draw();
 
-        bool operator<(const Sprite &other) const;
+        bool operator<(const Sprite &other) const { return layer < other.layer; }
 
         ~Sprite()
         {
+
+            // temp
             SDL_DestroyTexture(texture);
             texture = nullptr;
         }
 
-    private:
+    protected:
         core::Hitbox hitbox;
         Layer layer;
         // temp
