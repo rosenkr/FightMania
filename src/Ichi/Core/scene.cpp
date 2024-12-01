@@ -1,6 +1,6 @@
 #include "Ichi/Core/scene.h"
 namespace ichi::core {
-    Scene::Scene(std::vector<std::unique_ptr<Component>> components, std::vector<Hitbox> hitboxes) : components(components), collisionHitboxes(hitboxes) {}
+    Scene::Scene(std::vector<std::unique_ptr<Component>> components, std::vector<Hitbox> hitboxes) : components(std::move(components)), collisionHitboxes(hitboxes) {}
     void Scene::draw() const {
         for(const std::unique_ptr<Component>& up_c : components) {
             up_c->draw();
