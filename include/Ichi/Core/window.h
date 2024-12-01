@@ -7,9 +7,6 @@
 #define WINDOW_HEIGHT 224
 #define WINDOW_NAME "Fight-Mania"
 
-// temp
-#include "Ichi/Graphics/sprite.h"
-
 namespace ichi::core
 {
     class Window
@@ -27,9 +24,6 @@ namespace ichi::core
     private:
         SDL_Window *window;
         SDL_Renderer *renderer;
-
-        // temp
-        graphics::Sprite s = graphics::Sprite(Hitbox(Point(0, 0), WINDOW_WIDTH, WINDOW_HEIGHT, false), graphics::Sprite::Layer::BACKGROUND, "resources/images/Dojo.png");
     };
 
 } // namespace ichi::core
