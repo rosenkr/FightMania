@@ -31,20 +31,11 @@ namespace ichi::graphics
 
         bool operator<(const Sprite &other) const { return layer < other.layer; }
 
-        ~Sprite()
-        {
-
-            // temp
-            SDL_DestroyTexture(texture);
-            texture = nullptr;
-        }
+        ~Sprite() = default;
 
     protected:
         core::Hitbox hitbox;
         Layer layer;
-        // temp
-        SDL_Texture *texture;
-        std::string path;
     };
 }
 

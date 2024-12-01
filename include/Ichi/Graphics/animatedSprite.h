@@ -12,19 +12,14 @@ namespace ichi::graphics
     {
     public:
         AnimatedSprite(core::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
-        AnimatedSprite(core::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime), paths(paths) {}
+        AnimatedSprite(core::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime) {}
 
         void draw();
         void update();
 
         bool operator<(const AnimatedSprite &other) const { return layer < other.layer; }
 
-        ~AnimatedSprite()
-        {
-            // temp
-            for (auto t : textures)
-                SDL_DestroyTexture(t);
-        }
+        ~AnimatedSprite() = default;
 
     private:
         // in milliseconds
@@ -32,10 +27,6 @@ namespace ichi::graphics
         std::map<int, Uint32> frameTime;
 
         int currentFrame = 0;
-
-        // temp
-        std::vector<SDL_Texture *> textures;
-        std::vector<std::string> paths;
     };
 
 } // namespace ichi::graphics
