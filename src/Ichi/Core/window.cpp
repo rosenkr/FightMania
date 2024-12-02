@@ -2,11 +2,16 @@
 #include "Ichi/Core/engine.h"
 #include "Ichi/Input/controllerHandler.h"
 
+// temp
+#include "Ichi/Graphics/sprite.h"
+#include "Ichi/Graphics/animatedSprite.h"
+
 namespace ichi::core
 {
+
     Window::Window()
     {
-        window = SDL_CreateWindow(WINDOW_NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, 0);
+        SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
     }
 
     Window::~Window()
@@ -40,8 +45,21 @@ namespace ichi::core
         // update input handlers
     }
 
+    // temp
+    graphics::Sprite s = graphics::Sprite(Hitbox(Point(0, 0), WINDOW_WIDTH, WINDOW_HEIGHT, false), graphics::Sprite::Layer::BACKGROUND, "resources/images/Dojo.png");
+    graphics::AnimatedSprite as = graphics::AnimatedSprite(
+        Hitbox(Point(0, 0), 100, 120, false),
+        graphics::Sprite::Layer::BACKGROUND,
+        "resources/images/Robot animations/RobotWalk", 4,
+        {{0, 166}, {1, 166}, {2, 166}, {3, 166}});
+
     void Window::draw()
     {
+        SDL_RenderClear(Engine::getInstance()->getRenderer());
+
+        s.draw();
+        as.draw();
+
         /*ICHI_TRACE("Left: {} \t Right: {}\t Middle: {} \t X1: {} \t X2: {}",
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT),
                   input::Mouse::buttonIsDown(input::Mouse::MouseButton::RIGHT),
@@ -65,14 +83,17 @@ namespace ichi::core
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::X),
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::Y));
         // SceneManager.draw
+
+        SDL_RenderPresent(Engine::getInstance()->getRenderer());
     }
 
     void Window::update()
     {
+        as.update();
         input::Mouse::update();
         input::Keyboard::update();
         input::ControllerHandler::update();
         // SceneManager.update
     }
 
-} // namespace ichi::cores
+} // namespace ichi::core

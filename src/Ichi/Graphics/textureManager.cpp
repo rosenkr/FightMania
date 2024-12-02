@@ -1,99 +1,90 @@
-#include <SDL2/SDL_image.h>
 #include "Ichi/Graphics/textureManager.h"
-#include "Ichi/log.h"
-namespace ichi::graphics::textureManager
+#include "Ichi/Core/engine.h"
+
+namespace ichi::graphics
 {
+    std::map<Sprite, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> TextureManager::spriteMap;
+    std::map<AnimatedSprite, std::map<int, std::unique_ptr<SDL_Texture, SDLTextureDeleter>>> TextureManager::animatedSpriteMap;
 
-    // static in this context means effectively private
-    static std::map<Sprite, SDL_Texture *> textureMap;
-    static std::map<AnimatedSprite, std::vector<SDL_Texture *>> animatedTextureMap;
-
-    // Creates texture from image file, adds it to map, returns true on success
-    bool addTextureFor(const Sprite &s, const std::string &filePath)
+    SDL_Texture *TextureManager::getTextureFor(const Sprite &s)
     {
-        SDL_Surface *surf = IMG_Load(filePath.c_str());
+        auto it = spriteMap.find(s);
+
+        if (it == spriteMap.end())
+        {
+            ICHI_ERROR("Could not find sprite in texturemap")
+            return nullptr;
+        }
+
+        return it->second.get();
+    }
+
+    void TextureManager::dropTextureFor(const Sprite &s)
+    {
+        spriteMap.erase(s);
+    }
+
+    void TextureManager::addTextureFor(const Sprite &s, const std::string &str)
+    {
+        spriteMap[s] = getTexture(str);
+    }
+
+    SDL_Texture *TextureManager::getTextureFor(const AnimatedSprite &as, int index)
+    {
+        auto it = animatedSpriteMap.find(as);
+
+        if (it == animatedSpriteMap.end())
+        {
+            ICHI_ERROR("Could not find animated sprite in texturemap")
+            return nullptr;
+        }
+
+        if (it->second[index].get() == nullptr)
+            ICHI_ERROR("Could not find frame {} in animatedTexturemap", index)
+
+        return it->second[index].get();
+    }
+
+    void TextureManager::dropTexturesFor(const AnimatedSprite &as)
+    {
+        animatedSpriteMap.erase(as);
+    }
+
+    void TextureManager::addTexturesFor(const AnimatedSprite &as, const std::vector<std::string> &paths)
+    {
+        std::map<int, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> map;
+
+        int i = 0;
+        for (auto p : paths)
+        {
+            map[i++] = getTexture(p);
+            ICHI_INFO("Add path {} with index: {}", p, i)
+        }
+
+        animatedSpriteMap[as] = std::move(map);
+    }
+
+    std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::getTexture(const std::string &path)
+    {
+
+        SDL_Surface *surf = IMG_Load(path.c_str());
+
         if (surf == nullptr)
         {
-            ICHI_ERROR("Failed to load image file:\n {}", SDL_GetError());
-            return false;
+
+            ICHI_ERROR("Could not open image: {}", path);
+            return nullptr;
         }
         SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
+
+        SDL_FreeSurface(surf);
+
         if (texture == nullptr)
         {
-            ICHI_ERROR("Failed to create texture for sprite:\n {}", SDL_GetError());
-            return false;
+            ICHI_ERROR("Could not create texture for sprite: {}", SDL_GetError());
+            return nullptr;
         }
-        SDL_FreeSurface(surf);
-        textureMap[s] = texture;
 
-        return true;
+        return std::unique_ptr<SDL_Texture, SDLTextureDeleter>(texture);
     }
-
-    bool addTextureFor(const AnimatedSprite &as, const std::string &filePath)
-    {
-        SDL_Surface *surf = IMG_Load(filePath.c_str());
-        if (surf == nullptr)
-        {
-            ICHI_ERROR("Failed to load image file:\n {}", SDL_GetError());
-            return false;
-        }
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-        if (texture == nullptr)
-        {
-            ICHI_ERROR("Failed to create texture for animatedSprite:\n {}", SDL_GetError());
-            return false;
-        }
-        SDL_FreeSurface(surf);
-        animatedTextureMap[as].push_back(texture);
-
-        return true;
-    }
-
-    // Destroys texture and removes sprite entry from the map
-    void dropTextureFor(const Sprite &s)
-    {
-        SDL_DestroyTexture(textureMap[s]);
-        textureMap.erase(s);
-    }
-
-    // Destroys all textures associated with animated sprite
-    void dropTexturesFor(const AnimatedSprite &as)
-    {
-        for (SDL_Texture *texture : animatedTextureMap[as])
-        {
-            SDL_DestroyTexture(texture);
-        }
-        animatedTextureMap.erase(as);
-    }
-
-    // Destroys all sprite and animatedsprite textures and erases both maps
-    void shutdown()
-    {
-        std::map<Sprite, SDL_Texture *>::iterator sIter;
-        for (sIter = textureMap.begin(); sIter != textureMap.end(); sIter++)
-        {
-            SDL_DestroyTexture(sIter->second);
-        }
-        textureMap.clear();
-
-        std::map<AnimatedSprite, std::vector<SDL_Texture *>>::iterator asIter;
-        for (asIter = animatedTextureMap.begin(); asIter != animatedTextureMap.end(); asIter++)
-        {
-            for (SDL_Texture *texture : asIter->second)
-            {
-                SDL_DestroyTexture(texture);
-            }
-        }
-        animatedTextureMap.clear();
-    }
-
-    SDL_Texture *getTextureFor(const Sprite &s)
-    {
-        return textureMap.at(s);
-    }
-
-    std::vector<SDL_Texture *> getTexturesFor(const AnimatedSprite &s)
-    {
-        return animatedTextureMap[s];
-    }
-}
+} // namespace ichi::graphics

@@ -37,9 +37,9 @@ namespace ichi::core
 
         // shutdown Everything exept logmanager
         ichi::input::ControllerHandler::shutdown();
-        ichi::graphics::textureManager::shutdown();
+        // ichi::graphics::TextureManager::shutdown();
 
-        SDL_DestroyRenderer(renderer);
+        SDL_DestroyRenderer(getRenderer());
 
         SDL_Quit();
 
