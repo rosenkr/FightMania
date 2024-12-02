@@ -1,6 +1,7 @@
 #include "Ichi/Core/engine.h"
 #include "Ichi/Graphics/textureManager.h"
 #include "Ichi/Input/controllerHandler.h"
+#include "Ichi/Audio/audioPlayer.h"
 
 namespace ichi::core
 {
@@ -19,31 +20,16 @@ namespace ichi::core
         SDL_VERSION(&version);
         ICHI_INFO("SDL {}.{}.{}", (int32_t)version.major, (int32_t)version.minor, (int32_t)version.patch);
 
-        // renderer = SDL_CreateRenderer(window, -1, 0);
-
+        // init std::rand
+        std::srand(static_cast<unsigned>(std::time(nullptr)));
         // init managers
         ichi::input::Mouse::init();
         ichi::input::Keyboard::init();
+        ichi::audio::AudioPlayer::init(2);
 
         isRunning = true;
+
         return true;
-    }
-
-    void Engine::shutdown()
-    {
-        ICHI_INFO("Ichi-Engine got shutdown");
-
-        isRunning = false;
-
-        // shutdown Everything exept logmanager
-        ichi::input::ControllerHandler::shutdown();
-        // ichi::graphics::TextureManager::shutdown();
-
-        SDL_DestroyRenderer(getRenderer());
-
-        SDL_Quit();
-
-        logManager.shutdown();
     }
 
     void Engine::run()
@@ -65,4 +51,22 @@ namespace ichi::core
 
         shutdown();
     }
+
+    void Engine::shutdown()
+    {
+        ICHI_INFO("Ichi-Engine got shutdown");
+
+        isRunning = false;
+
+        // shutdown Everything exept logmanager
+        ichi::input::ControllerHandler::shutdown();
+        ichi::audio::AudioPlayer::shutdown();
+
+        SDL_DestroyRenderer(getRenderer());
+
+        SDL_Quit();
+
+        logManager.shutdown();
+    }
+
 } // namespace ichi::core

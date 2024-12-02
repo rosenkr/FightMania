@@ -5,6 +5,7 @@
 // temp
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/Graphics/animatedSprite.h"
+#include "Ichi/Audio/audioPlayer.h"
 
 namespace ichi::core
 {
@@ -82,6 +83,7 @@ namespace ichi::core
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::B),
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::X),
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::Y));
+
         // SceneManager.draw
 
         SDL_RenderPresent(Engine::getInstance()->getRenderer());
@@ -89,6 +91,23 @@ namespace ichi::core
 
     void Window::update()
     {
+        /*audio::AudioPlayer::play(Mix_LoadMUS("resources/music/UnderTale.wav"));
+
+        if (input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_W) || input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_A) || input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_S) || input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_D))
+        {
+            audio::AudioPlayer::play({
+                Mix_LoadWAV("resources/sounds/StoneStep1.wav"),
+                Mix_LoadWAV("resources/sounds/StoneStep2.wav"),
+                Mix_LoadWAV("resources/sounds/StoneStep3.wav"),
+                Mix_LoadWAV("resources/sounds/StoneStep4.wav"),
+            });
+        }
+
+        if (input::Keyboard::keyIsDown(input::Keyboard::Key::ICHIKEY_SPACE))
+        {
+            audio::AudioPlayer::play(Mix_LoadWAV("resources/sounds/ChestOpening.wav"));
+        }*/
+
         as.update();
         input::Mouse::update();
         input::Keyboard::update();
