@@ -19,8 +19,11 @@ namespace ichi::core
         void draw();
         void update();
 
+        SDL_Renderer *getRenderer() const { return renderer; }
+
     private:
         SDL_Window *window;
+        SDL_Renderer *renderer;
     };
 
 } // namespace ichi::core

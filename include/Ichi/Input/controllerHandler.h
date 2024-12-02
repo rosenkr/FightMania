@@ -33,7 +33,7 @@ namespace ichi::input
             X,
             Y,
             Back,
-            Guide,
+            Guide, // home button on playstation controller
             Start,
             LS,
             RS,

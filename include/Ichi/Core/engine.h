@@ -15,13 +15,12 @@ namespace ichi::core
     public:
         // Singleton instance
         static Engine *getInstance() { return instance = (instance != nullptr) ? instance : new Engine(); }
-        SDL_Renderer *getRenderer() const { return renderer; };
+        SDL_Renderer *getRenderer() const { return window.getRenderer(); }
         void quit() { isRunning = false; }
         void run();
 
     private:
         Window window;
-        SDL_Renderer *renderer;
         ichi::managers::LogManager logManager;
         bool isRunning = true;
 
