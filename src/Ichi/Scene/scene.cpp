@@ -3,7 +3,8 @@
 
 namespace ichi::scene
 {
-    Scene::Scene(std::vector<std::unique_ptr<core::Component>> components = {}, std::vector<datatypes::Hitbox> hitboxes = {}) : components(std::move(components)), collisionHitboxes(hitboxes) {}
+    Scene::Scene(std::vector<std::unique_ptr<core::Component>> components = {}, std::vector<datatypes::Hitbox> hitboxes = {}) : components(std::move(components)){}
+    
     void Scene::draw() const
     {
         for (const auto &up_c : components)
@@ -16,9 +17,15 @@ namespace ichi::scene
             up_c->update();
     }
 
-    std::vector<datatypes::Hitbox> Scene::getCollisionHitboxes() const
+    // Returns a vector of immutable Hitbox references to all hitboxes of all components of this Scene.
+    std::vector<std::reference_wrapper<const datatypes::Hitbox>> Scene::getCollisionHitboxes() const
     {
-        return collisionHitboxes;
+        std::vector<std::reference_wrapper<const datatypes::Hitbox>> vec;
+
+        for (const auto& component : components) {
+            vec.push_back(component.get()->getHitbox());
+        }
+        return vec;
     }
 
     // Impl usage: ConcreteComponent comp; Scene::addComponent(&comp);

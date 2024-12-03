@@ -13,15 +13,14 @@ namespace ichi::scene
     public:
         Scene() {};
         Scene(std::vector<std::unique_ptr<core::Component>>, std::vector<datatypes::Hitbox>);
-        void draw() const;
-        void update();
-        std::vector<datatypes::Hitbox> getCollisionHitboxes() const;
+        virtual void draw() const;
+        virtual void update();
+        std::vector<std::reference_wrapper<const datatypes::Hitbox>> Scene::getCollisionHitboxes() const;
         void addComponent(core::Component *comp);
         void removeComponent(size_t index);
 
     private:
         std::vector<std::unique_ptr<core::Component>> components;
-        std::vector<datatypes::Hitbox> collisionHitboxes;
         bool pausable;
         bool isPaused;
     };
