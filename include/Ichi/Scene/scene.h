@@ -15,7 +15,7 @@ namespace ichi::scene
         Scene(std::vector<std::unique_ptr<core::Component>>, std::vector<datatypes::Hitbox>);
         virtual void draw() const;
         virtual void update();
-        std::vector<std::reference_wrapper<const datatypes::Hitbox>> Scene::getCollisionHitboxes() const;
+        std::vector<std::reference_wrapper<const datatypes::Hitbox>> getCollisionHitboxes() const;
         void addComponent(core::Component *comp);
         void removeComponent(size_t index);
 
