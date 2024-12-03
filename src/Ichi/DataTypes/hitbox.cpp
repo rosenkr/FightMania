@@ -1,6 +1,6 @@
-#include "Ichi/Core/hitbox.h"
+#include "Ichi/DataTypes/hitbox.h"
 
-namespace ichi::core
+namespace ichi::datatypes
 {
     // Basically check minx to the others maxx, and same for y, symmetrically
     bool Hitbox::isOverlapping(const Hitbox &other) const

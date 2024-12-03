@@ -1,7 +1,7 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
 
-#include "Ichi/Core/hitbox.h"
+#include "Ichi/DataTypes/hitbox.h"
 
 namespace ichi::core
 {
@@ -13,15 +13,15 @@ namespace ichi::core
         virtual void handleinput() {};
         virtual ~Component() = default;
 
-        const Hitbox &getHitbox() const { return hitbox; } // Getter in case we want to draw textures based on hitbox size
+        const datatypes::Hitbox &getHitbox() const { return hitbox; } // Getter in case we want to draw textures based on hitbox size
 
         // Prefer newer idiom of public + delete over making these private
         Component(const Component &) = delete;
         Component &operator=(const Component &) = delete;
 
     protected:
-        Hitbox hitbox;
-        Component(Hitbox hb) : hitbox(hb) {};
+        datatypes::Hitbox hitbox;
+        Component(datatypes::Hitbox hb) : hitbox(hb) {};
     };
 }
 #endif

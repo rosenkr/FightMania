@@ -47,9 +47,9 @@ namespace ichi::core
     }
 
     // temp
-    graphics::Sprite s = graphics::Sprite(Hitbox(Point(0, 0), WINDOW_WIDTH, WINDOW_HEIGHT, false), graphics::Sprite::Layer::BACKGROUND, "resources/images/Dojo.png");
+    graphics::Sprite s = graphics::Sprite(datatypes::Hitbox(datatypes::Point(0, 0), WINDOW_WIDTH, WINDOW_HEIGHT, false), graphics::Sprite::Layer::BACKGROUND, "resources/images/Dojo.png");
     graphics::AnimatedSprite as = graphics::AnimatedSprite(
-        Hitbox(Point(0, 0), 100, 120, false),
+        datatypes::Hitbox(datatypes::Point(0, 0), 100, 120, false),
         graphics::Sprite::Layer::BACKGROUND,
         "resources/images/Robot animations/RobotWalk", 4,
         {{0, 166}, {1, 166}, {2, 166}, {3, 166}});

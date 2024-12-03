@@ -1,10 +1,10 @@
-#include "Ichi/Core/sceneManager.h"
+#include "Ichi/Scene/sceneManager.h"
 #include "Ichi/log.h"
 #include <memory>
 
 // Currently just a namespace library, not a class
 // Uses a vector but perhaps another data structure is more reasonable
-namespace ichi::core::sceneManager
+namespace ichi::scene::sceneManager
 {
 
     // Shared instead of unique because activeScene wants to point at a scene pointed to in scenes

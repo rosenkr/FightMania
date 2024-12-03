@@ -1,7 +1,7 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "Ichi/Core/hitbox.h"
+#include "Ichi/DataTypes/hitbox.h"
 
 #include <string>
 
@@ -21,8 +21,8 @@ namespace ichi::graphics
             UICOMPONENT = 6,
         };
 
-        Sprite(core::Hitbox, Layer, std::string);
-        Sprite(core::Hitbox h, Layer l) : hitbox(h), layer(l) {}
+        Sprite(datatypes::Hitbox, Layer, std::string);
+        Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l) {}
 
         void draw();
 
@@ -31,7 +31,7 @@ namespace ichi::graphics
         ~Sprite() = default;
 
     protected:
-        core::Hitbox hitbox;
+        datatypes::Hitbox hitbox;
         Layer layer;
     };
 }

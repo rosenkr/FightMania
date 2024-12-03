@@ -4,7 +4,7 @@
 
 namespace ichi::graphics
 {
-    AnimatedSprite::AnimatedSprite(core::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime)
+    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime)
     {
         std::vector<std::string> paths;
         for (int i = 0; i < textureCount; i++)
