@@ -3,7 +3,7 @@
 
 namespace ichi::scene
 {
-    Scene::Scene(std::vector<std::unique_ptr<core::Component>> components = {}, std::vector<datatypes::Hitbox> hitboxes = {}) : components(std::move(components)){}
+    Scene::Scene(std::vector<std::unique_ptr<core::Component>> components = {}) : components(std::move(components)){}
     
     void Scene::draw() const
     {
