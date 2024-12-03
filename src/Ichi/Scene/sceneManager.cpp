@@ -46,11 +46,12 @@ namespace ichi::scene::sceneManager
         activeScene = scenes.at(index);
     }
 
-    // call update on active scene, which calls update on its components
-    // because what if a scene is updated even when it isnt active?
-    // void update();
+    void update() {
+        activeScene.get()->update();
+    }
 
-    // call draw on the active scene
-    // void draw();
 
+    void draw() {
+        activeScene.get()->draw();
+    }
 }
