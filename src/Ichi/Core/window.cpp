@@ -6,6 +6,7 @@
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/Graphics/animatedSprite.h"
 #include "Ichi/Audio/audioPlayer.h"
+#include "Ichi/UIComponents/label.h"
 
 namespace ichi::core
 {
@@ -83,6 +84,11 @@ namespace ichi::core
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::B),
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::X),
                        input::ControllerHandler::buttonIsDown(0, input::ControllerHandler::ControllerButton::Y));
+
+        auto f = TTF_OpenFont("resources/fonts/PRSTART.TTF", 20);
+        uicomponents::Label lbl = uicomponents::Label(datatypes::Hitbox(datatypes::Point(0, 0), WINDOW_WIDTH, 50, false), "Fight - Mania", f, {255, 255, 255});
+
+        lbl.draw();
 
         // SceneManager.draw
 

@@ -2,6 +2,7 @@
 #include "Ichi/Graphics/textureManager.h"
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Audio/audioPlayer.h"
+#include "SDL2/SDL_ttf.h"
 
 namespace ichi::core
 {
@@ -19,6 +20,12 @@ namespace ichi::core
         SDL_version version;
         SDL_VERSION(&version);
         ICHI_INFO("SDL {}.{}.{}", (int32_t)version.major, (int32_t)version.minor, (int32_t)version.patch);
+
+        if (TTF_Init() != 0)
+        {
+            ICHI_ERROR("Error initializing TTF {}", SDL_GetError());
+            return false;
+        }
 
         // init std::rand
         std::srand(static_cast<unsigned>(std::time(nullptr)));
