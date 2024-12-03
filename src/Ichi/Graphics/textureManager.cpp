@@ -1,6 +1,8 @@
 #include "Ichi/Graphics/textureManager.h"
 #include "Ichi/Core/engine.h"
 
+#include "SDL2/SDL_image.h"
+
 namespace ichi::graphics
 {
     std::map<Sprite, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> TextureManager::spriteMap;

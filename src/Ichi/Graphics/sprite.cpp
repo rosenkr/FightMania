@@ -1,8 +1,5 @@
 #include "Ichi/Graphics/sprite.h"
-
-// temp
 #include "Ichi/Core/engine.h"
-#include "Ichi/log.h"
 #include "Ichi/Graphics/textureManager.h"
 
 namespace ichi::graphics

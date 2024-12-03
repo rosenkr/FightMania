@@ -5,9 +5,6 @@
 
 #include <string>
 
-// temp
-#include "SDL2/SDL_image.h"
-
 namespace ichi::graphics
 {
     class Sprite
