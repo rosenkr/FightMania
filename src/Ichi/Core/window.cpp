@@ -87,6 +87,7 @@ namespace ichi::core
 
         auto f = TTF_OpenFont("resources/fonts/PRSTART.TTF", 20);
         uicomponents::Label lbl = uicomponents::Label(datatypes::Hitbox(datatypes::Point(0, 0), WINDOW_WIDTH, 50, false), "Fight - Mania", f, {255, 255, 255});
+        TTF_CloseFont(f);
 
         lbl.draw();
 
