@@ -28,7 +28,8 @@ namespace ichi::graphics
 
     void TextureManager::addTextureFor(const Sprite &s, const std::string &str)
     {
-        spriteMap[s] = getTexture(str);
+        if (auto texture = getTexture(str))
+            spriteMap[s] = std::move(texture);
     }
 
     SDL_Texture *TextureManager::getTextureFor(const AnimatedSprite &as, int index)
@@ -57,10 +58,11 @@ namespace ichi::graphics
         std::map<int, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> map;
 
         int i = 0;
-        for (auto p : paths)
+        for (auto path : paths)
         {
-            map[i++] = getTexture(p);
-            ICHI_INFO("Add path {} with index: {}", p, i)
+            if (auto texture = getTexture(path))
+                map[i++] = std::move(texture);
+            ICHI_INFO("Add path {} with index: {}", path, i)
         }
 
         animatedSpriteMap[as] = std::move(map);
