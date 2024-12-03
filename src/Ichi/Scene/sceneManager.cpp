@@ -44,11 +44,18 @@ namespace ichi::scene::sceneManager
     }
 
     void update() {
-        activeScene.get()->update();
+        if (activeScene) {
+            activeScene.get()->update(); 
+        } else {
+            ICHI_ERROR("No active scene to update");
+        }
     }
 
-
     void draw() {
-        activeScene.get()->draw();
+        if (activeScene) {
+            activeScene.get()->draw(); 
+        } else {
+            ICHI_ERROR("No active scene to draw");
+        }
     }
 }
