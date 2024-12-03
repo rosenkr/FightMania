@@ -29,7 +29,7 @@ namespace ichi::uicomponents
 
     void Label::draw() const
     {
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hitbox.toSdlRect());
+        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hitbox.getSDLRect());
     }
 
 } // namespace ichi::uicomponents

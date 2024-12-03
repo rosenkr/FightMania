@@ -12,7 +12,7 @@ namespace ichi::datatypes
     public:
         Hitbox(Point p, int w, int h, bool tangible) : rect(SDL_Rect{p.X, p.Y, w, h}), isTangible(tangible) {};
 
-        const SDL_Rect *toSdlRect() const { return &rect; }
+        const SDL_Rect *getSDLRect() const { return &rect; }
         int getWidth() const { return rect.w; }
         int getHeight() const { return rect.h; }
         int getX() const { return rect.x; }

@@ -12,7 +12,7 @@ namespace ichi::graphics
 
     void Sprite::draw()
     {
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), TextureManager::getTextureFor(*this), NULL, hitbox.toSdlRect());
+        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), TextureManager::getTextureFor(*this), NULL, hitbox.getSDLRect());
     }
 
 } // namespace ichi::graphics
