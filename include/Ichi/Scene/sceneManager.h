@@ -10,5 +10,7 @@ namespace ichi::scene::sceneManager
     void setActiveScene(int key);
     void draw();
     void update();
+    Scene* getActiveScene();
+    Scene* getScene(int key);
 }
 #endif

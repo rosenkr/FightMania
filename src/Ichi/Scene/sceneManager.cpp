@@ -43,6 +43,14 @@ namespace ichi::scene::sceneManager
         }
     }
 
+    Scene* getActiveScene() { 
+        return activeScene.get(); 
+    }
+
+    Scene* getScene(int key){
+        return scenes[key].get();
+    }
+
     void update() {
         if (activeScene) {
             activeScene.get()->update(); 
