@@ -148,6 +148,14 @@ namespace ichi::input
         }
     }
 
+    int ControllerHandler::getFirstController(const std::vector<int> &except = {})
+    {
+        for (auto it = controllers.begin(); it != controllers.end(); it++)
+            if (it->second.get() && std::find(except.begin(), except.end(), it->first) == except.end())
+                return it->first;
+        return -1;
+    }
+
     int ControllerHandler::getNextFreeIndex()
     {
         int ret = -1;
