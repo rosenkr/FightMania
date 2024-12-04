@@ -1,5 +1,7 @@
 #include "Ichi/Graphics/textureManager.h"
+
 #include "Ichi/Core/engine.h"
+#include "Ichi/log.h"
 
 #include "SDL2/SDL_image.h"
 

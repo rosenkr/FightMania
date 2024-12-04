@@ -1,7 +1,12 @@
 #include "Ichi/Core/engine.h"
-#include "Ichi/Graphics/textureManager.h"
+
+#include "Ichi/log.h"
+#include "Ichi/Input/mouse.h"
+#include "Ichi/Input/keyboard.h"
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Audio/audioPlayer.h"
+#include "Ichi/Graphics/textureManager.h"
+
 #include "SDL2/SDL_ttf.h"
 
 namespace ichi::core

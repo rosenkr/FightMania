@@ -4,6 +4,7 @@
 #include <array>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 struct SDL_ControllerDeviceEvent;
 typedef struct _SDL_GameController SDL_GameController;

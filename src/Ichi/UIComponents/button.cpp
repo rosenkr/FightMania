@@ -44,9 +44,9 @@ namespace ichi::uicomponents
     void Button::update()
     {
         if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_KP_ENTER) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) || (ControllerHandler::getFirstController() != -1 && ControllerHandler::buttonIsDown(ControllerHandler::getFirstController(), ControllerHandler::ControllerButton::A))))
-            *funcPtr;
+            funcPtr();
 
         if (hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())) && Mouse::buttonIsDown(Mouse::MouseButton::LEFT))
-            *funcPtr;
+            funcPtr();
     }
 } // namespace ichi::uicomponents
