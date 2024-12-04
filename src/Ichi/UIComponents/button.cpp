@@ -9,9 +9,9 @@ using namespace ichi::input;
 
 namespace ichi::uicomponents
 {
-    Button::Button(datatypes::Hitbox hb, std::string path, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, void (*ptr)()) : UIComponent(hb), sprite(s), focusedSprite(fs), funcPtr(ptr)
+    Button::Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, void (*ptr)()) : UIComponent(hb), sprite(s), focusedSprite(fs), funcPtr(ptr)
     {
-        SDL_Surface *surf = TTF_RenderText_Solid(f, path.c_str(), c);
+        SDL_Surface *surf = TTF_RenderText_Solid(f, btnLabel.c_str(), c);
 
         if (surf == nullptr)
         {

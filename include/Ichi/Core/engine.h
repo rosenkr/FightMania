@@ -15,6 +15,8 @@ namespace ichi::core
         SDL_Renderer *getRenderer() const { return window.getRenderer(); }
         void quit() { isRunning = false; }
         void run();
+        bool init();
+        void shutdown();
 
     private:
         Window window;
@@ -22,9 +24,6 @@ namespace ichi::core
         bool isRunning = true;
 
         static Engine *instance;
-
-        bool init();
-        void shutdown();
 
         Engine() = default;
         ~Engine() = default;

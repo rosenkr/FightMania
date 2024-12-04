@@ -16,6 +16,8 @@ namespace ichi::core
 
     bool Engine::init()
     {
+        logManager.init();
+
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         {
             ICHI_ERROR("Error initializing SDL {}", SDL_GetError());
@@ -46,13 +48,6 @@ namespace ichi::core
 
     void Engine::run()
     {
-        logManager.init();
-
-        if (!init())
-        {
-            shutdown();
-            return;
-        }
 
         while (isRunning)
         {

@@ -12,8 +12,7 @@ namespace ichi::uicomponents
     class Button : public UIComponent
     {
     public:
-        /* data */
-        Button(datatypes::Hitbox hb, std::string path, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, void (*ptr)());
+        Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, void (*ptr)());
         ~Button() { SDL_DestroyTexture(text); }
 
         void draw() const;

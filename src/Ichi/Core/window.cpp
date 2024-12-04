@@ -4,6 +4,7 @@
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Input/mouse.h"
 #include "Ichi/Input/keyboard.h"
+#include "Ichi/Scene/sceneManager.h"
 
 namespace ichi::core
 {
@@ -42,23 +43,24 @@ namespace ichi::core
             }
         }
         // update input handlers
+
+        input::Mouse::update();
+        input::Keyboard::update();
+        input::ControllerHandler::update();
     }
 
     void Window::draw()
     {
         SDL_RenderClear(Engine::getInstance()->getRenderer());
 
-        // SceneManager.draw
+        scene::sceneManager::draw();
 
         SDL_RenderPresent(Engine::getInstance()->getRenderer());
     }
 
     void Window::update()
     {
-        input::Mouse::update();
-        input::Keyboard::update();
-        input::ControllerHandler::update();
-        // SceneManager.update
+        scene::sceneManager::update();
     }
 
 } // namespace ichi::core
