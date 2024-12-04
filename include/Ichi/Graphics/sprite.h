@@ -24,7 +24,7 @@ namespace ichi::graphics
         Sprite(datatypes::Hitbox, Layer, std::string);
         Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l) {}
 
-        void draw();
+        void draw() const;
 
         bool operator<(const Sprite &other) const { return layer < other.layer; }
 
