@@ -18,6 +18,7 @@ namespace ichi::datatypes
         int getX() const { return rect.x; }
         int getY() const { return rect.y; }
 
+        bool pointIsInRect(Point p) const { return (rect.x <= p.X && p.X <= rect.x + rect.w) && (rect.y <= p.Y && p.Y <= rect.y + rect.h); }
         bool isOverlapping(const Hitbox &other) const;
         bool operator==(const Hitbox &other) const { return other.getWidth() == getWidth() && other.getHeight() == getHeight() && other.getX() == getX() && other.getY() == getY(); }
         bool operator!=(const Hitbox &other) const { return !(other == *this); }
