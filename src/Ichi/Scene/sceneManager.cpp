@@ -2,56 +2,60 @@
 #include "Ichi/log.h"
 #include <memory>
 
-// Currently just a namespace library, not a class
-// Uses a vector but perhaps another data structure is more reasonable
 namespace ichi::scene::sceneManager
 {
-
-    // Shared instead of unique because activeScene wants to point at a scene pointed to in scenes
-    static std::vector<std::shared_ptr<Scene>> scenes;
+    static std::map<int, std::shared_ptr<Scene>> scenes;
     static std::shared_ptr<Scene> activeScene;
 
-    // adds existing scene at the given index
-    // The implementation must create a new scene and make it uniquely pointed to, then pass ownership to the manager by mgr.addScene, which calls move().
-    void addScene(std::shared_ptr<Scene> scene, size_t index)
+    // Succesfully adds a scene if the key does not already have an associated scene
+    bool addScene(int key, std::shared_ptr<Scene> scene)
     {
-        if (scenes.size() <= index)
-            scenes.resize(index + 1);
-
-        scenes.insert(scenes.begin() + index, scene);
+        auto it = scenes.find(key);
+        if(it == scenes.end()) {
+            scenes[key] = scene; 
+            ICHI_INFO("Inserted scene at key {}", key);
+            return true;
+        } else {
+            ICHI_ERROR("Failed to insert scene with key {}, the key already has an associated scene", key);
+            return false;
+        }
     }
 
-    // If index is within the proper range and scenes isnt empty, remove scene at index
-    void removeScene(size_t index)
+    // Removes scene at key, logs whether a scene was actually removed if it existed or not
+    void removeScene(int key)
     {
-        if (index < 0 || index >= scenes.size())
-        {
-            ICHI_ERROR("Index error when removing scene at index");
-            return;
+        if (scenes.erase(key) > 0) {
+            ICHI_INFO("Removed the scene with key {}", key);
+        } else {
+            ICHI_ERROR("There is no scene to remove with the key {}", key);
         }
-
-        scenes.erase(scenes.begin() + index);
     }
 
-    // If index in valid range and there is a unique pointer to a scene at the index, set that scene as active one.
-    // Before setting the new scene, transfer back the old scene to the components vector
-    void setActiveScene(size_t index)
+    // Sets active scene at key, logs whether this was succesful or not
+    void setActiveScene(int key)
     {
-        if (index < 0 || index >= scenes.size() || scenes.at(index) == nullptr)
-        {
-            ICHI_ERROR("Index error when setting active scene to scene at index");
-            return;
+        auto it = scenes.find(key);
+        if(it == scenes.end()){
+            ICHI_ERROR("There is no active scene associated with key {}", key);
+        } else {
+            activeScene = scenes[key];
+            ICHI_INFO("Active scene was set with key {}", key);
         }
-
-        activeScene = scenes.at(index);
     }
 
     void update() {
-        activeScene.get()->update();
+        if (activeScene) {
+            activeScene.get()->update(); 
+        } else {
+            ICHI_ERROR("No active scene to update");
+        }
     }
 
-
     void draw() {
-        activeScene.get()->draw();
+        if (activeScene) {
+            activeScene.get()->draw(); 
+        } else {
+            ICHI_ERROR("No active scene to draw");
+        }
     }
 }
