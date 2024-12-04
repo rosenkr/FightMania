@@ -3,8 +3,8 @@
 
 namespace ichi::scene
 {
-    Scene::Scene(std::vector<std::unique_ptr<core::Component>> components = {}) : components(std::move(components)){}
-    
+    Scene::Scene(std::vector<core::Component *> components = {}) : components(std::move(components)) {}
+
     void Scene::draw() const
     {
         for (const auto &up_c : components)
@@ -22,8 +22,9 @@ namespace ichi::scene
     {
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> vec;
 
-        for (const auto& component : components) {
-            vec.push_back(component.get()->getHitbox());
+        for (const auto &component : components)
+        {
+            vec.push_back(component->getHitbox());
         }
         return vec;
     }
@@ -36,7 +37,7 @@ namespace ichi::scene
             ICHI_ERROR("Null pointer passed to addComponent");
             return;
         }
-        components.push_back(std::unique_ptr<core::Component>(comp));
+        components.push_back(std::move(comp));
     }
 
     // The unique pointer will automatically delete the Component object!

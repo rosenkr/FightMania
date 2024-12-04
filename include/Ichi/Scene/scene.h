@@ -12,7 +12,14 @@ namespace ichi::scene
     {
     public:
         Scene() {};
-        Scene(std::vector<std::unique_ptr<core::Component>>);
+        Scene(std::vector<core::Component *>);
+        ~Scene()
+        {
+            for (auto p : components)
+                delete p;
+            components.clear();
+        }
+
         virtual void draw() const;
         virtual void update();
         bool canBePaused() const { return pausable; }
@@ -21,7 +28,7 @@ namespace ichi::scene
         void removeComponent(size_t index);
 
     protected:
-        std::vector<std::unique_ptr<core::Component>> components;
+        std::vector<core::Component *> components;
         bool pausable;
         bool isPaused;
     };
