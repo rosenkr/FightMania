@@ -15,7 +15,8 @@ namespace ichi::input
 
     void Keyboard::update()
     {
-        lastKeys = keys;
+        std::copy(keys.begin(), keys.end(), lastKeys.begin());
+
         const Uint8 *state = SDL_GetKeyboardState(nullptr);
         for (int i = static_cast<int>(Keyboard::Key::ICHIKEY_FIRST); i < KeyCount; i++)
             keys[i] = state[i];
