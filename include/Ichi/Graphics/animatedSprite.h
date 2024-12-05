@@ -12,12 +12,12 @@ namespace ichi::graphics
     {
     public:
         AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
-        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime) {}
+        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime);
 
         void draw();
         void update();
 
-        bool operator<(const AnimatedSprite &other) const { return layer < other.layer; }
+        bool operator<(const AnimatedSprite &other) const { return paths < other.paths; }
 
         ~AnimatedSprite() = default;
 
@@ -25,6 +25,7 @@ namespace ichi::graphics
         // in milliseconds
         Uint32 lastUpdatedOn = 0;
         std::map<int, Uint32> frameTime;
+        std::vector<std::string> paths;
 
         int currentFrame = 0;
     };

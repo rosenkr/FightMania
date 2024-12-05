@@ -5,7 +5,7 @@
 namespace ichi::graphics
 {
 
-    Sprite::Sprite(datatypes::Hitbox hb, Layer l, std::string s) : hitbox(hb), layer(l)
+    Sprite::Sprite(datatypes::Hitbox hb, Layer l, std::string s) : hitbox(hb), layer(l), path(s)
     {
         TextureManager::addTextureFor(*this, s);
     }

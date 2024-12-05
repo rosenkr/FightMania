@@ -11,6 +11,12 @@ namespace ichi::graphics
             paths.push_back(path + std::to_string(i) + ".png");
 
         TextureManager::addTexturesFor(*this, paths);
+
+        this->paths = paths;
+    }
+    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime), paths(paths)
+    {
+        TextureManager::addTexturesFor(*this, paths);
     }
 
     void AnimatedSprite::update()
