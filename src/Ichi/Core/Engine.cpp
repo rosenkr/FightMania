@@ -48,12 +48,17 @@ namespace ichi::core
 
     void Engine::run()
     {
-
         while (isRunning)
         {
+            Uint32 frameStart = SDL_GetTicks();
+
             window.handleEvents();
             window.update();
             window.draw();
+
+            Uint32 frameTime = SDL_GetTicks() - frameStart;
+            if (1000 / FPS > frameTime)
+                SDL_Delay((1000 / FPS) - frameTime);
         }
 
         shutdown();
