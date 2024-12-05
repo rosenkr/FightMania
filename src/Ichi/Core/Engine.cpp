@@ -1,7 +1,12 @@
 #include "Ichi/Core/engine.h"
-#include "Ichi/Graphics/textureManager.h"
+
+#include "Ichi/log.h"
+#include "Ichi/Input/mouse.h"
+#include "Ichi/Input/keyboard.h"
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Audio/audioPlayer.h"
+#include "Ichi/Graphics/textureManager.h"
+
 #include "SDL2/SDL_ttf.h"
 
 namespace ichi::core
@@ -11,6 +16,8 @@ namespace ichi::core
 
     bool Engine::init()
     {
+        logManager.init();
+
         if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
         {
             ICHI_ERROR("Error initializing SDL {}", SDL_GetError());
@@ -41,13 +48,6 @@ namespace ichi::core
 
     void Engine::run()
     {
-        logManager.init();
-
-        if (!init())
-        {
-            shutdown();
-            return;
-        }
 
         while (isRunning)
         {

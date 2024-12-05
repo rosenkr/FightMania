@@ -10,7 +10,7 @@ namespace ichi::graphics
         TextureManager::addTextureFor(*this, s);
     }
 
-    void Sprite::draw()
+    void Sprite::draw() const
     {
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), TextureManager::getTextureFor(*this), NULL, hitbox.getSDLRect());
     }

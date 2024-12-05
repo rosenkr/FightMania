@@ -2,11 +2,8 @@
 #define ENGINE_H
 
 #include <SDL2/SDL.h>
-#include "Ichi/log.h"
-#include "Ichi/Managers/logManager.h"
 #include "Ichi/Core/window.h"
-#include "Ichi/Input/mouse.h"
-#include "Ichi/Input/keyboard.h"
+#include "Ichi/Managers/logManager.h"
 
 namespace ichi::core
 {
@@ -18,6 +15,8 @@ namespace ichi::core
         SDL_Renderer *getRenderer() const { return window.getRenderer(); }
         void quit() { isRunning = false; }
         void run();
+        bool init();
+        void shutdown();
 
     private:
         Window window;
@@ -25,9 +24,6 @@ namespace ichi::core
         bool isRunning = true;
 
         static Engine *instance;
-
-        bool init();
-        void shutdown();
 
         Engine() = default;
         ~Engine() = default;

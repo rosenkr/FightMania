@@ -4,6 +4,7 @@
 #include <array>
 #include <unordered_map>
 #include <memory>
+#include <vector>
 
 struct SDL_ControllerDeviceEvent;
 typedef struct _SDL_GameController SDL_GameController;
@@ -50,6 +51,7 @@ namespace ichi::input
         static void shutdown();
 
         static bool isControllerAvailable(int controllerId);
+        static int getFirstController(const std::vector<int> &except = {});
 
         static bool buttonIsDown(int controllerId, ControllerButton button);
         static bool buttonIsPressed(int controllerId, ControllerButton button);

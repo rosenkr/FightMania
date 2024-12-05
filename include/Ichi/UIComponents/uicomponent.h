@@ -21,8 +21,6 @@ namespace ichi::uicomponents
 
     protected:
         UIComponent(datatypes::Hitbox hb) : Component(hb) {}
-
-    private:
         bool focused = 0;
     };
 }

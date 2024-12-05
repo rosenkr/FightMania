@@ -11,8 +11,15 @@ namespace ichi::scene
     class Scene
     {
     public:
-        Scene() {}
-        Scene(std::vector<std::unique_ptr<core::Component>>);
+        Scene() {};
+        Scene(std::vector<core::Component *>);
+        ~Scene()
+        {
+            for (auto p : components)
+                delete p;
+            components.clear();
+        }
+
         virtual void draw() const;
         virtual void update();
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> getCollisionHitboxes() const;
@@ -21,7 +28,7 @@ namespace ichi::scene
         void setPaused(bool paused);
 
     protected:
-        std::vector<std::unique_ptr<core::Component>> components;
+        std::vector<core::Component *> components;
         bool pausable;
         bool isPaused;
     };
