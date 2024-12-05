@@ -1,6 +1,6 @@
 #ifndef MENU_H
 #define MENU_H
-#include "scene.h"
+#include "Ichi/Scene/scene.h"
 #include <vector>
 #include <memory>
 #include "Ichi/UIComponents/uicomponent.h"

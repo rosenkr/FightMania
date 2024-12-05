@@ -17,6 +17,7 @@ namespace ichi::datatypes
         int getHeight() const { return rect.h; }
         int getX() const { return rect.x; }
         int getY() const { return rect.y; }
+        bool getIsTangible() const { return isTangible; }
 
         bool isOverlapping(const Hitbox &other) const;
         bool operator==(const Hitbox &other) const { return other.getWidth() == getWidth() && other.getHeight() == getHeight() && other.getX() == getX() && other.getY() == getY(); }
