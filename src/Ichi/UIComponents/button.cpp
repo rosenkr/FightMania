@@ -43,10 +43,18 @@ namespace ichi::uicomponents
 
     void Button::update()
     {
-        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_KP_ENTER) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) || (ControllerHandler::getFirstController() != -1 && ControllerHandler::buttonIsDown(ControllerHandler::getFirstController(), ControllerHandler::ControllerButton::A))))
-            funcPtr();
+        if (Mouse::buttonIsPressed(Mouse::MouseButton::LEFT))
+            setFocus(hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())));
 
-        if (hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())) && Mouse::buttonIsDown(Mouse::MouseButton::LEFT))
+        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_KP_ENTER) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) || (ControllerHandler::getFirstController() != -1 && ControllerHandler::buttonIsPressed(ControllerHandler::getFirstController(), ControllerHandler::ControllerButton::A))))
+        {
             funcPtr();
+            return;
+        }
+
+        if (hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())) && Mouse::buttonIsReleased(Mouse::MouseButton::LEFT))
+        {
+            funcPtr();
+        }
     }
 } // namespace ichi::uicomponents

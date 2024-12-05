@@ -3,11 +3,7 @@
 
 namespace ichi::scene
 {
-<<<<<<< HEAD
-    Scene::Scene(std::vector<std::unique_ptr<core::Component>> components): components(std::move(components)){ }
-=======
     Scene::Scene(std::vector<core::Component *> components = {}) : components(std::move(components)) {}
->>>>>>> 98f295f1fa4cec20d57bb39c5d9e456588d0fb61
 
     void Scene::draw() const
     {
@@ -26,16 +22,10 @@ namespace ichi::scene
     {
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> vec;
 
-<<<<<<< HEAD
-        for (const auto& component : components)
-            if(component.get()->getHitbox().getIsTangible())
-                vec.push_back(component.get()->getHitbox());
-=======
         for (const auto &component : components)
         {
             vec.push_back(component->getHitbox());
         }
->>>>>>> 98f295f1fa4cec20d57bb39c5d9e456588d0fb61
         return vec;
     }
 
@@ -61,8 +51,10 @@ namespace ichi::scene
         components.erase(components.begin() + index);
     }
 
-    void Scene::setPaused(bool paused) { 
-        if(pausable){ 
+    void Scene::setPaused(bool paused)
+    {
+        if (pausable)
+        {
             isPaused = paused;
         }
     }
