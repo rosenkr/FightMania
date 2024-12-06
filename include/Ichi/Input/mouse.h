@@ -32,6 +32,9 @@ namespace ichi::input
         inline static int getX() { return x; }
         inline static int getY() { return y; }
 
+        inline static int DX() { return lastX - x; }
+        inline static int DY() { return lastY - y; }
+
     private:
         constexpr static const int ButtonCount = 5; // SDL supports up to 5 mouse buttons - see SDL_BUTTON_LEFT
 
