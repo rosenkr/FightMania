@@ -2,6 +2,8 @@
 #define KEYBOARD_H
 
 #include <array>
+#include <map>
+#include <string>
 
 namespace ichi::input
 {
@@ -66,6 +68,9 @@ namespace ichi::input
             ICHIKEY_COMMA = 54,
             ICHIKEY_PERIOD = 55,
             ICHIKEY_SLASH = 56,
+
+            LAST_INPUT_KEY = ICHIKEY_SLASH,
+
             ICHIKEY_CAPSLOCK = 57,
             ICHIKEY_F1 = 58,
             ICHIKEY_F2 = 59,
@@ -265,6 +270,13 @@ namespace ichi::input
         static bool keyIsPressed(Key key);
         static bool keyIsReleased(Key key);
 
+        static std::string stringRepresentation(Key k, bool shiftIsDown)
+        {
+            if (shiftIsDown)
+                return capsStringRepresentation.at(k);
+            return lowerStringRepresentation.at(k);
+        }
+
     private:
         constexpr static const int KeyCount = 287; // SDL supports up to index 286 - see SDL_NUM_SCANCODES
 
@@ -273,6 +285,8 @@ namespace ichi::input
 
         Keyboard() = default;
         ~Keyboard() = default;
+        static const std::map<Key, std::string> capsStringRepresentation;
+        static const std::map<Key, std::string> lowerStringRepresentation;
     };
 
 } // namespace ichi::input
