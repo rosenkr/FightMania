@@ -1,6 +1,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#define FPS 60
+
 #include <SDL2/SDL.h>
 #include "Ichi/Core/window.h"
 #include "Ichi/Managers/logManager.h"

@@ -23,10 +23,10 @@ namespace ichi::input
     {
         lastX = x;
         lastY = y;
-        lastButtons = buttons;
+        std::copy(buttons.begin(), buttons.end(), lastButtons.begin());
 
         Uint32 state = SDL_GetMouseState(&x, &y);
-        for (int i = 0; i <= Mouse::ButtonCount; i++)
+        for (int i = 0; i < Mouse::ButtonCount; i++)
         {
             buttons[i] = state & SDL_BUTTON(i + 1);
         }

@@ -21,10 +21,10 @@ namespace ichi::input
                 ICHI_ERROR("Invalid game controller in availableJoysticks map");
                 continue;
             }
-
-            c->lastButtons = c->buttons;
-            c->lastJoystick = c->joystick;
-
+            
+            std::copy(c->buttons.begin(), c->buttons.end(), c->lastButtons.begin());
+            std::copy(c->joystick.begin(), c->joystick.end(), c->lastJoystick.begin());
+            
             for (unsigned int i = 0; i < static_cast<int>(ControllerButton::Count); i++)
                 c->buttons[i] = SDL_GameControllerGetButton(c->gameController, static_cast<SDL_GameControllerButton>(i));
 

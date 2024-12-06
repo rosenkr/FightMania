@@ -51,8 +51,10 @@ namespace ichi::scene
         components.erase(components.begin() + index);
     }
 
-    void Scene::setPaused(bool paused) { 
-        if(pausable){ 
+    void Scene::setPaused(bool paused)
+    {
+        if (pausable)
+        {
             isPaused = paused;
         }
     }

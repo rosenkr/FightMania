@@ -22,17 +22,18 @@ namespace ichi::graphics
         };
 
         Sprite(datatypes::Hitbox, Layer, std::string);
-        Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l) {}
 
         void draw() const;
 
-        bool operator<(const Sprite &other) const { return layer < other.layer; }
+        bool operator<(const Sprite &other) const { return path < other.path; }
 
         ~Sprite() = default;
 
     protected:
+        Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l) {}
         datatypes::Hitbox hitbox;
         Layer layer;
+        std::string path;
     };
 }
 
