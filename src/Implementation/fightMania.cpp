@@ -2,6 +2,7 @@
 #include "Ichi/Scene/sceneManager.h"
 #include "Ichi/UIComponents/button.h"
 #include "Ichi/UIComponents/textbox.h"
+#include "Ichi/UIComponents/dropDownMenu.h"
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/log.h"
 
@@ -41,7 +42,13 @@ int main(int argc, char *argv[])
 	graphics::Sprite fs2(hb3, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/FocusedTextbox.png");
 	core::Component *c2 = new uicomponents::Textbox(hb3, font, SDL_Color{0, 0, 0, 255}, s2, fs2);
 
-	std::vector<core::Component *> components = {c, c1, c2};
+	datatypes::Hitbox hb4(datatypes::Hitbox(datatypes::Point(200, 200), 120, 30, false));
+	datatypes::Hitbox hb5(datatypes::Hitbox(datatypes::Point(200, 200), 109, 25, false));
+	graphics::Sprite item(hb5, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Item.png");
+	graphics::Sprite menu(hb4, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/DropDownMenu.png");
+	core::Component *c3 = new uicomponents::DropDownMenu(hb4, {"item1", "item2", "item3"}, font, SDL_Color{0, 0, 0, 255}, menu, item);
+
+	std::vector<core::Component *> components = {c, c1, c2, c3};
 
 	std::shared_ptr<scene::Scene> scene = std::make_shared<scene::Scene>(components);
 
