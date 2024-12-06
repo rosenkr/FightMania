@@ -23,6 +23,16 @@ namespace ichi::datatypes
         bool isOverlapping(const Hitbox &other) const;
         bool operator==(const Hitbox &other) const { return other.getWidth() == getWidth() && other.getHeight() == getHeight() && other.getX() == getX() && other.getY() == getY(); }
         bool operator!=(const Hitbox &other) const { return !(other == *this); }
+        Hitbox &operator+=(const Point &p)
+        {
+            rect = {rect.x + p.X, rect.y + p.Y, rect.w, rect.h};
+            return *this;
+        }
+        Hitbox &operator-=(const Point &p)
+        {
+            rect = {rect.x - p.X, rect.y - p.Y, rect.w, rect.h};
+            return *this;
+        }
 
     private:
         SDL_Rect rect;
