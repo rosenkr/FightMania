@@ -3,6 +3,7 @@
 #include "Ichi/UIComponents/button.h"
 #include "Ichi/UIComponents/textbox.h"
 #include "Ichi/UIComponents/dropDownMenu.h"
+#include "Ichi/UIComponents/checkbox.h"
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/log.h"
 
@@ -48,7 +49,12 @@ int main(int argc, char *argv[])
 	graphics::Sprite menu(hb4, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/DropDownMenu.png");
 	core::Component *c3 = new uicomponents::DropDownMenu(hb4, {"item1", "item2", "item3"}, font, SDL_Color{0, 0, 0, 255}, menu, item);
 
-	std::vector<core::Component *> components = {c, c1, c2, c3};
+	datatypes::Hitbox hb6(datatypes::Hitbox(datatypes::Point(100, 300), 50, 50, false));
+	graphics::Sprite s3(hb6, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Checkbox.png");
+	graphics::Sprite sChecked(hb6, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/CheckedCheckbox.png");
+	core::Component *c4 = new uicomponents::Checkbox(hb6, s3, sChecked);
+
+	std::vector<core::Component *> components = {c, c1, c2, c3, c4};
 
 	std::shared_ptr<scene::Scene> scene = std::make_shared<scene::Scene>(components);
 
