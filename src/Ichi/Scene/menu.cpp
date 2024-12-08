@@ -1,7 +1,20 @@
 #include "Ichi/Scene/menu.h"
-namespace ichi::scene{
-    Menu::Menu(std::vector<std::unique_ptr<ichi::uicomponents::UIComponent>> uiComponents = {}) : Scene(), uiComponents(std::move(uiComponents)) { 
-        pausable = false;
-    }
+namespace ichi::scene
+{
+    void Menu::draw() const
+    {
+        for (auto c : components)
+            c->draw();
 
+        for (auto ui : uiComponents)
+            ui->draw();
+    }
+    void Menu::update()
+    {
+        for (auto c : components)
+            c->update();
+
+        for (auto ui : uiComponents)
+            ui->update();
+    }
 }

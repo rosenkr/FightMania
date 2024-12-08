@@ -4,17 +4,18 @@
 #include <vector>
 #include <memory>
 #include "Ichi/UIComponents/uicomponent.h"
-namespace ichi::scene{
+namespace ichi::scene
+{
 
-    // A menu is a type of Scene that is non-pausable and only holds subclasses of UIComponents
-    class Menu : public Scene {
-        public:
-            Menu(std::vector<std::unique_ptr<ichi::uicomponents::UIComponent>>);
-            void draw() const override {}
-            void update() override {}
+    class Menu : public Scene
+    {
+    public:
+        Menu(std::vector<core::Component *> comps, std::vector<ichi::uicomponents::UIComponent *> uicomps) : Scene(comps), uiComponents(std::move(uicomps)) { pausable = false; }
+        void draw() const override;
+        void update() override;
 
-        private:
-            std::vector<std::unique_ptr<ichi::uicomponents::UIComponent>> uiComponents;
+    private:
+        std::vector<ichi::uicomponents::UIComponent *> uiComponents;
     };
 }
 
