@@ -21,10 +21,10 @@ namespace ichi::input
                 ICHI_ERROR("Invalid game controller in availableJoysticks map");
                 continue;
             }
-            
+
             std::copy(c->buttons.begin(), c->buttons.end(), c->lastButtons.begin());
             std::copy(c->joystick.begin(), c->joystick.end(), c->lastJoystick.begin());
-            
+
             for (unsigned int i = 0; i < static_cast<int>(ControllerButton::Count); i++)
                 c->buttons[i] = SDL_GameControllerGetButton(c->gameController, static_cast<SDL_GameControllerButton>(i));
 
@@ -148,12 +148,32 @@ namespace ichi::input
         }
     }
 
-    int ControllerHandler::getFirstController(const std::vector<int> &except)
+    bool ControllerHandler::anyControllerIsPressing(ControllerButton button)
     {
         for (auto it = controllers.begin(); it != controllers.end(); it++)
-            if (it->second.get() && std::find(except.begin(), except.end(), it->first) == except.end())
-                return it->first;
-        return -1;
+            if (it->second.get() && buttonIsDown(it->first, button))
+                return true;
+        return false;
+    }
+
+    float ControllerHandler::getTotalLeftStickX()
+    {
+        float total = 0;
+        for (auto it = controllers.begin(); it != controllers.end(); it++)
+            if (it->second.get())
+                total += getJoystick(it->first, Joystick::LeftStickHorizontal);
+
+        return total;
+    }
+
+    float ControllerHandler::getTotalLeftStickY()
+    {
+        float total = 0;
+        for (auto it = controllers.begin(); it != controllers.end(); it++)
+            if (it->second.get())
+                total += getJoystick(it->first, Joystick::LeftStickVertical);
+
+        return total;
     }
 
     int ControllerHandler::getNextFreeIndex()

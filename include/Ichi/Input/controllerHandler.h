@@ -51,7 +51,9 @@ namespace ichi::input
         static void shutdown();
 
         static bool isControllerAvailable(int controllerId);
-        static int getFirstController(const std::vector<int> &except = {});
+        static bool anyControllerIsPressing(ControllerButton button);
+        static float getTotalLeftStickX();
+        static float getTotalLeftStickY();
 
         static bool buttonIsDown(int controllerId, ControllerButton button);
         static bool buttonIsPressed(int controllerId, ControllerButton button);
