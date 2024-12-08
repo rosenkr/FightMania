@@ -1,5 +1,6 @@
 #include "Ichi/Core/engine.h"
 #include "Ichi/Scene/sceneManager.h"
+#include "Ichi/Scene/popUpMenu.h"
 #include "Ichi/UIComponents/button.h"
 #include "Ichi/UIComponents/textbox.h"
 #include "Ichi/UIComponents/dropDownMenu.h"
@@ -29,6 +30,11 @@ void minus()
 	c5->setProcentageFilled(f);
 }
 
+void quit()
+{
+	core::Engine::getInstance()->quit();
+}
+
 int main(int argc, char *argv[])
 {
 	auto instance = core::Engine::getInstance();
@@ -40,6 +46,21 @@ int main(int argc, char *argv[])
 	}
 
 	TTF_Font *font = TTF_OpenFont("resources/fonts/PRSTART.TTF", 20);
+
+	datatypes::Hitbox quitBox(datatypes::Point(384 * 2, 224 * 2), 90, 30, false);
+	graphics::Sprite quitSprite(quitBox, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Button.png");
+	graphics::Sprite fQuitSprite(quitBox, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/FocusedButton.png");
+	uicomponents::UIComponent *quitBtn = new uicomponents::Button(quitBox, "Quit", font, SDL_Color{255, 255, 255, 255}, quitSprite, fQuitSprite, quit);
+
+	datatypes::Hitbox screen(datatypes::Point(0, 0), 384 * 4, 224 * 4, false);
+	datatypes::Hitbox windowBox(datatypes::Point(384 * 2 - 200, 224 * 2 - 200), 400, 400, false);
+	graphics::Sprite background(screen, graphics::Sprite::Layer::UICOMPONENT, "resources/images/PopUpMenu/TransparantBlack.png");
+	graphics::Sprite window(windowBox, graphics::Sprite::Layer::UICOMPONENT, "resources/images/PopUpMenu/PopUpMenu.png");
+
+	std::vector<uicomponents::UIComponent *> uicomponents{quitBtn};
+
+	auto popMenu = std::make_shared<scene::PopUpMenu>(uicomponents, background, window);
+	scene::sceneManager::setPopUpMenu(popMenu);
 
 	datatypes::Hitbox hb1(datatypes::Point(0, 0), 90, 30, false);
 	graphics::Sprite s(hb1, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Button.png");
