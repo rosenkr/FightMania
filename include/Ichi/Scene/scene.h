@@ -26,11 +26,13 @@ namespace ichi::scene
         void addComponent(core::Component *comp);
         void removeComponent(size_t index);
         void setPaused(bool paused);
+        bool isPaused() const { return paused; }
+        bool isPausable() const { return pausable; }
 
     protected:
         std::vector<core::Component *> components;
         bool pausable;
-        bool isPaused;
+        bool paused;
     };
 }
 
