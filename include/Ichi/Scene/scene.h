@@ -11,7 +11,6 @@ namespace ichi::scene
     class Scene
     {
     public:
-        Scene() {};
         Scene(std::vector<core::Component *>);
         ~Scene()
         {
