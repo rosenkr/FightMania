@@ -10,9 +10,21 @@
 
 using namespace ichi;
 
-void clicked()
+float f = 0.5f;
+datatypes::Hitbox hb7(datatypes::Point(100, 500), 70, 10, false);
+graphics::Sprite s4(hb7, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/ProgressBar.png");
+auto *c5 = new uicomponents::ProgressBar(hb7, s4, "resources/images/UIComponents/colorGreen.png");
+
+void plus()
 {
-	ICHI_TRACE("Clicked");
+	f += 0.1;
+	c5->setProcentageFilled(f);
+}
+
+void minus()
+{
+	f -= 0.1;
+	c5->setProcentageFilled(f);
 }
 
 int main(int argc, char *argv[])

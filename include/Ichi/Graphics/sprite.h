@@ -25,6 +25,9 @@ namespace ichi::graphics
 
         void draw() const;
 
+        int getHeight() const { return hitbox.getHeight(); }
+        int getWidth() const { return hitbox.getWidth(); }
+
         bool operator<(const Sprite &other) const { return path < other.path; }
 
         ~Sprite() = default;
