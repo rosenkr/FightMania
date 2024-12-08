@@ -3,9 +3,7 @@
 #include "Ichi/Scene/popUpMenu.h"
 #include "Ichi/UIComponents/button.h"
 #include "Ichi/UIComponents/textbox.h"
-#include "Ichi/UIComponents/dropDownMenu.h"
-#include "Ichi/UIComponents/checkbox.h"
-#include "Ichi/UIComponents/progressBar.h"
+#include "Ichi/UIComponents/slidebar.h"
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/log.h"
 
@@ -45,7 +43,9 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	TTF_Font *font = TTF_OpenFont("resources/fonts/PRSTART.TTF", 20);
+	// Temp string for Alex
+	std::string str = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/";
+	TTF_Font *font = TTF_OpenFont((str + "resources/fonts/PRSTART.TTF").c_str(), 20);
 
 	datatypes::Hitbox quitBox(datatypes::Point(384 * 2, 224 * 2), 90, 30, false);
 	graphics::Sprite quitSprite(quitBox, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Button.png");
@@ -62,33 +62,33 @@ int main(int argc, char *argv[])
 	auto popMenu = std::make_shared<scene::PopUpMenu>(uicomponents, background, window);
 	scene::sceneManager::setPopUpMenu(popMenu);
 
-	datatypes::Hitbox hb1(datatypes::Point(0, 0), 90, 30, false);
-	graphics::Sprite s(hb1, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Button.png");
-	graphics::Sprite fs(hb1, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/FocusedButton.png");
-	core::Component *c = new uicomponents::Button(hb1, "Click Me", font, SDL_Color{255, 255, 255, 255}, s, fs, plus);
+	datatypes::Hitbox hb1(datatypes::Hitbox(datatypes::Point(0, 0), 90, 30, false));
+	graphics::Sprite s(hb1, graphics::Sprite::Layer::UICOMPONENT, str + "resources/images/UIComponents/Button.png");
+	graphics::Sprite fs(hb1, graphics::Sprite::Layer::UICOMPONENT, str + "resources/images/UIComponents/FocusedButton.png");
+	core::Component *c = new uicomponents::Button(hb1, "Click Me", font, SDL_Color{255, 255, 255, 255}, s, fs, clicked);
 
-	datatypes::Hitbox hb2(datatypes::Point(100, 0), 90, 30, false);
-	graphics::Sprite s1(hb2, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Button.png");
-	graphics::Sprite fs1(hb2, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/FocusedButton.png");
-	core::Component *c1 = new uicomponents::Button(hb2, "Click Me", font, SDL_Color{255, 255, 255, 255}, s1, fs1, minus);
+	datatypes::Hitbox hb2(datatypes::Hitbox(datatypes::Point(100, 0), 90, 30, false));
+	graphics::Sprite s1(hb2, graphics::Sprite::Layer::UICOMPONENT, str + "resources/images/UIComponents/Button.png");
+	graphics::Sprite fs1(hb2, graphics::Sprite::Layer::UICOMPONENT, str + "resources/images/UIComponents/FocusedButton.png");
+	core::Component *c1 = new uicomponents::Button(hb2, "Click Me", font, SDL_Color{255, 255, 255, 255}, s1, fs1, clicked);
 
-	datatypes::Hitbox hb3(datatypes::Point(100, 100), 90, 30, false);
-	graphics::Sprite s2(hb3, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Textbox.png");
-	graphics::Sprite fs2(hb3, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/FocusedTextbox.png");
+	datatypes::Hitbox hb3(datatypes::Hitbox(datatypes::Point(100, 100), 90, 30, false));
+	graphics::Sprite s2(hb3, graphics::Sprite::Layer::UICOMPONENT, str + "resources/images/UIComponents/Textbox.png");
+	graphics::Sprite fs2(hb3, graphics::Sprite::Layer::UICOMPONENT, str + "resources/images/UIComponents/FocusedTextbox.png");
 	core::Component *c2 = new uicomponents::Textbox(hb3, font, SDL_Color{0, 0, 0, 255}, s2, fs2);
 
-	datatypes::Hitbox hb4(datatypes::Point(200, 200), 120, 30, false);
-	datatypes::Hitbox hb5(datatypes::Point(200, 200), 109, 25, false);
-	graphics::Sprite item(hb5, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Item.png");
-	graphics::Sprite menu(hb4, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/DropDownMenu.png");
-	core::Component *c3 = new uicomponents::DropDownMenu(hb4, {"item1", "item2", "item3"}, font, SDL_Color{0, 0, 0, 255}, menu, item);
+	// Create <one> main hitbox for the bar
+	// pass the sprite for the bar, and the paths for the slider/focusedsliders
+	datatypes::Hitbox hb4(datatypes::Hitbox(datatypes::Point(150, 150), 200, 15, false));
+	graphics::Sprite s3(hb4, graphics::Sprite::Layer::UICOMPONENT, str + "resources/images/UIComponents/Bar.png");
+	core::Component *c3 = new uicomponents::SlideBar(hb4, s3, str + "resources/images/UIComponents/Slider.png", str + "resources/images/UIComponents/FocusedSlider.png");
 
-	datatypes::Hitbox hb6(datatypes::Point(100, 300), 50, 50, false);
-	graphics::Sprite s3(hb6, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Checkbox.png");
-	graphics::Sprite sChecked(hb6, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/CheckedCheckbox.png");
-	core::Component *c4 = new uicomponents::Checkbox(hb6, s3, sChecked);
+	if (uicomponents::SlideBar *x = dynamic_cast<uicomponents::SlideBar *>(c3))
+	{
+		x->getSliderValue();
+	}
 
-	std::vector<core::Component *> components = {c, c1, c2, c3, c4, c5};
+	std::vector<core::Component *> components = {c, c1, c2, c3};
 
 	std::shared_ptr<scene::Scene> scene = std::make_shared<scene::Scene>(components);
 

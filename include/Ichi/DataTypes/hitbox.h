@@ -19,7 +19,9 @@ namespace ichi::datatypes
         int getY() const { return rect.y; }
         bool getIsTangible() const { return isTangible; }
 
-        bool pointIsInRect(Point p) const { return (rect.x <= p.X && p.X <= rect.x + rect.w) && (rect.y <= p.Y && p.Y <= rect.y + rect.h); }
+        bool pointIsInRect(Point p) const { return 
+        (rect.x <= p.X && p.X <= rect.x + rect.w) && 
+        (rect.y <= p.Y && p.Y <= rect.y + rect.h); }
         bool isOverlapping(const Hitbox &other) const;
         bool operator==(const Hitbox &other) const { return other.getWidth() == getWidth() && other.getHeight() == getHeight() && other.getX() == getX() && other.getY() == getY(); }
         bool operator!=(const Hitbox &other) const { return !(other == *this); }
@@ -33,6 +35,8 @@ namespace ichi::datatypes
             rect = {rect.x - p.X, rect.y - p.Y, rect.w, rect.h};
             return *this;
         }
+
+        void setX(int newX) { rect.x = newX; }
 
     private:
         SDL_Rect rect;

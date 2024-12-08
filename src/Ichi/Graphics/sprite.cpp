@@ -1,11 +1,12 @@
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/Core/engine.h"
 #include "Ichi/Graphics/textureManager.h"
+#include "Ichi/log.h"
 
 namespace ichi::graphics
 {
 
-    Sprite::Sprite(datatypes::Hitbox hb, Layer l, std::string s) : hitbox(hb), layer(l), path(s)
+    Sprite::Sprite(datatypes::Hitbox& hb, Layer l, std::string s) : hitbox(hb), layer(l), path(s)
     {
         TextureManager::addTextureFor(*this, s);
     }
@@ -13,6 +14,10 @@ namespace ichi::graphics
     void Sprite::draw() const
     {
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), TextureManager::getTextureFor(*this), NULL, hitbox.getSDLRect());
+    }  
+
+    const datatypes::Hitbox& Sprite::getHitbox() const {
+        return  hitbox;
     }
 
 } // namespace ichi::graphics
