@@ -76,7 +76,9 @@ namespace ichi::uicomponents
             }
         }
 
-        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) || (ControllerHandler::getFirstController() != -1 && ControllerHandler::buttonIsPressed(ControllerHandler::getFirstController(), ControllerHandler::ControllerButton::A))))
+        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) ||
+                        Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) ||
+                        ControllerHandler::anyControllerIsPressing(ControllerHandler::ControllerButton::A)))
         {
             isExpanded = !isExpanded;
             return;

@@ -46,7 +46,9 @@ namespace ichi::uicomponents
         if (Mouse::buttonIsPressed(Mouse::MouseButton::LEFT))
             setFocus(hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())));
 
-        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) || (ControllerHandler::getFirstController() != -1 && ControllerHandler::buttonIsPressed(ControllerHandler::getFirstController(), ControllerHandler::ControllerButton::A))))
+        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) ||
+                        Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) ||
+                        ControllerHandler::anyControllerIsPressing(ControllerHandler::ControllerButton::A)))
         {
             funcPtr();
             return;

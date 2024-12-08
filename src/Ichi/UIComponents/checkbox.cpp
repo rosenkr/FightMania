@@ -13,7 +13,9 @@ namespace ichi::uicomponents
     // Toggles isChecked on mouse/keyboard input
     void Checkbox::update()
     {
-        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) || (ControllerHandler::getFirstController() != -1 && ControllerHandler::buttonIsDown(ControllerHandler::getFirstController(), ControllerHandler::ControllerButton::A))))
+        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) ||
+                        Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) ||
+                        ControllerHandler::anyControllerIsPressing(ControllerHandler::ControllerButton::A)))
             isChecked = !isChecked;
 
         if (hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())) && Mouse::buttonIsPressed(Mouse::MouseButton::LEFT))
