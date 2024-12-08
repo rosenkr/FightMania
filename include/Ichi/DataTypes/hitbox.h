@@ -15,13 +15,13 @@ namespace ichi::datatypes
         const SDL_Rect *getSDLRect() const { return &rect; }
         int getWidth() const { return rect.w; }
         int getHeight() const { return rect.h; }
+        Point getPos() const { return Point(rect.x, rect.y); }
         int getX() const { return rect.x; }
         int getY() const { return rect.y; }
         bool getIsTangible() const { return isTangible; }
 
-        bool pointIsInRect(Point p) const { return 
-        (rect.x <= p.X && p.X <= rect.x + rect.w) && 
-        (rect.y <= p.Y && p.Y <= rect.y + rect.h); }
+        bool pointIsInRect(Point p) const { return (rect.x <= p.X && p.X <= rect.x + rect.w) &&
+                                                   (rect.y <= p.Y && p.Y <= rect.y + rect.h); }
         bool isOverlapping(const Hitbox &other) const;
         bool operator==(const Hitbox &other) const { return other.getWidth() == getWidth() && other.getHeight() == getHeight() && other.getX() == getX() && other.getY() == getY(); }
         bool operator!=(const Hitbox &other) const { return !(other == *this); }
