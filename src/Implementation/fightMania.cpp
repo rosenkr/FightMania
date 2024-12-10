@@ -1,6 +1,5 @@
 #include "Ichi/Core/engine.h"
 
-#include "Ichi/Scene/menu.h"
 #include "Ichi/Scene/sceneManager.h"
 #include "Ichi/Scene/popUpMenu.h"
 
@@ -59,7 +58,7 @@ int main(int argc, char *argv[])
 	// uicomponents::Pane *pane = new uicomponents::Pane(window, {c, c1, c2, c3});
 	uicomponents::UIComponent *uic = new uicomponents::SlideBar(hb4, bar, 10, 30, "resources/images/UIComponents/Slider.png", "resources/images/UIComponents/FocusedSlider.png");
 
-	std::shared_ptr<scene::Menu> scene = std::make_shared<scene::Menu>(std::vector<core::Component *>{}, std::vector<uicomponents::UIComponent *>{uic});
+	std::shared_ptr<scene::Scene> scene = std::make_shared<scene::Scene>(std::vector<core::Component *>{uic}, false);
 
 	scene::sceneManager::addScene(0, std::move(scene));
 
