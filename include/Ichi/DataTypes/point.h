@@ -27,6 +27,30 @@ namespace ichi::datatypes
                 return this->Y < other.Y;
             return this->X < other.X;
         }
+        Point &operator+=(const Point &rhs)
+        {
+            X += rhs.X;
+            Y += rhs.Y;
+            return *this;
+        }
+
+        friend Point operator+(Point lhs, const Point &rhs)
+        {
+            lhs += rhs;
+            return lhs;
+        }
+        Point &operator-=(const Point &rhs)
+        {
+            X -= rhs.X;
+            Y -= rhs.Y;
+            return *this;
+        }
+
+        friend Point operator-(Point lhs, const Point &rhs)
+        {
+            lhs -= rhs;
+            return lhs;
+        }
 
         /* Overloaded operators */
     };
