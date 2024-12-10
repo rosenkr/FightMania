@@ -43,7 +43,7 @@ namespace ichi::uicomponents
 
     void Button::update()
     {
-        if (Mouse::buttonIsPressed(Mouse::MouseButton::LEFT))
+        if (Mouse::DX() != 0 || Mouse::DY() != 0)
             setFocus(hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())));
 
         if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) ||

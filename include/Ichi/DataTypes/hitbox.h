@@ -37,6 +37,7 @@ namespace ichi::datatypes
         }
 
         void setX(int newX) { rect.x = newX; }
+        void setY(int newY) { rect.y = newY; }
 
     private:
         SDL_Rect rect;

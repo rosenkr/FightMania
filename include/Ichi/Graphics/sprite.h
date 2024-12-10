@@ -21,7 +21,7 @@ namespace ichi::graphics
             UICOMPONENT = 6,
         };
 
-        Sprite(datatypes::Hitbox&, Layer, std::string);
+        Sprite(datatypes::Hitbox &, Layer, std::string);
 
         void draw() const;
 
@@ -32,11 +32,16 @@ namespace ichi::graphics
 
         ~Sprite() = default;
 
-        const datatypes::Hitbox& getHitbox() const;
+        const datatypes::Hitbox &getHitbox() const;
+
+        void setX(int i);
+        void setY(int i);
 
     protected:
-        Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l) {}
-        datatypes::Hitbox& hitbox;
+        Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l)
+        {
+        }
+        datatypes::Hitbox &hitbox;
         Layer layer;
         std::string path;
     };

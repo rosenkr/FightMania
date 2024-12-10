@@ -8,13 +8,16 @@
 using namespace ichi::input;
 namespace ichi::uicomponents
 {
-    Checkbox::Checkbox(const datatypes::Hitbox &hb, const graphics::Sprite &us, const graphics::Sprite &cs, bool checked) : UIComponent(hb), isChecked(checked), uncheckedSprite(us), checkedSprite(cs) {}
+    Checkbox::Checkbox(const datatypes::Hitbox &hb, const graphics::Sprite &fus, const graphics::Sprite &fcs, const graphics::Sprite &us, const graphics::Sprite &cs, bool checked)
+        : UIComponent(hb), isChecked(checked), focusedUncheckedSprite(fus), focusedCheckedSprite(fcs), uncheckedSprite(us), checkedSprite(cs) {}
 
     // Toggles isChecked on mouse/keyboard input
     void Checkbox::update()
     {
-        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) ||
-                        Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) ||
+        if (Mouse::DX() != 0 || Mouse::DY() != 0)
+            setFocus(hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())));
+
+        if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) ||
                         ControllerHandler::anyControllerIsPressing(ControllerHandler::ControllerButton::A)))
             isChecked = !isChecked;
 

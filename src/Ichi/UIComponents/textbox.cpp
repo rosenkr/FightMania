@@ -24,8 +24,8 @@ namespace ichi::uicomponents
 
     void Textbox::update()
     {
-        if (Mouse::buttonIsPressed(Mouse::MouseButton::LEFT))
-            setFocus(hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())));
+        if (Mouse::DX() != 0 || Mouse::DY() != 0)
+            focused = hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY()));
 
         if (!focused)
             return;

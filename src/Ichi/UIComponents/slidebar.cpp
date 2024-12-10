@@ -9,31 +9,23 @@
 #include "Ichi/Graphics/textureManager.h"
 #include <algorithm>
 using namespace ichi::datatypes;
-namespace ichi::uicomponents{
- 
-    SlideBar::SlideBar(const Hitbox& barHitbox, 
-                   const graphics::Sprite& barSprite, 
-                   std::string sliderSpritePath, 
-                   std::string focusedSliderSpritePath)
-    : UIComponent(barHitbox), 
-      sliderHitbox(Hitbox(
-                      Point(barHitbox.getX() + barHitbox.getWidth() / 2, barHitbox.getY() + (barHitbox.getHeight() - barHitbox.getHeight() * 2) / 2),
-                      barHitbox.getHeight(), 
-                      barHitbox.getHeight() * 2, 
-                      false)),
-      barSprite(barSprite),
-      sliderSprite(sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, sliderSpritePath),
-      focusedSliderSprite(sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, focusedSliderSpritePath) {}
+namespace ichi::uicomponents
+{
 
+    SlideBar::SlideBar(const Hitbox &barHitbox, const graphics::Sprite &barSprite, const graphics::Sprite &ss, const graphics::Sprite &fs)
+        : UIComponent(barHitbox), barSprite(barSprite), sliderSprite(ss), focusedSliderSprite(fs) {}
 
-    void SlideBar::update() {
+    void SlideBar::update()
+    {
+        if (input::Mouse::DX() != 0 || input::Mouse::DY() != 0)
+            focused = hitbox.pointIsInRect(Point(ichi::input::Mouse::getX(), ichi::input::Mouse::getY()));
 
-        focused = hitbox.pointIsInRect(Point(ichi::input::Mouse::getX(), ichi::input::Mouse::getY()));
         bool btnPressedOrDown = (ichi::input::Mouse::buttonIsPressed(ichi::input::Mouse::MouseButton::LEFT) ||
-            ichi::input::Mouse::buttonIsDown(ichi::input::Mouse::MouseButton::LEFT));
+                                 ichi::input::Mouse::buttonIsDown(ichi::input::Mouse::MouseButton::LEFT));
 
-        if (focused && btnPressedOrDown) {
-            sliderHitbox.setX(ichi::input::Mouse::getX());
+        if (focused && btnPressedOrDown)
+        {
+            sliderSprite.setX(ichi::input::Mouse::getX() - sliderSprite.getWidth() / 2);
         }
 
         int sliderX = sliderSprite.getHitbox().getX();
@@ -43,22 +35,28 @@ namespace ichi::uicomponents{
         updateNormalizedSliderValue(sliderX, barX, sliderWidth, barWidth);
     }
 
-    void SlideBar::draw() const {
+    void SlideBar::draw() const
+    {
         barSprite.draw();
-        if (focused) {
+        if (focused)
+        {
             focusedSliderSprite.draw();
-        } else {
+        }
+        else
+        {
             sliderSprite.draw();
         }
     }
 
     // Return slider value 0-1
-    float SlideBar::getSliderValue() const {
+    float SlideBar::getSliderValue() const
+    {
         return sliderValue;
     }
 
     // Update slider value 0-1
-    void SlideBar::updateNormalizedSliderValue(int sliderX, int barX, int sliderWidth, int barWidth) { 
+    void SlideBar::updateNormalizedSliderValue(int sliderX, int barX, int sliderWidth, int barWidth)
+    {
         int dx = sliderX - barX;
 
         float sliderValue = static_cast<float>(dx) / barWidth;
