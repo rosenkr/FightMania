@@ -60,8 +60,9 @@ namespace ichi::uicomponents
                 focused = p;
         }
 
-        if (uiComponents.find(lastFocused) != uiComponents.end())
+        if (lastFocused != focused && uiComponents.find(lastFocused) != uiComponents.end())
             uiComponents[lastFocused].get()->setFocus(false);
+
         if (uiComponents.find(focused) != uiComponents.end())
             uiComponents[focused].get()->setFocus(true);
     }
