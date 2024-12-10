@@ -11,7 +11,7 @@ namespace ichi::scene
     class Scene
     {
     public:
-        Scene(std::vector<core::Component *>);
+        Scene(std::vector<core::Component *>, bool);
         ~Scene()
         {
             for (auto p : components)
