@@ -9,33 +9,35 @@ namespace ichi::scene::sceneManager
 {
     static std::map<int, std::shared_ptr<Scene>> scenes;
     static std::shared_ptr<Scene> activeScene;
+
     static std::shared_ptr<PopUpMenu> popUpMenu;
 
     // Succesfully adds a scene if the key does not already have an associated scene
     bool addScene(int key, std::shared_ptr<Scene> scene)
     {
         auto it = scenes.find(key);
-        if (it == scenes.end())
+
+        if (it != scenes.end()) // Key exists
         {
-            scenes[key] = scene;
-            ICHI_INFO("Inserted scene at key {}", key);
-            return true;
+            ICHI_ERROR("Failed to insert scene with key {}, the key already has an associated scene", key);
+            return false;
         }
 
-        ICHI_ERROR("Failed to insert scene with key {}, the key already has an associated scene", key);
-        return false;
+        scenes[key] = scene;
+        ICHI_INFO("Inserted scene at key {}", key);
+        return true;
     }
 
     // Removes scene at key, logs whether a scene was actually removed if it existed or not
     void removeScene(int key)
     {
-        if (scenes.erase(key) > 0)
+        if (scenes.erase(key) == 0)
         {
-            ICHI_INFO("Removed the scene with key {}", key);
+            ICHI_ERROR("There is no scene to remove with the key {}", key);
             return;
         }
 
-        ICHI_ERROR("There is no scene to remove with the key {}", key);
+        ICHI_INFO("Removed the scene with key {}", key);
     }
 
     // Sets active scene at key, logs whether this was succesful or not
@@ -80,12 +82,9 @@ namespace ichi::scene::sceneManager
             activeScene.get()->setPaused(!activeScene.get()->isPaused());
 
         if (activeScene.get()->isPaused())
-        {
             popUpMenu.get()->update();
-            return;
-        }
-
-        activeScene.get()->update();
+        else
+            activeScene.get()->update();
     }
 
     void draw()
