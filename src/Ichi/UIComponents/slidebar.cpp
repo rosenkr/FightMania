@@ -18,9 +18,9 @@ namespace ichi::uicomponents
         auto barCenter = Point(barSprite.getX() + barSprite.getWidth() / 2, barSprite.getY() + barSprite.getHeight() / 2);
         auto sliderCenter = Point(sliderWidth / 2, sliderHeight / 2);
 
-        static Hitbox hb(barCenter - sliderCenter, sliderWidth, sliderHeight, false); // deletes on SlideBar destructor
-        sliderSprite = new graphics::Sprite(hb, graphics::Sprite::Layer::UICOMPONENT, sliderPath);
-        focusedSliderSprite = new graphics::Sprite(hb, graphics::Sprite::Layer::UICOMPONENT, focusedSliderPath);
+        sliderHitbox = new Hitbox(barCenter - sliderCenter, sliderWidth, sliderHeight, false);
+        sliderSprite = new graphics::Sprite(*sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, sliderPath);
+        focusedSliderSprite = new graphics::Sprite(*sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, focusedSliderPath);
     }
 
     void SlideBar::update()

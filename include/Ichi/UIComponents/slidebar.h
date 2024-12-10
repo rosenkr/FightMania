@@ -17,6 +17,8 @@ namespace ichi::uicomponents
         {
             delete sliderSprite;
             delete focusedSliderSprite;
+            delete sliderHitbox;
+            sliderHitbox = nullptr;
             sliderSprite = nullptr;
             focusedSliderSprite = nullptr;
         }
@@ -26,6 +28,7 @@ namespace ichi::uicomponents
         graphics::Sprite barSprite;
         graphics::Sprite *sliderSprite;
         graphics::Sprite *focusedSliderSprite;
+        datatypes::Hitbox *sliderHitbox;
         float sliderValue;
         bool isDragging;
     };
