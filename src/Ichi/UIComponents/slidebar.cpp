@@ -12,56 +12,53 @@ using namespace ichi::datatypes;
 namespace ichi::uicomponents
 {
 
-    SlideBar::SlideBar(const Hitbox &barHitbox, const graphics::Sprite &barSprite, const graphics::Sprite &ss, const graphics::Sprite &fs)
-        : UIComponent(barHitbox), barSprite(barSprite), sliderSprite(ss), focusedSliderSprite(fs) {}
+    SlideBar::SlideBar(const Hitbox &barHitbox, const graphics::Sprite &barSprite, int sliderWidth, int sliderHeight, const std::string &sliderPath, const std::string &focusedSliderPath)
+        : UIComponent(barHitbox), barSprite(barSprite)
+    {
+        auto barCenter = Point(barSprite.getX() + barSprite.getWidth() / 2, barSprite.getY() + barSprite.getHeight() / 2);
+        auto sliderCenter = Point(sliderWidth / 2, sliderHeight / 2);
+
+        static Hitbox hb(barCenter - sliderCenter, sliderWidth, sliderHeight, false); // deletes on SlideBar destructor
+        sliderSprite = new graphics::Sprite(hb, graphics::Sprite::Layer::UICOMPONENT, sliderPath);
+        focusedSliderSprite = new graphics::Sprite(hb, graphics::Sprite::Layer::UICOMPONENT, focusedSliderPath);
+    }
 
     void SlideBar::update()
     {
         if (input::Mouse::DX() != 0 || input::Mouse::DY() != 0)
-            focused = hitbox.pointIsInRect(Point(ichi::input::Mouse::getX(), ichi::input::Mouse::getY()));
+            focused = hitbox.pointIsInRect(Point(input::Mouse::getX(), input::Mouse::getY()));
 
-        bool btnPressedOrDown = (ichi::input::Mouse::buttonIsPressed(ichi::input::Mouse::MouseButton::LEFT) ||
-                                 ichi::input::Mouse::buttonIsDown(ichi::input::Mouse::MouseButton::LEFT));
+        if (focused && input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT))
+            sliderSprite->setX(input::Mouse::getX() - sliderSprite->getWidth() / 2);
 
-        if (focused && btnPressedOrDown)
-        {
-            sliderSprite.setX(ichi::input::Mouse::getX() - sliderSprite.getWidth() / 2);
-        }
-
-        int sliderX = sliderSprite.getHitbox().getX();
-        int barX = barSprite.getHitbox().getX();
-        int sliderWidth = sliderSprite.getHitbox().getWidth();
-        int barWidth = barSprite.getHitbox().getWidth();
-        updateNormalizedSliderValue(sliderX, barX, sliderWidth, barWidth);
+        updateNormalizedSliderValue();
     }
 
     void SlideBar::draw() const
     {
         barSprite.draw();
+
         if (focused)
-        {
-            focusedSliderSprite.draw();
-        }
+            focusedSliderSprite->draw();
         else
-        {
-            sliderSprite.draw();
-        }
+            sliderSprite->draw();
     }
 
-    // Return slider value 0-1
     float SlideBar::getSliderValue() const
     {
         return sliderValue;
     }
 
     // Update slider value 0-1
-    void SlideBar::updateNormalizedSliderValue(int sliderX, int barX, int sliderWidth, int barWidth)
+    void SlideBar::updateNormalizedSliderValue()
     {
-        int dx = sliderX - barX;
+        int pixels = (sliderSprite->getX() + sliderSprite->getWidth() / 2) - barSprite.getX(); // Distance between the middle of slider to bar X pos
 
-        float sliderValue = static_cast<float>(dx) / barWidth;
+        sliderValue = pixels / (float)barSprite.getWidth();
+
         sliderValue = std::clamp(sliderValue, 0.0f, 1.0f);
-        sliderValue = std::round(sliderValue * 100.0f) / 100.0f;
+        sliderValue = std::round(sliderValue * 100.0f) / 100.0f; // two decimals
+
         ICHI_INFO("SliderValue: {}", sliderValue);
         this->sliderValue = sliderValue;
     }

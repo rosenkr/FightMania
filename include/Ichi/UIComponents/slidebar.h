@@ -8,16 +8,24 @@ namespace ichi::uicomponents
     class SlideBar : public UIComponent
     {
     public:
-        SlideBar(const datatypes::Hitbox &barHitbox, const graphics::Sprite &barSprite, const graphics::Sprite &sliderSpritePath, const graphics::Sprite &focusedSliderSpritePath);
+        SlideBar(const datatypes::Hitbox &barHitbox, const graphics::Sprite &barSprite, int sliderWidth, int sliderHeight, const std::string &sliderPath, const std::string &fs);
         void update();
         void draw() const;
         float getSliderValue() const;
 
+        ~SlideBar()
+        {
+            delete sliderSprite;
+            delete focusedSliderSprite;
+            sliderSprite = nullptr;
+            focusedSliderSprite = nullptr;
+        }
+
     private:
-        void updateNormalizedSliderValue(int sliderX, int barX, int sliderWidth, int barWidth);
+        void updateNormalizedSliderValue();
         graphics::Sprite barSprite;
-        graphics::Sprite sliderSprite;
-        graphics::Sprite focusedSliderSprite;
+        graphics::Sprite *sliderSprite;
+        graphics::Sprite *focusedSliderSprite;
         float sliderValue;
         bool isDragging;
     };

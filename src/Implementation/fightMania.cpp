@@ -39,11 +39,8 @@ int main(int argc, char *argv[])
 	datatypes::Hitbox hb3(datatypes::Point(200, 400), 50, 50, false);
 
 	datatypes::Hitbox hb4(datatypes::Point(500, 500), 100, 20, false);
-	datatypes::Hitbox hb5(datatypes::Point(hb4.getX() + hb4.getWidth() / 2, hb4.getY() + (hb4.getHeight() - hb4.getHeight() * 2) / 2), hb4.getHeight(), hb4.getHeight() * 2, false);
 
 	graphics::Sprite bar(hb4, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Bar.png");
-	graphics::Sprite fSlider(hb5, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/FocusedSlider.png");
-	graphics::Sprite slider(hb5, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/Slider.png");
 
 	graphics::Sprite s(hb, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/TextBox.png");
 	graphics::Sprite s1(hb1, graphics::Sprite::Layer::UICOMPONENT, "resources/images/UIComponents/TextBox.png");
@@ -60,7 +57,7 @@ int main(int argc, char *argv[])
 	std::shared_ptr<uicomponents::UIComponent> c3 = std::make_shared<uicomponents::Textbox>(hb3, font, SDL_Color{0, 255, 0, 255}, s3, sChecked3);
 
 	// uicomponents::Pane *pane = new uicomponents::Pane(window, {c, c1, c2, c3});
-	uicomponents::UIComponent *uic = new uicomponents::SlideBar(hb4, bar, slider, fSlider);
+	uicomponents::UIComponent *uic = new uicomponents::SlideBar(hb4, bar, 10, 30, "resources/images/UIComponents/Slider.png", "resources/images/UIComponents/FocusedSlider.png");
 
 	std::shared_ptr<scene::Menu> scene = std::make_shared<scene::Menu>(std::vector<core::Component *>{}, std::vector<uicomponents::UIComponent *>{uic});
 
