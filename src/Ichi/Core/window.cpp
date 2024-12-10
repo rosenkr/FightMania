@@ -16,7 +16,9 @@ namespace ichi::core
 
     Window::~Window()
     {
+        SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
+        renderer = nullptr;
         window = nullptr;
     }
 

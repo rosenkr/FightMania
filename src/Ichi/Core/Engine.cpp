@@ -74,9 +74,7 @@ namespace ichi::core
         ichi::input::ControllerHandler::shutdown();
         ichi::audio::AudioPlayer::shutdown();
 
-        SDL_DestroyRenderer(getRenderer());
-
-        SDL_Quit();
+                SDL_Quit();
 
         logManager.shutdown();
     }
