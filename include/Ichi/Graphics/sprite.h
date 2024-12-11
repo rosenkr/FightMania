@@ -24,13 +24,14 @@ namespace ichi::graphics
         Sprite(datatypes::Hitbox &, Layer, std::string);
 
         void draw() const;
+        virtual void update() {};
 
         int getHeight() const { return hitbox.getHeight(); }
         int getWidth() const { return hitbox.getWidth(); }
 
         bool operator<(const Sprite &other) const { return path < other.path; }
 
-        ~Sprite() = default;
+        virtual ~Sprite() = default;
 
         const datatypes::Hitbox &getHitbox() const;
 
