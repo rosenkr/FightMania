@@ -20,8 +20,10 @@ using namespace ichi;
 const std::string TEMP = "";
 
 const std::string FONT_PATH = TEMP + "resources/fonts/PRSTART.TTF";
+
 const std::string POP_UP_MENU_PATH = TEMP + "resources/images/PopUpMenu/PopUpMenu.png";
 const std::string TRANSPARENT_BLACK_PATH = TEMP + "resources/images/PopUpMenu/TransparantBlack.png";
+
 const std::string BAR_PATH = TEMP + "resources/images/UIComponents/Bar.png";
 const std::string BUTTON_PATH = TEMP + "resources/images/UIComponents/Button.png";
 const std::string CHECKBOX_PATH = TEMP + "resources/images/UIComponents/Checkbox.png";
@@ -36,9 +38,12 @@ const std::string PROGRESS_BAR_PATH = TEMP + "resources/images/UIComponents/Prog
 const std::string SLIDER_PATH = TEMP + "resources/images/UIComponents/Slider.png";
 const std::string TEXTBOX_PATH = TEMP + "resources/images/UIComponents/Textbox.png";
 
-const datatypes::Hitbox window(datatypes::Point(0, 0), 384, 224, false);
+const std::string DARK_BLUE_SCREEN_PATH = TEMP + "resources/images/BackGrounds/DarkBlueScreen.png";
+
+datatypes::Hitbox window(datatypes::Point(0, 0), 384, 224, false);
 
 const graphics::Sprite::Layer UI_LAYER = graphics::Sprite::Layer::UICOMPONENT;
+const graphics::Sprite::Layer BACKGROUND_LAYER = graphics::Sprite::Layer::BACKGROUND;
 
 const SDL_Color black{0, 0, 0, 255};
 const SDL_Color white{255, 255, 255, 255};
@@ -95,6 +100,8 @@ int main(int argc, char *argv[])
 	graphics::Sprite settingsFocusedSprite(hbSettings, UI_LAYER, FOCUSED_BUTTON_PATH);
 	graphics::Sprite exitFocusedSprite(hbExit, UI_LAYER, FOCUSED_BUTTON_PATH);
 
+	graphics::Sprite *darkBlueBackground = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+
 	std::shared_ptr<uicomponents::Button> localPlay = std::make_shared<uicomponents::Button>(hbLocalPlay, "Local Play", font, black, localPlaySprite, localPlayFocusedSprite, changeSceneToProfileEditor);
 	std::shared_ptr<uicomponents::Button> training = std::make_shared<uicomponents::Button>(hbTraining, "Training", font, black, trainingSprite, trainingFocusedSprite, changeSceneToTrainingCharacterSelection);
 	std::shared_ptr<uicomponents::Button> profileEditor = std::make_shared<uicomponents::Button>(hbProfileEditor, "Profile Editor", font, black, profileEditorSprite, profileEditorFocusedSprite, changeSceneToProfileEditor);
@@ -103,7 +110,7 @@ int main(int argc, char *argv[])
 
 	auto pane = new uicomponents::Pane(window, {localPlay, training, profileEditor, settings, exit});
 
-	std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(std::vector<core::Component *>{pane}, false);
+	std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(darkBlueBackground, std::vector<core::Component *>{pane}, false);
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::MAIN), mainScene);
 
