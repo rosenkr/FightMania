@@ -3,7 +3,7 @@
 
 namespace ichi::scene
 {
-    Scene::Scene(std::vector<core::Component *> components = {}) : components(std::move(components)), pausable(true), paused(false) {}
+    Scene::Scene(std::vector<core::Component *> components = {}, bool pausable = true) : components(std::move(components)), pausable(pausable), paused(false) {}
 
     void Scene::draw() const
     {
@@ -54,8 +54,6 @@ namespace ichi::scene
     void Scene::setPaused(bool paused)
     {
         if (pausable)
-        {
             this->paused = paused;
-        }
     }
 }
