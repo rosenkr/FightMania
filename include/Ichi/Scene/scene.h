@@ -2,6 +2,7 @@
 #define SCENE_H
 
 #include "Ichi/Core/component.h"
+#include "Ichi/Graphics/sprite.h"
 
 #include <vector>
 #include <memory>
@@ -11,12 +12,14 @@ namespace ichi::scene
     class Scene
     {
     public:
-        Scene(std::vector<core::Component *>, bool);
+        Scene(graphics::Sprite *, std::vector<core::Component *>, bool);
         ~Scene()
         {
             for (auto p : components)
                 delete p;
             components.clear();
+            delete background;
+            background = nullptr;
         }
 
         virtual void draw() const;
@@ -29,6 +32,7 @@ namespace ichi::scene
         bool isPausable() const { return pausable; }
 
     protected:
+        graphics::Sprite *background;
         std::vector<core::Component *> components;
         bool pausable;
         bool paused;

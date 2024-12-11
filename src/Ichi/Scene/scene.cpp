@@ -1,18 +1,22 @@
 #include "Ichi/Scene/scene.h"
+
+#include "Ichi/Graphics/animatedSprite.h"
 #include "Ichi/log.h"
 
 namespace ichi::scene
 {
-    Scene::Scene(std::vector<core::Component *> components = {}, bool pausable = true) : components(std::move(components)), pausable(pausable), paused(false) {}
+    Scene::Scene(graphics::Sprite *background, std::vector<core::Component *> components = {}, bool pausable = true) : background(background), components(std::move(components)), pausable(pausable), paused(false) {}
 
     void Scene::draw() const
     {
+        background->draw();
         for (const auto &up_c : components)
             up_c->draw();
     }
 
     void Scene::update()
     {
+        background->update();
         for (const auto &up_c : components)
             up_c->update();
     }
