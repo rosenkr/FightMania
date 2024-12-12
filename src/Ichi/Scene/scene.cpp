@@ -5,7 +5,7 @@
 
 namespace ichi::scene
 {
-    Scene::Scene(graphics::Sprite *background, std::vector<core::Component *> components = {}, bool pausable = true) : background(background), components(std::move(components)), pausable(pausable), paused(false) {}
+    Scene::Scene(graphics::Sprite *background, std::vector<core::Component *> components = {}, bool pausable = true) : background(std::move(background)), components(std::move(components)), pausable(pausable), paused(false) {}
 
     void Scene::draw() const
     {
