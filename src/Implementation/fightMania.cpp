@@ -37,8 +37,12 @@ const std::string ITEM_PATH = TEMP + "resources/images/UIComponents/Item.png";
 const std::string PROGRESS_BAR_PATH = TEMP + "resources/images/UIComponents/ProgressBar.png";
 const std::string SLIDER_PATH = TEMP + "resources/images/UIComponents/Slider.png";
 const std::string TEXTBOX_PATH = TEMP + "resources/images/UIComponents/Textbox.png";
+const std::string FOCUSED_RETURN_BTN_PATH = TEMP + "resources/images/UIComponents/FocusedReturnBtn.png";
+const std::string RETURN_BTN_PATH = TEMP + "resources/images/UIComponents/ReturnBtn.png";
 
 const std::string DARK_BLUE_SCREEN_PATH = TEMP + "resources/images/BackGrounds/DarkBlueScreen.png";
+const std::string CHARACTER_SELECTION_PATH = TEMP + "resources/images/BackGrounds/CharcterSelection.png";
+const std::string TRAINING_SELECTION_PATH = TEMP + "resources/images/BackGrounds/TrainingSelection.png";
 
 datatypes::Hitbox window(datatypes::Point(0, 0), 384, 224, false);
 
@@ -47,6 +51,8 @@ const graphics::Sprite::Layer BACKGROUND_LAYER = graphics::Sprite::Layer::BACKGR
 
 const SDL_Color black{0, 0, 0, 255};
 const SDL_Color white{255, 255, 255, 255};
+
+TTF_Font *font;
 
 enum class SceneName
 {
@@ -66,6 +72,19 @@ void changeSceneToTrainingCharacterSelection() { scene::sceneManager::setActiveS
 void changeSceneToProfileEditor() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::PROFILE_EDITOR)); }
 void changeSceneToSettings() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::SETTINGS)); }
 
+std::shared_ptr<uicomponents::Button> createButton(datatypes::Hitbox &hitbox, const std::string &label, const std::string &spritePath, const std::string &focusedSpritePath, const std::function<void()> &onClick)
+{
+	graphics::Sprite defaultSprite(hitbox, UI_LAYER, spritePath);
+	graphics::Sprite focusedSprite(hitbox, UI_LAYER, focusedSpritePath);
+
+	uicomponents::Button btn(hitbox, "", font, black, defaultSprite, focusedSprite, onClick);
+	return std::make_shared<uicomponents::Button>(hitbox, label, font, black, defaultSprite, focusedSprite, onClick);
+}
+
+void createToSettings()
+{
+}
+
 int main(int argc, char *argv[])
 {
 	auto instance = core::Engine::getInstance();
@@ -76,10 +95,10 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	TTF_Font *font = TTF_OpenFont(FONT_PATH.c_str(), 12);
+	font = TTF_OpenFont(FONT_PATH.c_str(), 12);
 
 	//
-	// 		MAIN SCENE
+	//		MAIN MENU
 	//
 
 	datatypes::Hitbox hbLocalPlay(datatypes::Point(50, 60), 75, 20, false);
@@ -88,34 +107,114 @@ int main(int argc, char *argv[])
 	datatypes::Hitbox hbSettings(datatypes::Point(50, 150), 75, 20, false);
 	datatypes::Hitbox hbExit(datatypes::Point(50, 180), 75, 20, false);
 
-	graphics::Sprite localPlaySprite(hbLocalPlay, UI_LAYER, BUTTON_PATH);
-	graphics::Sprite trainingSprite(hbTraining, UI_LAYER, BUTTON_PATH);
-	graphics::Sprite profileEditorSprite(hbProfileEditor, UI_LAYER, BUTTON_PATH);
-	graphics::Sprite settingsSprite(hbSettings, UI_LAYER, BUTTON_PATH);
-	graphics::Sprite exitSprite(hbExit, UI_LAYER, BUTTON_PATH);
+	graphics::Sprite *darkBlueBackgroundMain = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
-	graphics::Sprite localPlayFocusedSprite(hbLocalPlay, UI_LAYER, FOCUSED_BUTTON_PATH);
-	graphics::Sprite trainingFocusedSprite(hbTraining, UI_LAYER, FOCUSED_BUTTON_PATH);
-	graphics::Sprite profileEditorFocusedSprite(hbProfileEditor, UI_LAYER, FOCUSED_BUTTON_PATH);
-	graphics::Sprite settingsFocusedSprite(hbSettings, UI_LAYER, FOCUSED_BUTTON_PATH);
-	graphics::Sprite exitFocusedSprite(hbExit, UI_LAYER, FOCUSED_BUTTON_PATH);
+	auto localPlay = createButton(hbLocalPlay, "Local Play", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToLocalPlayCharacterSelection);
+	auto training = createButton(hbTraining, "Training", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToTrainingCharacterSelection);
+	auto profileEditor = createButton(hbProfileEditor, "Profile Editor", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToProfileEditor);
+	auto settings = createButton(hbSettings, "Settings", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToSettings);
+	auto exit = createButton(hbExit, "Exit game", BUTTON_PATH, FOCUSED_BUTTON_PATH, quit);
 
-	graphics::Sprite *darkBlueBackground = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+	auto mainPane = new uicomponents::Pane(window, {localPlay, training, profileEditor, settings, exit});
 
-	std::shared_ptr<uicomponents::Button> localPlay = std::make_shared<uicomponents::Button>(hbLocalPlay, "Local Play", font, black, localPlaySprite, localPlayFocusedSprite, changeSceneToProfileEditor);
-	std::shared_ptr<uicomponents::Button> training = std::make_shared<uicomponents::Button>(hbTraining, "Training", font, black, trainingSprite, trainingFocusedSprite, changeSceneToTrainingCharacterSelection);
-	std::shared_ptr<uicomponents::Button> profileEditor = std::make_shared<uicomponents::Button>(hbProfileEditor, "Profile Editor", font, black, profileEditorSprite, profileEditorFocusedSprite, changeSceneToProfileEditor);
-	std::shared_ptr<uicomponents::Button> settings = std::make_shared<uicomponents::Button>(hbSettings, "Settings", font, black, settingsSprite, settingsFocusedSprite, changeSceneToProfileEditor);
-	std::shared_ptr<uicomponents::Button> exit = std::make_shared<uicomponents::Button>(hbExit, "Exit", font, black, exitSprite, exitFocusedSprite, quit);
-
-	auto pane = new uicomponents::Pane(window, {localPlay, training, profileEditor, settings, exit});
-
-	std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(darkBlueBackground, std::vector<core::Component *>{pane}, false);
+	std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(darkBlueBackgroundMain, std::vector<core::Component *>{mainPane}, false);
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::MAIN), mainScene);
 
 	//
-	// 		END OF MAIN SCENE
+	//		MAIN MENU END
+	//
+
+	//
+	//		LOCAL PLAY SELECTION
+	//
+
+	datatypes::Hitbox hbReturnLP(datatypes::Point(0, 0), 30, 30, false);
+
+	graphics::Sprite returnSpriteLP(hbReturnLP, UI_LAYER, RETURN_BTN_PATH);
+	graphics::Sprite focusedReturnSpriteLP(hbReturnLP, UI_LAYER, FOCUSED_RETURN_BTN_PATH);
+
+	std::shared_ptr<uicomponents::Button> returnBtnLP = std::make_shared<uicomponents::Button>(hbReturnLP, "", font, black, returnSpriteLP, focusedReturnSpriteLP, changeSceneToMain);
+
+	graphics::Sprite *characterSelectionBackground = new graphics::Sprite(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
+
+	auto characterPane = new uicomponents::Pane(window, {returnBtnLP});
+
+	std::shared_ptr<scene::Scene> characterSelectionScene = std::make_shared<scene::Scene>(characterSelectionBackground, std::vector<core::Component *>{characterPane}, false);
+
+	scene::sceneManager::addScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION), characterSelectionScene);
+
+	//
+	//		LOCAL PLAY SELECTION END
+	//
+
+	//
+	//		TRAINING SELECTION
+	//
+
+	datatypes::Hitbox hbReturnT(datatypes::Point(0, 0), 30, 30, false);
+
+	graphics::Sprite returnSpriteT(hbReturnT, UI_LAYER, RETURN_BTN_PATH);
+	graphics::Sprite focusedReturnSpriteT(hbReturnT, UI_LAYER, FOCUSED_RETURN_BTN_PATH);
+
+	std::shared_ptr<uicomponents::Button> returnBtnT = std::make_shared<uicomponents::Button>(hbReturnT, "", font, black, returnSpriteT, focusedReturnSpriteT, changeSceneToMain);
+
+	auto trainingPane = new uicomponents::Pane(window, {returnBtnT});
+
+	graphics::Sprite *trainingSelcetion = new graphics::Sprite(window, BACKGROUND_LAYER, TRAINING_SELECTION_PATH);
+
+	std::shared_ptr<scene::Scene> trainingSelectionScene = std::make_shared<scene::Scene>(trainingSelcetion, std::vector<core::Component *>{trainingPane}, false);
+
+	scene::sceneManager::addScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION), trainingSelectionScene);
+
+	//
+	//		TRAINING SELECTION END
+	//
+
+	//
+	//		PROFILE EDITOR
+	//
+
+	datatypes::Hitbox hbReturnPE(datatypes::Point(0, 0), 30, 30, false);
+
+	graphics::Sprite returnSpritePE(hbReturnPE, UI_LAYER, RETURN_BTN_PATH);
+	graphics::Sprite focusedReturnSpritePE(hbReturnPE, UI_LAYER, FOCUSED_RETURN_BTN_PATH);
+
+	std::shared_ptr<uicomponents::Button> returnBtnPE = std::make_shared<uicomponents::Button>(hbReturnPE, "", font, black, returnSpritePE, focusedReturnSpritePE, changeSceneToMain);
+
+	auto profileEditorPane = new uicomponents::Pane(window, {returnBtnPE});
+
+	graphics::Sprite *darkBlueBackgroundPE = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+
+	std::shared_ptr<scene::Scene> profileEditorScene = std::make_shared<scene::Scene>(darkBlueBackgroundPE, std::vector<core::Component *>{profileEditorPane}, false);
+
+	scene::sceneManager::addScene(static_cast<int>(SceneName::PROFILE_EDITOR), profileEditorScene);
+
+	//
+	//		PROFILE EDITOR END
+	//
+
+	//
+	//		SETTINGS
+	//
+
+	datatypes::Hitbox hbReturnS(datatypes::Point(0, 0), 30, 30, false);
+
+	graphics::Sprite returnSpriteS(hbReturnS, UI_LAYER, RETURN_BTN_PATH);
+	graphics::Sprite focusedReturnSpriteS(hbReturnS, UI_LAYER, FOCUSED_RETURN_BTN_PATH);
+
+	std::shared_ptr<uicomponents::Button> returnBtnS = std::make_shared<uicomponents::Button>(hbReturnS, "", font, black, returnSpriteS, focusedReturnSpriteS, changeSceneToMain);
+
+	auto pane = new uicomponents::Pane(window, {returnBtnS});
+
+	graphics::Sprite *darkBlueBackgroundS = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+
+	std::shared_ptr<scene::Scene> settingScene = std::make_shared<scene::Scene>(darkBlueBackgroundS, std::vector<core::Component *>{pane}, false);
+
+	scene::sceneManager::addScene(static_cast<int>(SceneName::SETTINGS), settingScene);
+
+	//
+	//		SETTINGS END
 	//
 
 	scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
