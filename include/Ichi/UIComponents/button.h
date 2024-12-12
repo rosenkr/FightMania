@@ -12,8 +12,12 @@ namespace ichi::uicomponents
     class Button : public UIComponent
     {
     public:
-        Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, void (*ptr)());
-        ~Button() { SDL_DestroyTexture(text); }
+        Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, std::function<void()> ptr);
+        ~Button()
+        {
+            if (text != nullptr)
+                SDL_DestroyTexture(text);
+        }
 
         void draw() const;
         void update();
@@ -22,7 +26,7 @@ namespace ichi::uicomponents
         SDL_Texture *text;
         graphics::Sprite sprite;
         graphics::Sprite focusedSprite;
-        void (*funcPtr)();
+        std::function<void()> funcPtr;
     };
 
 } // namespace ichi::uicomponents

@@ -9,13 +9,19 @@ using namespace ichi::input;
 
 namespace ichi::uicomponents
 {
-    Button::Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, void (*ptr)()) : UIComponent(hb), sprite(s), focusedSprite(fs), funcPtr(ptr)
+    Button::Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, std::function<void()> ptr) : UIComponent(hb), sprite(s), focusedSprite(fs), funcPtr(ptr)
     {
+        if (btnLabel.empty())
+        {
+            text = nullptr;
+            return;
+        }
+
         SDL_Surface *surf = TTF_RenderText_Solid(f, btnLabel.c_str(), c);
 
         if (surf == nullptr)
         {
-            ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
+            ICHI_ERROR("Could not create surface for button label: {}", SDL_GetError());
             return;
         }
 
@@ -24,7 +30,7 @@ namespace ichi::uicomponents
 
         if (texture == nullptr)
         {
-            ICHI_ERROR("Could not create texture for label");
+            ICHI_ERROR("Could not create texture for button label", SDL_GetError());
             return;
         }
 
@@ -38,7 +44,8 @@ namespace ichi::uicomponents
         else
             sprite.draw();
 
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), text, NULL, hitbox.getSDLRect());
+        if (text)
+            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), text, NULL, hitbox.getSDLRect());
     }
 
     void Button::update()
