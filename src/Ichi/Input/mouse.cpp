@@ -1,4 +1,5 @@
 #include "Ichi/Input/mouse.h"
+#include "Ichi/Core/engine.h"
 #include "SDL2/SDL.h"
 #include "Ichi/log.h"
 #include <algorithm>
@@ -26,6 +27,14 @@ namespace ichi::input
         std::copy(buttons.begin(), buttons.end(), lastButtons.begin());
 
         Uint32 state = SDL_GetMouseState(&x, &y);
+
+        // Setting x and y to logical points
+        float fx, fy;
+        SDL_RenderWindowToLogical(core::Engine::getInstance()->getRenderer(), x, y, &fx, &fy);
+
+        x = static_cast<int>(fx);
+        y = static_cast<int>(fy);
+
         for (int i = 0; i < Mouse::ButtonCount; i++)
         {
             buttons[i] = state & SDL_BUTTON(i + 1);
