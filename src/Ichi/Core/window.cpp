@@ -11,7 +11,8 @@ namespace ichi::core
 
     Window::Window()
     {
-        SDL_CreateWindowAndRenderer(WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer);
+        SDL_CreateWindowAndRenderer(WINDOW_WIDTH + SCALE, WINDOW_HEIGHT * SCALE, 0, &window, &renderer);
+        SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
     }
 
     Window::~Window()
