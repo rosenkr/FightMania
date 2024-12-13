@@ -13,8 +13,8 @@ using namespace ichi::input;
 namespace ichi::uicomponents
 {
 
-    DropDownMenu::DropDownMenu(datatypes::Hitbox hb, std::vector<std::string> items, TTF_Font *f, SDL_Color c, graphics::Sprite m, graphics::Sprite item)
-        : UIComponent(hb), items(items), font(f), textColor(c), menu(m), itemSprite(item)
+    DropDownMenu::DropDownMenu(datatypes::Hitbox hb, std::vector<std::string> items, TTF_Font *f, SDL_Color c, graphics::Sprite m, graphics::Sprite fm, graphics::Sprite item)
+        : UIComponent(hb), items(items), font(f), textColor(c), menu(m), focusedMenu(fm), itemSprite(item)
     {
 
         for (auto s : items)
@@ -92,7 +92,11 @@ namespace ichi::uicomponents
 
     void DropDownMenu::draw() const
     {
-        menu.draw();
+        if (focused)
+            menu.draw();
+        else
+            focusedMenu.draw();
+
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), itemTextures.at(selected), NULL, hitbox.getSDLRect());
 
         if (!isExpanded)
