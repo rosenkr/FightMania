@@ -54,9 +54,6 @@ namespace ichi::uicomponents
 
         auto rect = SDL_Rect{hitbox.getX() + diff, hitbox.getY(), textWidth, textHeight};
 
-        if (textWidth > hitbox.getWidth())
-            rect = SDL_Rect{hitbox.getX(), hitbox.getY(), textWidth, hitbox.getHeight()};
-
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), text, NULL, &rect);
     }
 

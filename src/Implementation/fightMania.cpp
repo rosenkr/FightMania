@@ -5,6 +5,7 @@
 
 #include "Ichi/UIComponents/textbox.h"
 #include "Ichi/UIComponents/slidebar.h"
+#include "Ichi/UIComponents/dropDownMenu.h"
 #include "Ichi/UIComponents/button.h"
 #include "Ichi/UIComponents/pane.h"
 
@@ -30,6 +31,7 @@ const std::string CHECKBOX_PATH = TEMP + "resources/images/UIComponents/Checkbox
 const std::string CHECKED_CHECKBOX_PATH = TEMP + "resources/images/UIComponents/CheckedCheckbox.png";
 const std::string COLOR_GREEN_PATH = TEMP + "resources/images/UIComponents/colorGreen.png";
 const std::string DROP_DOWN_MENU_PATH = TEMP + "resources/images/UIComponents/DropDownMenu.png";
+const std::string FOCUSED_DROP_DOWN_MENU_PATH = TEMP + "resources/images/UIComponents/FocusedDropDownMenu.png";
 const std::string FOCUSED_BUTTON_PATH = TEMP + "resources/images/UIComponents/FocusedButton.png";
 const std::string FOCUSED_SLIDER_PATH = TEMP + "resources/images/UIComponents/FocusedSlider.png";
 const std::string FOCUSED_TEXTBOX_PATH = TEMP + "resources/images/UIComponents/FocusedTextbox.png";
@@ -77,12 +79,16 @@ std::shared_ptr<uicomponents::Button> createButton(datatypes::Hitbox &hitbox, co
 	graphics::Sprite defaultSprite(hitbox, UI_LAYER, spritePath);
 	graphics::Sprite focusedSprite(hitbox, UI_LAYER, focusedSpritePath);
 
-	uicomponents::Button btn(hitbox, "", font, black, defaultSprite, focusedSprite, onClick);
 	return std::make_shared<uicomponents::Button>(hitbox, label, font, black, defaultSprite, focusedSprite, onClick);
 }
 
-void createToSettings()
+std::shared_ptr<uicomponents::DropDownMenu> createMenu(datatypes::Hitbox &hitbox, const std::vector<std::string> &items, const std::string &spritePath, const std::string &focusedSpritePath, const std::string &itemPath)
 {
+	graphics::Sprite defaultSprite(hitbox, UI_LAYER, spritePath);
+	graphics::Sprite focusedSprite(hitbox, UI_LAYER, focusedSpritePath);
+	graphics::Sprite itemSprite(hitbox, UI_LAYER, itemPath);
+
+	return std::make_shared<uicomponents::DropDownMenu>(hitbox, items, font, black, defaultSprite, focusedSprite, itemSprite);
 }
 
 int main(int argc, char *argv[])
@@ -95,7 +101,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	font = TTF_OpenFont(FONT_PATH.c_str(), 12);
+	font = TTF_OpenFont(FONT_PATH.c_str(), 8);
 
 	//
 	//		MAIN MENU
@@ -130,15 +136,16 @@ int main(int argc, char *argv[])
 	//
 
 	datatypes::Hitbox hbReturnLP(datatypes::Point(0, 0), 30, 30, false);
+	datatypes::Hitbox hbRedPlayerMenu(datatypes::Point(30, 180), 50, 15, false);
+	datatypes::Hitbox hbBluePlayerMenu(datatypes::Point(220, 180), 50, 15, false);
 
-	graphics::Sprite returnSpriteLP(hbReturnLP, UI_LAYER, RETURN_BTN_PATH);
-	graphics::Sprite focusedReturnSpriteLP(hbReturnLP, UI_LAYER, FOCUSED_RETURN_BTN_PATH);
-
-	std::shared_ptr<uicomponents::Button> returnBtnLP = std::make_shared<uicomponents::Button>(hbReturnLP, "", font, black, returnSpriteLP, focusedReturnSpriteLP, changeSceneToMain);
+	auto returnBtnLP = createButton(hbReturnLP, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+	auto redMenu = createMenu(hbRedPlayerMenu, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+	auto blueMenu = createMenu(hbBluePlayerMenu, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
 	graphics::Sprite *characterSelectionBackground = new graphics::Sprite(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
 
-	auto characterPane = new uicomponents::Pane(window, {returnBtnLP});
+	auto characterPane = new uicomponents::Pane(window, {returnBtnLP, redMenu, blueMenu});
 
 	std::shared_ptr<scene::Scene> characterSelectionScene = std::make_shared<scene::Scene>(characterSelectionBackground, std::vector<core::Component *>{characterPane}, false);
 
