@@ -15,12 +15,13 @@ namespace ichi::uicomponents
     {
 
     public:
-        DropDownMenu(datatypes::Hitbox, std::vector<std::string>, TTF_Font *, SDL_Color, graphics::Sprite, graphics::Sprite);
+        DropDownMenu(datatypes::Hitbox, std::vector<std::string>, TTF_Font *, SDL_Color, graphics::Sprite, graphics::Sprite, graphics::Sprite);
 
         void update();
         void draw() const;
 
         std::string getSelected() { return selected; }
+        void updateItems(std::vector<std::string> items) { this->items = items; }
 
         ~DropDownMenu()
         {
@@ -43,6 +44,7 @@ namespace ichi::uicomponents
         TTF_Font *font;
         SDL_Color textColor;
         graphics::Sprite menu;
+        graphics::Sprite focusedMenu;
         graphics::Sprite itemSprite;
     };
 } // namespace ichi::uicomponents
