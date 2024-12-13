@@ -13,7 +13,7 @@ namespace ichi::uicomponents
     class Label : public UIComponent
     {
     public:
-        Label(datatypes::Hitbox h, const std::string &s, TTF_Font *f, SDL_Color c);
+        Label(datatypes::Point location, const std::string &s, TTF_Font *f, SDL_Color c);
         ~Label()
         {
             SDL_DestroyTexture(texture);

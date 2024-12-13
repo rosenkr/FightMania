@@ -9,7 +9,7 @@ using namespace ichi::input;
 namespace ichi::uicomponents
 {
 
-    Textbox::Textbox(datatypes::Hitbox hb, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs) : UIComponent(hb), font(f), color(c), sprite(s), focusedSprite(fs) {}
+    Textbox::Textbox(datatypes::Hitbox hb, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, int cap) : UIComponent(hb), font(f), color(c), sprite(s), focusedSprite(fs), maxLetterCap(cap) {}
 
     void Textbox::draw() const
     {
@@ -18,8 +18,15 @@ namespace ichi::uicomponents
         else
             sprite.draw();
 
-        if (texture != nullptr)
-            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hitbox.getSDLRect());
+        if (texture == nullptr)
+            return;
+
+        int textWidth, textHeight;
+        SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
+
+        auto rect = SDL_Rect{hitbox.getX(), hitbox.getY(), textWidth, textHeight};
+
+        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, &rect);
     }
 
     void Textbox::update()
@@ -53,6 +60,9 @@ namespace ichi::uicomponents
                 continue;
             }
 
+            if (cursor >= maxLetterCap)
+                continue;
+
             bool shiftState = Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_LSHIFT) || Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_RSHIFT);
             std::string keyString = Keyboard::stringRepresentation(key, shiftState);
 
@@ -70,7 +80,7 @@ namespace ichi::uicomponents
             if (text.size() == 0)
                 return;
 
-            SDL_Surface *surf = TTF_RenderText_Solid(font, text.c_str(), color);
+            SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
 
             if (surf == nullptr)
             {

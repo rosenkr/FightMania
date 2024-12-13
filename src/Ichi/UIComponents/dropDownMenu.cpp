@@ -19,7 +19,7 @@ namespace ichi::uicomponents
 
         for (auto s : items)
         {
-            SDL_Surface *surf = TTF_RenderText_Solid(f, s.c_str(), c);
+            SDL_Surface *surf = TTF_RenderText_Blended(f, s.c_str(), c);
 
             if (surf == nullptr)
             {
@@ -102,7 +102,19 @@ namespace ichi::uicomponents
         for (auto s : items)
         {
             SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), graphics::TextureManager::getTextureFor(itemSprite), NULL, hb.getSDLRect());
-            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), itemTextures.at(s), NULL, hb.getSDLRect());
+
+            int textWidth, textHeight;
+            SDL_QueryTexture(itemTextures.at(s), nullptr, nullptr, &textWidth, &textHeight);
+
+            int diff = (hb.getWidth() - textWidth) / 2;
+
+            auto rect = SDL_Rect{hb.getX() + diff, hb.getY(), textWidth, textHeight};
+
+            if (textWidth > hb.getWidth())
+                rect = SDL_Rect{hb.getX(), hb.getY(), textWidth, hb.getHeight()};
+
+            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), itemTextures.at(s), NULL, &rect);
+
             hb += datatypes::Point(0, itemSprite.getHeight());
         }
     }
