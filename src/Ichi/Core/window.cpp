@@ -11,8 +11,9 @@ namespace ichi::core
 
     Window::Window()
     {
-        SDL_CreateWindowAndRenderer(WINDOW_WIDTH + SCALE, WINDOW_HEIGHT * SCALE, 0, &window, &renderer);
+        SDL_CreateWindowAndRenderer(WINDOW_WIDTH * SCALE, WINDOW_HEIGHT * SCALE, 0, &window, &renderer);
         SDL_RenderSetLogicalSize(renderer, WINDOW_WIDTH, WINDOW_HEIGHT);
+        SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"); // For pixel perfect
     }
 
     Window::~Window()
