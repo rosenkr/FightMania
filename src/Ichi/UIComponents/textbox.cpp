@@ -76,6 +76,12 @@ namespace ichi::uicomponents
             updateTextTexture();
     }
 
+    void Textbox::clear()
+    {
+        text = "";
+        updateTextTexture();
+    }
+
     void Textbox::updateTextTexture()
     {
         if (texture)
