@@ -19,6 +19,7 @@ namespace ichi::uicomponents
         }
         void update();
         void draw() const;
+        const std::map<datatypes::Point, std::shared_ptr<UIComponent>> &getUIComponents() const { return uiComponents; }
 
     private:
         datatypes::Point findClosestPoint(int deltaX, int deltaY);
