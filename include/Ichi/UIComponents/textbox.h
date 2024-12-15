@@ -34,6 +34,8 @@ namespace ichi::uicomponents
         int cursor = 0;
 
         SDL_Texture *texture = nullptr;
+
+        void updateTextTexture();
     };
 
 } // namespace ichi::uicomponents

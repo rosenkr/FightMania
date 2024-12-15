@@ -60,7 +60,7 @@ namespace ichi::uicomponents
                 continue;
             }
 
-            if (cursor >= maxLetterCap)
+            if (maxLetterCap != -1 && cursor >= maxLetterCap)
                 continue;
 
             bool shiftState = Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_LSHIFT) || Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_RSHIFT);
@@ -73,32 +73,35 @@ namespace ichi::uicomponents
         }
 
         if (wasChanged)
+            updateTextTexture();
+    }
+
+    void Textbox::updateTextTexture()
+    {
+        if (texture)
+            SDL_DestroyTexture(texture);
+
+        if (text.size() == 0)
+            return;
+
+        SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
+
+        if (surf == nullptr)
         {
-            if (texture)
-                SDL_DestroyTexture(texture);
-
-            if (text.size() == 0)
-                return;
-
-            SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
-
-            if (surf == nullptr)
-            {
-                ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
-                return;
-            }
-
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-            SDL_FreeSurface(surf);
-
-            if (texture == nullptr)
-            {
-                ICHI_ERROR("Could not create texture for label");
-                return;
-            }
-
-            this->texture = texture;
+            ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
+            return;
         }
+
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
+        SDL_FreeSurface(surf);
+
+        if (texture == nullptr)
+        {
+            ICHI_ERROR("Could not create texture for label");
+            return;
+        }
+
+        this->texture = texture;
     }
 
 } // namespace ichi::uicomponents
