@@ -78,6 +78,7 @@ void ProfileHandler::removeProfile(std::string name)
 
 bool ProfileHandler::updateVector()
 {
+    profiles.clear();
     ifstream fstream(PROFILE_PATH);
 
     if (!fstream.is_open())
@@ -117,7 +118,7 @@ void ProfileHandler::addToVector(vector<string> list)
 
     map<ichi::input::Mouse::MouseButton, Profile::Action> mMap;
     map<ichi::input::Keyboard::Key, Profile::Action> kMap;
-    for (size_t i = 6; i < list.size(); i++)
+    for (size_t i = 1; i < list.size(); i++)
     {
         if (mouseStrings.find(list[i]) != mouseStrings.end())
             mMap[mouseStrings[list[i]]] = static_cast<Profile::Action>(i - 2); // first two is isController and Name
