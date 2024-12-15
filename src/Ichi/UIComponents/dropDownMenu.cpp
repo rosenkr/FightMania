@@ -93,9 +93,9 @@ namespace ichi::uicomponents
     void DropDownMenu::draw() const
     {
         if (focused)
-            menu.draw();
-        else
             focusedMenu.draw();
+        else
+            menu.draw();
 
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), itemTextures.at(selected), NULL, hitbox.getSDLRect());
 
