@@ -21,7 +21,7 @@ namespace ichi::uicomponents
         void draw() const;
 
         std::string getSelected() { return selected; }
-        void updateItems(std::vector<std::string> items) { this->items = items; }
+        void updateItems(std::vector<std::string> items);
 
         ~DropDownMenu()
         {
@@ -46,6 +46,8 @@ namespace ichi::uicomponents
         graphics::Sprite menu;
         graphics::Sprite focusedMenu;
         graphics::Sprite itemSprite;
+
+        void addTextureFor(std::string s);
     };
 } // namespace ichi::uicomponents
 

@@ -18,43 +18,8 @@ namespace ichi::uicomponents
     {
 
         for (auto s : items)
-        {
-            SDL_Surface *surf = TTF_RenderText_Blended(f, s.c_str(), c);
-
-            if (surf == nullptr)
-            {
-                ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
-                return;
-            }
-
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-            SDL_FreeSurface(surf);
-
-            if (texture == nullptr)
-            {
-                ICHI_ERROR("Could not create texture for label");
-                return;
-            }
-
-            itemTextures[s] = texture;
-        }
-        SDL_Surface *surf = TTF_RenderText_Solid(f, NONE_SELECTED.c_str(), c);
-
-        if (surf == nullptr)
-        {
-            ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
-            return;
-        }
-
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-        SDL_FreeSurface(surf);
-
-        if (texture == nullptr)
-        {
-            ICHI_ERROR("Could not create texture for label");
-            return;
-        }
-        itemTextures[NONE_SELECTED] = texture;
+            addTextureFor(s);
+        addTextureFor(NONE_SELECTED);
     }
 
     void DropDownMenu::update()
@@ -121,5 +86,43 @@ namespace ichi::uicomponents
 
             hb += datatypes::Point(0, itemSprite.getHeight());
         }
+    }
+
+    void DropDownMenu::updateItems(std::vector<std::string> items)
+    {
+        this->items = items;
+        for (auto &pair : itemTextures)
+            if (pair.second)
+            {
+                SDL_DestroyTexture(pair.second);
+                pair.second = nullptr;
+            }
+        itemTextures.clear();
+
+        for (auto s : items)
+            addTextureFor(s);
+        addTextureFor(NONE_SELECTED);
+    }
+
+    void DropDownMenu::addTextureFor(std::string s)
+    {
+        SDL_Surface *surf = TTF_RenderText_Blended(font, s.c_str(), textColor);
+
+        if (surf == nullptr)
+        {
+            ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
+            return;
+        }
+
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
+        SDL_FreeSurface(surf);
+
+        if (texture == nullptr)
+        {
+            ICHI_ERROR("Could not create texture for label");
+            return;
+        }
+
+        itemTextures[s] = texture;
     }
 } // namespace ichi::uicomponents
