@@ -9,9 +9,9 @@ using namespace ichi::input;
 namespace ichi::uicomponents
 {
     Checkbox::Checkbox(const datatypes::Hitbox &hb, const graphics::Sprite &fus, const graphics::Sprite &fcs, const graphics::Sprite &us, const graphics::Sprite &cs, bool checked)
-        : UIComponent(hb), isChecked(checked), focusedUncheckedSprite(fus), focusedCheckedSprite(fcs), uncheckedSprite(us), checkedSprite(cs) {}
+        : UIComponent(hb), checked(checked), focusedUncheckedSprite(fus), focusedCheckedSprite(fcs), uncheckedSprite(us), checkedSprite(cs) {}
 
-    // Toggles isChecked on mouse/keyboard input
+    // Toggles checked on mouse/keyboard input
     void Checkbox::update()
     {
         if (Mouse::DX() != 0 || Mouse::DY() != 0)
@@ -19,15 +19,15 @@ namespace ichi::uicomponents
 
         if (focused && (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RETURN) || Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_SPACE) ||
                         ControllerHandler::anyControllerIsPressing(ControllerHandler::ControllerButton::A)))
-            isChecked = !isChecked;
+            checked = !checked;
 
         if (hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY())) && Mouse::buttonIsPressed(Mouse::MouseButton::LEFT))
-            isChecked = !isChecked;
+            checked = !checked;
     }
 
     void Checkbox::draw() const
     {
-        if (isChecked)
+        if (checked)
             checkedSprite.draw();
         else
             uncheckedSprite.draw();

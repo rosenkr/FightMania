@@ -11,9 +11,10 @@ namespace ichi::uicomponents
         Checkbox(const datatypes::Hitbox &hb, const graphics::Sprite &fus, const graphics::Sprite &fcs, const graphics::Sprite &us, const graphics::Sprite &cs, bool checked = false);
         void update();
         void draw() const;
+        bool isChecked() const { return checked; }
 
     private:
-        bool isChecked;
+        bool checked;
         graphics::Sprite focusedUncheckedSprite;
         graphics::Sprite focusedCheckedSprite;
         graphics::Sprite uncheckedSprite;
