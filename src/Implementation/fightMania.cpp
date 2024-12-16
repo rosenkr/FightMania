@@ -50,6 +50,8 @@ const std::string DARK_BLUE_SCREEN_PATH = TEMP + "resources/images/BackGrounds/D
 const std::string CHARACTER_SELECTION_PATH = TEMP + "resources/images/BackGrounds/CharcterSelection.png";
 const std::string TRAINING_SELECTION_PATH = TEMP + "resources/images/BackGrounds/TrainingSelection.png";
 
+const std::string DOJO_PATH = TEMP + "resources/images/BackGrounds/Dojo.png";
+
 datatypes::Hitbox window(datatypes::Point(0, 0), 384, 224, false);
 
 const graphics::Sprite::Layer UI_LAYER = graphics::Sprite::Layer::UICOMPONENT;
@@ -73,10 +75,42 @@ enum class SceneName
 
 void quit() { core::Engine::getInstance()->quit(); }
 void changeSceneToMain() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN)); }
-void changeSceneToLocalPlayCharacterSelection() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION)); }
-void changeSceneToTrainingCharacterSelection() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION)); }
+void changeSceneToLocalPlayCharacterSelection()
+{
+	scene::sceneManager::setActiveScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION));
+	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
+		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+			for (auto ui : ptr->getUIComponents())
+				if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
+					ptr2->updateItems(ProfileHandler::getNames());
+}
+void changeSceneToTrainingCharacterSelection()
+{
+	scene::sceneManager::setActiveScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION));
+	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
+		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+			for (auto ui : ptr->getUIComponents())
+				if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
+					ptr2->updateItems(ProfileHandler::getNames());
+}
 void changeSceneToProfileEditor() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::PROFILE_EDITOR)); }
 void changeSceneToSettings() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::SETTINGS)); }
+void changeSceneToDojo()
+{
+	std::string profile;
+	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
+		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+			for (auto ui : ptr->getUIComponents())
+				if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
+					profile = ptr2->getSelected();
+	if (ProfileHandler::getProfile(profile) == nullptr)
+	{
+		ICHI_ERROR("Could not find profile: {}", profile)
+		return;
+	}
+	// Create character with ProfileHandler::getProfile(profile)
+	scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
+}
 
 void resetTextboxes()
 {
@@ -199,6 +233,26 @@ int main(int argc, char *argv[])
 	font = TTF_OpenFont(FONT_PATH.c_str(), 8);
 
 	//
+	//		POP UP MENU
+	//
+
+	datatypes::Hitbox popUpWindowHB(datatypes::Point(122, 50), 110, 140, false);
+	datatypes::Hitbox returnToMainMenuHB(datatypes::Point(142, 150), 70, 20, false);
+
+	graphics::Sprite popUpWindowSprite(popUpWindowHB, UI_LAYER, POP_UP_MENU_PATH);
+	graphics::Sprite popUpBackground(window, UI_LAYER, TRANSPARENT_BLACK_PATH);
+
+	auto returnToMainMenuBtn = createButton(returnToMainMenuHB, "Main Menu", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToMain);
+
+	auto popUp = std::make_shared<scene::PopUpMenu>(std::vector<uicomponents::UIComponent *>{returnToMainMenuBtn.get()}, popUpBackground, popUpWindowSprite);
+
+	scene::sceneManager::setPopUpMenu(popUp);
+
+	//
+	//		POP UP MENU
+	//
+
+	//
 	//		MAIN MENU
 	//
 
@@ -231,8 +285,8 @@ int main(int argc, char *argv[])
 	//
 
 	datatypes::Hitbox hbReturnLP(datatypes::Point(0, 0), 30, 30, false);
-	datatypes::Hitbox hbRedPlayerMenu(datatypes::Point(30, 180), 50, 15, false);
-	datatypes::Hitbox hbBluePlayerMenu(datatypes::Point(220, 180), 50, 15, false);
+	datatypes::Hitbox hbBluePlayerMenu(datatypes::Point(30, 180), 50, 15, false);
+	datatypes::Hitbox hbRedPlayerMenu(datatypes::Point(220, 180), 50, 15, false);
 
 	auto returnBtnLP = createButton(hbReturnLP, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
 	auto redMenu = createMenu(hbRedPlayerMenu, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
@@ -254,11 +308,14 @@ int main(int argc, char *argv[])
 	//		TRAINING SELECTION
 	//
 
+	datatypes::Hitbox hbStartTraining(datatypes::Point(160, 110), 70, 15, false);
 	datatypes::Hitbox hbReturnT(datatypes::Point(0, 0), 30, 30, false);
 
 	auto returnBtnT = createButton(hbReturnT, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+	auto startTrainingBtn = createButton(hbStartTraining, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
+	auto playerMenu = createMenu(hbBluePlayerMenu, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
-	auto trainingPane = new uicomponents::Pane(window, {returnBtnT});
+	auto trainingPane = new uicomponents::Pane(window, {returnBtnT, playerMenu, startTrainingBtn});
 
 	graphics::Sprite *trainingSelcetion = new graphics::Sprite(window, BACKGROUND_LAYER, TRAINING_SELECTION_PATH);
 
@@ -360,6 +417,20 @@ int main(int argc, char *argv[])
 
 	//
 	//		SETTINGS END
+	//
+
+	//
+	//		DOJO TRAINING SCENE
+	//
+
+	graphics::Sprite *dojoBackground = new graphics::Sprite(window, BACKGROUND_LAYER, DOJO_PATH);
+
+	std::shared_ptr<scene::Scene> dojoScene = std::make_shared<scene::Scene>(dojoBackground, std::vector<core::Component *>{}, true);
+
+	scene::sceneManager::addScene(static_cast<int>(SceneName::DOJO), dojoScene);
+
+	//
+	//		DOJO TRAINING SCENE END
 	//
 
 	scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
