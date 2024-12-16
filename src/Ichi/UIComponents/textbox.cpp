@@ -39,11 +39,17 @@ namespace ichi::uicomponents
 
         bool wasChanged = false;
 
-        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_LEFT) && --cursor < 0)
-            cursor = 0;
+        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_LEFT))
+            cursor--;
 
-        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RIGHT) && ++cursor > (int)text.size())
+        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RIGHT))
+            cursor++;
+
+        if (cursor > (int)text.size())
             cursor = text.size();
+
+        if (cursor < 0)
+            cursor = 0;
 
         for (int i = static_cast<int>(Keyboard::Key::ICHIKEY_FIRST); i <= static_cast<int>(Keyboard::Key::LAST_INPUT_KEY); i++)
         {

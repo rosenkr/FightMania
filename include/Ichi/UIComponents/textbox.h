@@ -20,9 +20,10 @@ namespace ichi::uicomponents
         void draw() const;
         void update();
         std::string getText() const { return text; }
-        void setText(std::string newText)
+        void setText(const std::string &newText)
         {
             text = newText;
+            cursor = text.size();
             updateTextTexture();
         }
         void clear();
