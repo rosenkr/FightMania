@@ -19,7 +19,12 @@ namespace ichi::uicomponents
 
         void draw() const;
         void update();
-        std::string getText() { return text; }
+        std::string getText() const { return text; }
+        void setText(std::string newText)
+        {
+            text = newText;
+            updateTextTexture();
+        }
         void clear();
 
         ~Textbox() = default;
