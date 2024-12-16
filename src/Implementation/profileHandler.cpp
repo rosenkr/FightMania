@@ -11,7 +11,20 @@ using namespace std;
 
 bool ProfileHandler::init()
 {
-    return updateVector();
+    ifstream fstream(PROFILE_PATH);
+
+    if (!fstream.is_open())
+    {
+        ICHI_ERROR("Could not open file: {}", PROFILE_PATH)
+        return false;
+    }
+
+    string line;
+    while (getline(fstream, line))
+        addToVector(split(line, ";"));
+
+    fstream.close();
+    return true;
 }
 
 void ProfileHandler::saveProfile(vector<string> strings, bool isController)
@@ -47,25 +60,13 @@ void ProfileHandler::saveProfile(vector<string> strings, bool isController)
                 return;
             }
 
-    ofstream myfile;
-    myfile.open(PROFILE_PATH, std::ios_base::app);
-
-    if (isController)
-        myfile << "TRUE";
-    else
-        myfile << "FALSE";
-
-    for (auto s : strings)
-        myfile << ";" << s;
-
-    myfile << endl;
-    myfile.close();
-
-    updateVector();
+    addToVector(strings, isController);
+    updateFile();
 }
 
 const Profile *ProfileHandler::getProfile(string name)
 {
+    transform(name.begin(), name.end(), name.begin(), ::toupper);
     if (profiles.find(name) == profiles.end())
         return nullptr;
     return &profiles.at(name);
@@ -73,43 +74,30 @@ const Profile *ProfileHandler::getProfile(string name)
 
 void ProfileHandler::removeProfile(std::string name)
 {
-    profiles.erase(name);
-}
-
-bool ProfileHandler::updateVector()
-{
-    profiles.clear();
-    ifstream fstream(PROFILE_PATH);
-
-    if (!fstream.is_open())
+    transform(name.begin(), name.end(), name.begin(), ::toupper);
+    if (profiles.find(name) == profiles.end())
     {
-        ICHI_ERROR("Could not open file: {}", PROFILE_PATH)
-        return false;
+        ICHI_ERROR("Name: {} does not exist in profiles", name)
+        return;
     }
-
-    string line;
-    while (getline(fstream, line))
-        addToVector(split(line, ";"));
-
-    fstream.close();
-    return true;
+    profiles.erase(name);
+    updateFile();
 }
 
-void ProfileHandler::addToVector(vector<string> list)
+void ProfileHandler::addToVector(string name, bool isController, vector<string> list)
 {
-    string name = list[1];
-
-    if (list[0] == "TRUE")
+    if (isController)
     {
         map<ichi::input::ControllerHandler::ControllerButton, Profile::Action> btnMap;
         map<ichi::input::ControllerHandler::Joystick, Profile::Action> joystickMap;
-
-        for (size_t i = 6; i < list.size(); i++)
+        int action = static_cast<int>(Profile::Action::LIGHT_ATTACK);
+        for (auto key : list)
         {
-            if (joystickStrings.find(list[i]) != joystickStrings.end())
-                joystickMap[joystickStrings[list[i]]] = static_cast<Profile::Action>(i - 2); // first two is isController and Name
+            if (joystickStrings.find(key) != joystickStrings.end())
+                joystickMap[joystickStrings[key]] = static_cast<Profile::Action>(action);
             else
-                btnMap[controllerStrings[list[i]]] = static_cast<Profile::Action>(i - 2);
+                btnMap[controllerStrings[key]] = static_cast<Profile::Action>(action);
+            ++action;
         }
 
         profiles.emplace(name, Profile(name, btnMap, joystickMap));
@@ -118,18 +106,59 @@ void ProfileHandler::addToVector(vector<string> list)
 
     map<ichi::input::Mouse::MouseButton, Profile::Action> mMap;
     map<ichi::input::Keyboard::Key, Profile::Action> kMap;
-    for (size_t i = 1; i < list.size(); i++)
+    int action = static_cast<int>(Profile::Action::UP);
+    for (auto key : list)
     {
-        if (mouseStrings.find(list[i]) != mouseStrings.end())
-            mMap[mouseStrings[list[i]]] = static_cast<Profile::Action>(i - 2); // first two is isController and Name
+        if (mouseStrings.find(key) != mouseStrings.end())
+            mMap[mouseStrings[key]] = static_cast<Profile::Action>(action);
         else
-            kMap[keyStrings[list[i]]] = static_cast<Profile::Action>(i - 2);
+            kMap[keyStrings[key]] = static_cast<Profile::Action>(action);
+        ++action;
     }
-
     profiles.emplace(name, Profile(name, mMap, kMap));
 }
+void ProfileHandler::addToVector(vector<string> list, bool isController)
+{
+    string name = list[0];
+    vector<string> copy(list.begin() + 1, list.end());
 
-vector<string> ProfileHandler::split(const string &s, const string &delimiter)
+    addToVector(name, isController, copy);
+}
+void ProfileHandler::addToVector(vector<string> list)
+{
+    bool isController = false;
+    if (list[0] == "TRUE")
+        isController = true;
+    string name = list[1];
+    vector<string> copy(list.begin() + 2, list.end());
+
+    addToVector(name, isController, copy);
+}
+
+void ProfileHandler::updateFile()
+{
+    ofstream myfile;
+    myfile.open(PROFILE_PATH);
+
+    for (auto profile : profiles)
+    {
+        if (profile.second.isController())
+            myfile << "TRUE";
+        else
+            myfile << "FALSE";
+
+        myfile << ";" << profile.first;
+
+        for (auto s : profile.second.getKeybinds())
+            myfile << ";" << s;
+        myfile << endl;
+    }
+
+    myfile.close();
+}
+
+vector<string>
+ProfileHandler::split(const string &s, const string &delimiter)
 {
     vector<string> tokens;
     size_t pos = 0;
