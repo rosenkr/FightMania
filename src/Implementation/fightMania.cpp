@@ -8,6 +8,7 @@
 #include "Ichi/UIComponents/slidebar.h"
 #include "Ichi/UIComponents/dropDownMenu.h"
 #include "Ichi/UIComponents/button.h"
+#include "Ichi/UIComponents/checkbox.h"
 #include "Ichi/UIComponents/pane.h"
 
 #include "Ichi/DataTypes/hitbox.h"
@@ -81,27 +82,63 @@ void resetTextboxes()
 {
 	ICHI_TRACE("RESET")
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
+	{
+		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+			for (auto ui : ptr->getUIComponents())
+				if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
+					ptr2->clear();
 		if (auto ptr = dynamic_cast<uicomponents::Textbox *>(c))
 			ptr->clear();
+	}
 }
 
 void importProfile()
 {
 	ICHI_TRACE("IMPORT")
+	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
+		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		{
+			const Profile *profile = nullptr;
+
+			if (auto tbPtr = dynamic_cast<uicomponents::Textbox *>(ptr->getUIComponents().at(datatypes::Point(150, 15)).get()))
+				profile = ProfileHandler::getProfile(tbPtr->getText());
+			if (!profile)
+			{
+				ICHI_ERROR("Could not import settings")
+				return;
+			}
+
+			int i = 0;
+			for (auto ui : ptr->getUIComponents())
+			{
+				if (ui.first == datatypes::Point(150, 15))
+					continue;
+				if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
+					ptr2->setText(profile->getKeybinds().at(i++));
+			}
+		}
 }
 
 void removeProfile()
 {
 	ICHI_TRACE("REMOVE")
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-		if (auto ptr = dynamic_cast<uicomponents::Textbox *>(c))
-			ProfileHandler::removeProfile(ptr->getText());
+		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+			for (auto ui : ptr->getUIComponents())
+				if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
+				{
+					if (ui.first != datatypes::Point(150, 15))
+						continue;
+					ProfileHandler::removeProfile(ptr2->getText());
+					return;
+				}
 }
 
 void saveProfile()
 {
 	ICHI_TRACE("SAVE")
 	std::vector<std::string> strings;
+	bool isChecked = false;
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
 	{
 		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
@@ -111,9 +148,12 @@ void saveProfile()
 
 		if (auto ptr = dynamic_cast<uicomponents::Textbox *>(c))
 			strings.push_back(ptr->getText());
+
+		if (auto ptr = dynamic_cast<uicomponents::Checkbox *>(c))
+			isChecked = ptr->isChecked();
 	}
 
-	ProfileHandler::saveProfile(strings, false /*replace this with a get from a checkbox*/);
+	ProfileHandler::saveProfile(strings, isChecked);
 }
 
 std::shared_ptr<uicomponents::Button> createButton(datatypes::Hitbox &hitbox, const std::string &label, const std::string &spritePath, const std::string &focusedSpritePath, const std::function<void()> &onClick)
@@ -246,7 +286,7 @@ int main(int argc, char *argv[])
 	datatypes::Point jumpPt(50, 155);
 	datatypes::Point blockPt(50, 175);
 
-	datatypes::Hitbox hbName(datatypes::Point(150, namePt.Y), 70, 10, false);
+	datatypes::Hitbox hbName(datatypes::Point(150, namePt.Y), 70, 10, false); // This is directly mapped to import method
 	datatypes::Hitbox hbUp(datatypes::Point(150, upPt.Y), 70, 10, false);
 	datatypes::Hitbox hbDown(datatypes::Point(150, downPt.Y), 70, 10, false);
 	datatypes::Hitbox hbLeft(datatypes::Point(150, leftPt.Y), 70, 10, false);
