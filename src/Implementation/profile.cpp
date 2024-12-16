@@ -44,17 +44,35 @@ const std::vector<std::string> Profile::getKeybinds() const
 {
     std::vector<std::string> actions;
 
-    for (auto pair : controllerButtons)
-        actions.push_back(ProfileHandler::getString(pair.first));
+    for (int i = static_cast<int>(Action::UP); i <= static_cast<int>(Action::END); i++)
+    {
+        for (auto c : controllerButtons)
+            if (c.second == static_cast<Action>(i))
+            {
+                actions.push_back(ProfileHandler::getString(c.first));
+                break;
+            }
 
-    for (auto pair : joystick)
-        actions.push_back(ProfileHandler::getString(pair.first));
+        for (auto c : keyboardKeys)
+            if (c.second == static_cast<Action>(i))
+            {
+                actions.push_back(ProfileHandler::getString(c.first));
+                break;
+            }
 
-    for (auto pair : keyboardKeys)
-        actions.push_back(ProfileHandler::getString(pair.first));
+        for (auto c : mouseButtons)
+            if (c.second == static_cast<Action>(i))
+            {
+                actions.push_back(ProfileHandler::getString(c.first));
+                break;
+            }
 
-    for (auto pair : mouseButtons)
-        actions.push_back(ProfileHandler::getString(pair.first));
-
+        for (auto c : joystick)
+            if (c.second == static_cast<Action>(i))
+            {
+                actions.push_back(ProfileHandler::getString(c.first));
+                break;
+            }
+    }
     return actions;
 }
