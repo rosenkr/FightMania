@@ -1,4 +1,5 @@
 #include "Implementation/profile.h"
+#include "Implementation/profileHandler.h"
 
 std::stack<Profile::Action> Profile::getActions(int controller)
 {
@@ -35,6 +36,25 @@ std::stack<Profile::Action> Profile::getActions(int controller)
     for (auto pair : mouseButtons)
         if (ichi::input::Mouse::buttonIsDown(pair.first))
             actions.push(pair.second);
+
+    return actions;
+}
+
+const std::vector<std::string> Profile::getKeybinds() const
+{
+    std::vector<std::string> actions;
+
+    for (auto pair : controllerButtons)
+        actions.push_back(ProfileHandler::getString(pair.first));
+
+    for (auto pair : joystick)
+        actions.push_back(ProfileHandler::getString(pair.first));
+
+    for (auto pair : keyboardKeys)
+        actions.push_back(ProfileHandler::getString(pair.first));
+
+    for (auto pair : mouseButtons)
+        actions.push_back(ProfileHandler::getString(pair.first));
 
     return actions;
 }

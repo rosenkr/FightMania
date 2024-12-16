@@ -1,3 +1,6 @@
+#ifndef PROFILE_H
+#define PROFILE_H
+
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Input/mouse.h"
 #include "Ichi/Input/keyboard.h"
@@ -12,14 +15,15 @@ public:
     // Move enum to character
     enum class Action
     {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT,
-        LIGHT_ATTACK,
-        HEAVY_ATTACK,
-        JUMP,
-        BLOCK,
+        UP = 0,
+        DOWN = 1,
+        LEFT = 2,
+        RIGHT = 3,
+        LIGHT_ATTACK = 4,
+        HEAVY_ATTACK = 5,
+        JUMP = 6,
+        BLOCK = 7,
+        END = BLOCK,
     };
 
     Profile(std::string name, std::map<ichi::input::ControllerHandler::ControllerButton, Action> cbtns, std::map<ichi::input::ControllerHandler::Joystick, Action> joystick)
@@ -31,6 +35,8 @@ public:
     ~Profile() {}
 
     std::string getName() const { return name; }
+    bool isController() const { return usingController; }
+    const std::vector<std::string> getKeybinds() const;
 
     std::stack<Action> getActions(int controller);
 
@@ -42,3 +48,5 @@ private:
     std::map<ichi::input::Keyboard::Key, Action> keyboardKeys;
     bool usingController;
 };
+
+#endif
