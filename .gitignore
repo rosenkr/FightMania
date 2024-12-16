@@ -9,6 +9,7 @@ Makefile
 build/
 # Code to not be pushed
 randomcode/
+resources/Profiles.txt
 
 # User-specific files
 *.rsuser
