@@ -16,6 +16,14 @@ public:
     static void saveProfile(std::vector<std::string>, bool);
     static const Profile *getProfile(std::string name);
     static void removeProfile(std::string name);
+    static std::vector<std::string> getNames()
+    {
+        std::vector<std::string> strings;
+        for (const auto &p : profiles)
+            strings.push_back(p.first);
+
+        return strings;
+    }
 
     static std::string getString(ichi::input::ControllerHandler::Joystick js)
     {
