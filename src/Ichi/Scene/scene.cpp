@@ -44,7 +44,6 @@ namespace ichi::scene
         components.push_back(std::move(comp));
     }
 
-    // The unique pointer will automatically delete the Component object!
     void Scene::removeComponent(size_t index)
     {
         if (index < 0 || index >= components.size())
@@ -52,7 +51,22 @@ namespace ichi::scene
             ICHI_ERROR("Index error when removing component at index");
             return;
         }
+
+        delete components.at(index);
+        components.at(index) = nullptr;
         components.erase(components.begin() + index);
+    }
+
+    void Scene::removeComponent(core::Component *c)
+    {
+        if (std::find(components.begin(), components.end(), c) == components.end())
+        {
+            ICHI_ERROR("Could not remove component from list");
+            return;
+        }
+        delete c;
+        c = nullptr;
+        components.erase(std::remove(components.begin(), components.end(), c), components.end());
     }
 
     void Scene::setPaused(bool paused)

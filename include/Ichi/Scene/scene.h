@@ -27,6 +27,7 @@ namespace ichi::scene
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> getCollisionHitboxes() const;
         void addComponent(core::Component *comp);
         void removeComponent(size_t index);
+        void removeComponent(core::Component *c);
         const std::vector<core::Component *> &getComponents() { return components; }
         void setPaused(bool paused);
         bool isPaused() const { return paused; }
