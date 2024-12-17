@@ -11,6 +11,8 @@ namespace ichi
         float getX() const { return X; }
         float getY() const { return Y; }
 
+        void setY(float y) { Y = y;}
+
         float magnitude() const { return std::sqrt(X * X + Y * Y); }
         Vector2D normalize() const
         {
