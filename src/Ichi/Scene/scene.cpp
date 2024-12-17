@@ -5,18 +5,6 @@
 
 namespace ichi::scene
 {
-    Scene::Scene(
-        graphics::Sprite* background,
-        std::vector<core::Component*> components,
-        bool pausable
-    )
-        : background(background), pausable(pausable), paused(false)
-    {
-        for (auto* comp : components) {
-            this->components.push_back(comp);  // Add raw pointer directly
-        }
-    }
-
     // Constructor to handle smart pointers
     Scene::Scene(
         graphics::Sprite* background,
@@ -34,32 +22,18 @@ namespace ichi::scene
     void Scene::draw() const
     {
         background->draw();
-        for (const auto &up_c : components)
+        for (const auto& comp : components)
         {
-            if (auto rawPtr = std::get_if<core::Component *>(&up_c))
-            {
-                (*rawPtr)->draw(); 
-            }
-            else if (auto sharedPtr = std::get_if<std::shared_ptr<core::Component>>(&up_c))
-            {
-                sharedPtr->get()->draw();  
-            }
+            comp->draw();  
         }
     }
 
     void Scene::update()
     {
         background->update();
-        for (const auto &up_c : components)
+        for (const auto& comp : components)
         {
-            if (auto rawPtr = std::get_if<core::Component *>(&up_c))
-            {
-                (*rawPtr)->update();
-            }
-            else if (auto sharedPtr = std::get_if<std::shared_ptr<core::Component>>(&up_c))
-            {
-                sharedPtr->get()->update();
-            }
+            comp->update(); 
         }
     }
 
@@ -68,31 +42,14 @@ namespace ichi::scene
     {
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> vec;
 
-        for (const auto &component : components)
+        for (const auto& component : components)
         {
-            if (auto rawPtr = std::get_if<core::Component *>(&component))
-            {
-                vec.push_back((*rawPtr)->getHitbox());
-            }
-            else if (auto sharedPtr = std::get_if<std::shared_ptr<core::Component>>(&component))
-            {
-                vec.push_back(sharedPtr->get()->getHitbox());
-            }
+            vec.push_back(component->getHitbox());  // Direct access using shared_ptr
         }
 
         return vec;
-    }
+    }   
 
-    // Impl usage: ConcreteComponent comp; Scene::addComponent(&comp);
-    void Scene::addComponent(core::Component *comp)
-    {
-        if (!comp)
-        {
-            ICHI_ERROR("Null pointer passed to addComponent");
-            return;
-        }
-        components.push_back(std::move(comp));
-    }
 
     void Scene::addComponent(std::shared_ptr<core::Component> component) {
         components.push_back(component);
@@ -106,22 +63,21 @@ namespace ichi::scene
             ICHI_ERROR("Index error when removing component at index");
             return;
         }
-
-        //delete components.at(index);
-        components.at(index) = nullptr;
         components.erase(components.begin() + index);
     }
 
-    void Scene::removeComponent(core::Component *c)
+    void Scene::removeComponent(const std::shared_ptr<core::Component>& c)
     {
-        if (std::find(components.begin(), components.end(), c) == components.end())
+        auto it = std::find(components.begin(), components.end(), c);
+
+        if (it != components.end())
+        {
+            components.erase(it);  // Remove the shared_ptr directly
+        }
+        else
         {
             ICHI_ERROR("Could not remove component from list");
-            return;
         }
-        delete c;
-        c = nullptr;
-        components.erase(std::remove(components.begin(), components.end(), c), components.end());
     }
 
     void Scene::setPaused(bool paused)

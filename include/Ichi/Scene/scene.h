@@ -14,19 +14,10 @@ namespace ichi::scene
     {
     public:
         Scene(graphics::Sprite* background, 
-          std::vector<core::Component*> components = {}, 
-          bool pausable = true
-        );
-
-        Scene(graphics::Sprite* background, 
           std::vector<std::shared_ptr<core::Component>> components = {}, 
           bool pausable = true);
         
         ~Scene(){
-            for (auto p : components)
-                if (auto rawPtr = std::get_if<core::Component*>(&p)) {
-                    delete *rawPtr;  // if raw pointer, delete
-                }
             components.clear();
             delete background;
             background = nullptr;
@@ -35,19 +26,17 @@ namespace ichi::scene
         virtual void draw() const;
         virtual void update();
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> getCollisionHitboxes() const;
-        void addComponent(core::Component *comp);
         void addComponent(std::shared_ptr<core::Component> component);
         void removeComponent(size_t index);
-        void removeComponent(core::Component *c);
-        //const std::vector<core::Component *> &getComponents() { return components; }
+        void removeComponent(const std::shared_ptr<core::Component>& c);
         void setPaused(bool paused);
         bool isPaused() const { return paused; }
         bool isPausable() const { return pausable; }
-        const std::vector<std::variant<core::Component*, std::shared_ptr<core::Component>>>& getComponents() const { return components; }
+        const std::vector<std::shared_ptr<core::Component>>& getComponents() const { return components; }
 
     protected:
         graphics::Sprite *background;
-        std::vector<std::variant<core::Component*, std::shared_ptr<core::Component>>> components;
+        std::vector<std::shared_ptr<core::Component>> components;
         bool pausable;
         bool paused;
     };
