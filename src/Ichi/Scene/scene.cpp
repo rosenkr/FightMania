@@ -107,7 +107,7 @@ namespace ichi::scene
             return;
         }
 
-        delete components.at(index);
+        //delete components.at(index);
         components.at(index) = nullptr;
         components.erase(components.begin() + index);
     }
