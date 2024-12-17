@@ -1,5 +1,7 @@
 #include "Ichi/Core/engine.h"
 
+#include "Ichi/Audio/audioPlayer.h"
+
 #include "Ichi/Scene/sceneManager.h"
 #include "Ichi/Scene/popUpMenu.h"
 
@@ -207,12 +209,19 @@ std::shared_ptr<uicomponents::DropDownMenu> createMenu(datatypes::Hitbox &hitbox
 	return std::make_shared<uicomponents::DropDownMenu>(hitbox, items, font, black, defaultSprite, focusedSprite, itemSprite);
 }
 
-std::shared_ptr<uicomponents::Textbox> createTextbox(datatypes::Hitbox &hb, std::string s, std::string fs, int cap)
+std::shared_ptr<uicomponents::Textbox> createTextbox(datatypes::Hitbox &hb, const std::string &s, const std::string &fs, int cap)
 {
 	graphics::Sprite defaultSprite(hb, UI_LAYER, s);
 	graphics::Sprite focusedSprite(hb, UI_LAYER, fs);
 
 	return std::make_shared<uicomponents::Textbox>(hb, font, black, defaultSprite, focusedSprite, cap);
+}
+
+std::shared_ptr<uicomponents::SlideBar> createSlideBar(datatypes::Hitbox &hb, const std::string &bar, int sliderWidth, int sliderHeight, const std::string &slider, const std::string &focusedSlider, std::function<void(float)> ptr)
+{
+	graphics::Sprite sprite(hb, UI_LAYER, bar);
+
+	return std::make_shared<uicomponents::SlideBar>(hb, sprite, sliderWidth, sliderHeight, slider, focusedSlider, ptr);
 }
 
 int main(int argc, char *argv[])
@@ -404,10 +413,12 @@ int main(int argc, char *argv[])
 	//
 
 	datatypes::Hitbox hbReturnS(datatypes::Point(0, 0), 30, 30, false);
+	datatypes::Hitbox sliderHb(datatypes::Point(120, 50), 70, 15, false);
 
 	auto returnBtnS = createButton(hbReturnS, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+	auto volumeSlider = createSlideBar(sliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setVolume);
 
-	auto pane = new uicomponents::Pane(window, {returnBtnS});
+	auto pane = new uicomponents::Pane(window, {returnBtnS, volumeSlider});
 
 	graphics::Sprite *darkBlueBackgroundS = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
