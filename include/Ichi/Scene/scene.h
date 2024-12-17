@@ -38,6 +38,8 @@ namespace ichi::scene
         void addComponent(core::Component *comp);
         void addComponent(std::shared_ptr<core::Component> component);
         void removeComponent(size_t index);
+        void removeComponent(core::Component *c);
+        const std::vector<core::Component *> &getComponents() { return components; }
         void setPaused(bool paused);
         bool isPaused() const { return paused; }
         bool isPausable() const { return pausable; }

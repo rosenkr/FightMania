@@ -19,7 +19,8 @@ namespace ichi::scene
         ~PopUpMenu()
         {
             for (auto p : uicomponents)
-                delete p;
+                if (p)
+                    delete p;
             uicomponents.clear();
         };
 

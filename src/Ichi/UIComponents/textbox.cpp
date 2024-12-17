@@ -9,7 +9,7 @@ using namespace ichi::input;
 namespace ichi::uicomponents
 {
 
-    Textbox::Textbox(datatypes::Hitbox hb, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs) : UIComponent(hb), font(f), color(c), sprite(s), focusedSprite(fs) {}
+    Textbox::Textbox(datatypes::Hitbox hb, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, int cap) : UIComponent(hb), font(f), color(c), sprite(s), focusedSprite(fs), maxLetterCap(cap) {}
 
     void Textbox::draw() const
     {
@@ -18,8 +18,16 @@ namespace ichi::uicomponents
         else
             sprite.draw();
 
+        if (texture == nullptr)
+            return;
+
+        int textWidth, textHeight;
+        SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
+
+        auto rect = SDL_Rect{hitbox.getX(), hitbox.getY(), textWidth, textHeight};
+
         if (texture != nullptr)
-            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hitbox.getSDLRect());
+            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, &rect);
     }
 
     void Textbox::update()
@@ -32,11 +40,17 @@ namespace ichi::uicomponents
 
         bool wasChanged = false;
 
-        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_LEFT) && --cursor < 0)
-            cursor = 0;
+        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_LEFT))
+            cursor--;
 
-        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RIGHT) && ++cursor > (int)text.size())
+        if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RIGHT))
+            cursor++;
+
+        if (cursor > (int)text.size())
             cursor = text.size();
+
+        if (cursor < 0)
+            cursor = 0;
 
         for (int i = static_cast<int>(Keyboard::Key::ICHIKEY_FIRST); i <= static_cast<int>(Keyboard::Key::LAST_INPUT_KEY); i++)
         {
@@ -53,6 +67,9 @@ namespace ichi::uicomponents
                 continue;
             }
 
+            if (maxLetterCap != -1 && cursor >= maxLetterCap)
+                continue;
+
             bool shiftState = Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_LSHIFT) || Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_RSHIFT);
             std::string keyString = Keyboard::stringRepresentation(key, shiftState);
 
@@ -63,31 +80,42 @@ namespace ichi::uicomponents
         }
 
         if (wasChanged)
+            updateTextTexture();
+    }
+
+    void Textbox::clear()
+    {
+        text = "";
+        updateTextTexture();
+    }
+
+    void Textbox::updateTextTexture()
+    {
+        if (texture)
         {
-            if (texture)
-                SDL_DestroyTexture(texture);
+            SDL_DestroyTexture(texture);
+            texture = nullptr;
+        }
 
-            if (text.size() == 0)
-                return;
+        if (text.size() == 0)
+            return;
 
-            SDL_Surface *surf = TTF_RenderText_Solid(font, text.c_str(), color);
+        SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
 
-            if (surf == nullptr)
-            {
-                ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
-                return;
-            }
+        if (surf == nullptr)
+        {
+            ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
+            return;
+        }
 
-            SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-            SDL_FreeSurface(surf);
+        texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
 
-            if (texture == nullptr)
-            {
-                ICHI_ERROR("Could not create texture for label");
-                return;
-            }
+        SDL_FreeSurface(surf);
 
-            this->texture = texture;
+        if (texture == nullptr)
+        {
+            ICHI_ERROR("Could not create texture for label");
+            return;
         }
     }
 

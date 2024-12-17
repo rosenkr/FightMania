@@ -17,7 +17,7 @@ namespace ichi::uicomponents
             return;
         }
 
-        SDL_Surface *surf = TTF_RenderText_Solid(f, btnLabel.c_str(), c);
+        SDL_Surface *surf = TTF_RenderText_Blended(f, btnLabel.c_str(), c);
 
         if (surf == nullptr)
         {
@@ -44,8 +44,17 @@ namespace ichi::uicomponents
         else
             sprite.draw();
 
-        if (text)
-            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), text, NULL, hitbox.getSDLRect());
+        if (!text)
+            return;
+
+        int textWidth, textHeight;
+        SDL_QueryTexture(text, nullptr, nullptr, &textWidth, &textHeight);
+
+        int diff = (hitbox.getWidth() - textWidth) / 2;
+
+        auto rect = SDL_Rect{hitbox.getX() + diff, hitbox.getY(), textWidth, textHeight};
+
+        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), text, NULL, &rect);
     }
 
     void Button::update()

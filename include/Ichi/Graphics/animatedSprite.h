@@ -17,6 +17,8 @@ namespace ichi::graphics
         void draw();
         void update();
 
+        bool hasCompleatedALap() { return compleatedALap; }
+
         bool operator<(const AnimatedSprite &other) const { return paths < other.paths; }
 
         ~AnimatedSprite() = default;
@@ -28,6 +30,7 @@ namespace ichi::graphics
         std::vector<std::string> paths;
 
         int currentFrame = 0;
+        bool compleatedALap = false;
     };
 
 } // namespace ichi::graphics

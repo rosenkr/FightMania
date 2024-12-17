@@ -12,8 +12,8 @@ using namespace ichi::datatypes;
 namespace ichi::uicomponents
 {
 
-    SlideBar::SlideBar(const Hitbox &barHitbox, const graphics::Sprite &barSprite, int sliderWidth, int sliderHeight, const std::string &sliderPath, const std::string &focusedSliderPath)
-        : UIComponent(barHitbox), barSprite(barSprite)
+    SlideBar::SlideBar(const Hitbox &barHitbox, const graphics::Sprite &barSprite, int sliderWidth, int sliderHeight, const std::string &sliderPath, const std::string &focusedSliderPath, std::function<void(float)> ptr)
+        : UIComponent(barHitbox), barSprite(barSprite), valueSetter(ptr)
     {
         auto barCenter = Point(barSprite.getX() + barSprite.getWidth() / 2, barSprite.getY() + barSprite.getHeight() / 2);
         auto sliderCenter = Point(sliderWidth / 2, sliderHeight / 2);
@@ -28,7 +28,7 @@ namespace ichi::uicomponents
         if (input::Mouse::DX() != 0 || input::Mouse::DY() != 0)
             focused = hitbox.pointIsInRect(Point(input::Mouse::getX(), input::Mouse::getY()));
 
-        if (focused && input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT))
+        if (hitbox.pointIsInRect(Point(input::Mouse::getX(), input::Mouse::getY())) && input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT))
             sliderSprite->setX(input::Mouse::getX() - sliderSprite->getWidth() / 2);
 
         updateNormalizedSliderValue();
@@ -59,7 +59,7 @@ namespace ichi::uicomponents
         sliderValue = std::clamp(sliderValue, 0.0f, 1.0f);
         sliderValue = std::round(sliderValue * 100.0f) / 100.0f; // two decimals
 
-        ICHI_INFO("SliderValue: {}", sliderValue);
         this->sliderValue = sliderValue;
+        valueSetter(sliderValue);
     }
 }

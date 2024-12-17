@@ -26,7 +26,10 @@ namespace ichi::graphics
             return;
 
         if (++currentFrame > (int)frameTime.size() - 1)
+        {
             currentFrame = 0;
+            compleatedALap = true;
+        }
 
         lastUpdatedOn = SDL_GetTicks();
     }

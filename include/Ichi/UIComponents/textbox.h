@@ -15,11 +15,18 @@ namespace ichi::uicomponents
     {
     public:
         /* data */
-        Textbox(datatypes::Hitbox, TTF_Font *, SDL_Color, graphics::Sprite, graphics::Sprite);
+        Textbox(datatypes::Hitbox, TTF_Font *, SDL_Color, graphics::Sprite, graphics::Sprite, int = -1);
 
         void draw() const;
         void update();
-        std::string getText() { return text; }
+        std::string getText() const { return text; }
+        void setText(const std::string &newText)
+        {
+            text = newText;
+            cursor = text.size();
+            updateTextTexture();
+        }
+        void clear();
 
         ~Textbox() = default;
 
@@ -30,9 +37,12 @@ namespace ichi::uicomponents
         graphics::Sprite sprite;
         graphics::Sprite focusedSprite;
 
+        int maxLetterCap;
         int cursor = 0;
 
         SDL_Texture *texture = nullptr;
+
+        void updateTextTexture();
     };
 
 } // namespace ichi::uicomponents

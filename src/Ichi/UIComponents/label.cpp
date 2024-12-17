@@ -5,9 +5,9 @@
 namespace ichi::uicomponents
 {
 
-    Label::Label(datatypes::Hitbox h, const std::string &s, TTF_Font *f, SDL_Color c) : UIComponent(h)
+    Label::Label(datatypes::Point location, const std::string &s, TTF_Font *f, SDL_Color c) : UIComponent(datatypes::Hitbox(location, 0, 0, false))
     {
-        SDL_Surface *surf = TTF_RenderText_Solid(f, s.c_str(), c);
+        SDL_Surface *surf = TTF_RenderText_Blended(f, s.c_str(), c);
 
         if (surf == nullptr)
         {
@@ -25,6 +25,11 @@ namespace ichi::uicomponents
         }
 
         this->texture = texture;
+
+        int textWidth, textHeight;
+        SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
+
+        hitbox = datatypes::Hitbox(location, textWidth, textHeight, false);
     }
 
     void Label::draw() const
