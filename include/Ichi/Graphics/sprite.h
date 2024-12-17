@@ -41,7 +41,7 @@ namespace ichi::graphics
         int getY() const { return hitbox.getY(); };
 
     protected:
-        Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l)
+        Sprite(datatypes::Hitbox& h, Layer l) : hitbox(h), layer(l)
         {
         }
         datatypes::Hitbox &hitbox;

@@ -1,10 +1,11 @@
 #include "Ichi/Graphics/animatedSprite.h"
 #include "Ichi/Core/engine.h"
 #include "Ichi/Graphics/textureManager.h"
+#include "Ichi/log.h"
 
 namespace ichi::graphics
 {
-    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime)
+    AnimatedSprite::AnimatedSprite(datatypes::Hitbox& hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime)
     {
         std::vector<std::string> paths;
         for (int i = 0; i < textureCount; i++)
@@ -14,7 +15,7 @@ namespace ichi::graphics
 
         this->paths = paths;
     }
-    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime), paths(paths)
+    AnimatedSprite::AnimatedSprite(datatypes::Hitbox& hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime), paths(paths)
     {
         TextureManager::addTexturesFor(*this, paths);
     }
@@ -32,6 +33,12 @@ namespace ichi::graphics
 
     void AnimatedSprite::draw()
     {
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), TextureManager::getTextureFor(*this, currentFrame), NULL, hitbox.getSDLRect());
+        SDL_Renderer* renderer = core::Engine::getInstance()->getRenderer();
+        SDL_Texture* texture = TextureManager::getTextureFor(*this, currentFrame);
+        const SDL_Rect* rect = hitbox.getSDLRect();
+
+        if (SDL_RenderCopy(renderer, texture, NULL, rect) != 0) {
+            ICHI_INFO("SDL_RenderCopy failed: {}", SDL_GetError());
+        }
     }
 } // namespace ichi::graphics

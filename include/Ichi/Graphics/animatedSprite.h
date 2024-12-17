@@ -11,8 +11,8 @@ namespace ichi::graphics
     class AnimatedSprite : public Sprite
     {
     public:
-        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
-        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime);
+        AnimatedSprite(datatypes::Hitbox& hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
+        AnimatedSprite(datatypes::Hitbox& hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime);
 
         void draw();
         void update();
