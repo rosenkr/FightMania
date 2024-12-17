@@ -26,7 +26,8 @@ namespace ichi::uicomponents
 
         auto rect = SDL_Rect{hitbox.getX(), hitbox.getY(), textWidth, textHeight};
 
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, &rect);
+        if (texture != nullptr)
+            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, &rect);
     }
 
     void Textbox::update()
@@ -91,7 +92,10 @@ namespace ichi::uicomponents
     void Textbox::updateTextTexture()
     {
         if (texture)
+        {
             SDL_DestroyTexture(texture);
+            texture = nullptr;
+        }
 
         if (text.size() == 0)
             return;
@@ -104,7 +108,8 @@ namespace ichi::uicomponents
             return;
         }
 
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
+        texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
+
         SDL_FreeSurface(surf);
 
         if (texture == nullptr)
@@ -112,8 +117,6 @@ namespace ichi::uicomponents
             ICHI_ERROR("Could not create texture for label");
             return;
         }
-
-        this->texture = texture;
     }
 
 } // namespace ichi::uicomponents
