@@ -27,7 +27,7 @@ void Match::update()
 
     if (end)
     {
-        scene::sceneManager::getActiveScene()->removeComponent(this);
+        scene::sceneManager::getActiveScene()->removeComponent(std::shared_ptr<core::Component>(this));
         scene::sceneManager::setActiveScene(1); // local play selection
         return;
     }

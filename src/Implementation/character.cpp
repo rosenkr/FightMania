@@ -84,19 +84,12 @@ bool Character::checkGroundCollision() {
     ichi::scene::Scene* s = ichi::scene::sceneManager::getActiveScene();
 
     for (auto& c : s->getComponents()) {
-        if (std::holds_alternative<ichi::core::Component*>(c)) {
-            ichi::core::Component* componentPtr = std::get<ichi::core::Component*>(c);
-            if (collidesWith(*componentPtr) && dynamic_cast<Ground*>(componentPtr)) {
+        // Directly use shared_ptr to Component, no need for holds_alternative
+        if (auto componentPtr = std::dynamic_pointer_cast<Ground>(c)) {
+            if (collidesWith(*componentPtr)) {
+                // Adjust Y position based on the ground's hitbox
                 hitbox.setY(componentPtr->getHitbox().getY() - hitbox.getHeight());
                 animation.setY(componentPtr->getHitbox().getY() - animation.getHeight());
-                return true;
-            }
-        } else if (std::holds_alternative<std::shared_ptr<ichi::core::Component>>(c)) {
-            std::shared_ptr<ichi::core::Component> componentPtr = std::get<std::shared_ptr<ichi::core::Component>>(c);
-            if (collidesWith(*componentPtr) && dynamic_cast<Ground*>(componentPtr.get())) {
-                ICHI_INFO("Ground collision detected");
-                hitbox.setY(componentPtr->getHitbox().getY() - (hitbox.getHeight() + 1));
-                animation.setY(componentPtr->getHitbox().getY() - (animation.getHeight() + 1));
                 return true;
             }
         }
@@ -104,6 +97,7 @@ bool Character::checkGroundCollision() {
 
     return false;
 }
+
 
 void Character::draw() const{
     animation.draw();

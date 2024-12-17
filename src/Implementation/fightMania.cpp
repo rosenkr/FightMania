@@ -86,20 +86,23 @@ enum class SceneName
 
 void quit() { core::Engine::getInstance()->quit(); }
 void changeSceneToMain() { scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN)); }
+
+
 void changeSceneToLocalPlayCharacterSelection()
 {
 	scene::sceneManager::setActiveScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION));
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
 			for (auto ui : ptr->getUIComponents())
 				if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
 					ptr2->updateItems(ProfileHandler::getNames());
-}
+} 
+
 void changeSceneToTrainingCharacterSelection()
 {
 	scene::sceneManager::setActiveScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION));
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
 			for (auto ui : ptr->getUIComponents())
 				if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
 					ptr2->updateItems(ProfileHandler::getNames());
@@ -110,7 +113,7 @@ void changeSceneToDojo()
 {
 	std::string profile;
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
 			for (auto ui : ptr->getUIComponents())
 				if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
 					profile = ptr2->getSelected();
@@ -128,11 +131,11 @@ void resetTextboxes()
 	ICHI_TRACE("RESET")
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
 	{
-		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
 			for (auto ui : ptr->getUIComponents())
 				if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
 					ptr2->clear();
-		if (auto ptr = dynamic_cast<uicomponents::Textbox *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Textbox>(c))
 			ptr->clear();
 	}
 }
@@ -141,7 +144,7 @@ void importProfile()
 {
 	ICHI_TRACE("IMPORT")
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane >(c))
 		{
 			const Profile *profile = nullptr;
 
@@ -168,7 +171,7 @@ void removeProfile()
 {
 	ICHI_TRACE("REMOVE")
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
 			for (auto ui : ptr->getUIComponents())
 				if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
 				{
@@ -186,15 +189,15 @@ void saveProfile()
 	bool isChecked = false;
 	for (auto c : scene::sceneManager::getActiveScene()->getComponents())
 	{
-		if (auto ptr = dynamic_cast<uicomponents::Pane *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
 			for (auto ui : ptr->getUIComponents())
 				if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
 					strings.push_back(ptr2->getText());
 
-		if (auto ptr = dynamic_cast<uicomponents::Textbox *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Textbox>(c))
 			strings.push_back(ptr->getText());
 
-		if (auto ptr = dynamic_cast<uicomponents::Checkbox *>(c))
+		if (auto ptr = std::dynamic_pointer_cast<uicomponents::Checkbox>(c))
 			isChecked = ptr->isChecked();
 	}
 
@@ -294,7 +297,11 @@ int main(int argc, char *argv[])
 
 	auto mainPane = new uicomponents::Pane(window, {localPlay, training, profileEditor, settings, exit, dojo});
 
-	std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(darkBlueBackgroundMain, std::vector<core::Component *>{mainPane}, false);
+	std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(
+		darkBlueBackgroundMain, 
+		std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(mainPane)}, 
+		false
+	);
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::MAIN), mainScene);
 
@@ -318,7 +325,11 @@ int main(int argc, char *argv[])
 
 	auto characterPane = new uicomponents::Pane(window, {returnBtnLP, redMenu, blueMenu});
 
-	std::shared_ptr<scene::Scene> characterSelectionScene = std::make_shared<scene::Scene>(characterSelectionBackground, std::vector<core::Component *>{characterPane}, false);
+	std::shared_ptr<scene::Scene> characterSelectionScene = std::make_shared<scene::Scene>(
+		characterSelectionBackground, 
+		std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(characterPane)}, 
+		false
+	);
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION), characterSelectionScene);
 
@@ -341,7 +352,11 @@ int main(int argc, char *argv[])
 
 	graphics::Sprite *trainingSelcetion = new graphics::Sprite(window, BACKGROUND_LAYER, TRAINING_SELECTION_PATH);
 
-	std::shared_ptr<scene::Scene> trainingSelectionScene = std::make_shared<scene::Scene>(trainingSelcetion, std::vector<core::Component *>{trainingPane}, false);
+	std::shared_ptr<scene::Scene> trainingSelectionScene = std::make_shared<scene::Scene>(
+		trainingSelcetion, 
+		std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(trainingPane)}, 
+		false
+	);
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION), trainingSelectionScene);
 
@@ -413,7 +428,12 @@ int main(int argc, char *argv[])
 
 	graphics::Sprite *darkBlueBackgroundPE = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
-	std::shared_ptr<scene::Scene> profileEditorScene = std::make_shared<scene::Scene>(darkBlueBackgroundPE, std::vector<core::Component *>{profileEditorPane}, false);
+	std::shared_ptr<scene::Scene> profileEditorScene = std::make_shared<scene::Scene>(
+		darkBlueBackgroundPE, 
+		std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(profileEditorPane)}, 
+		false
+	);
+
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::PROFILE_EDITOR), profileEditorScene);
 
@@ -435,7 +455,11 @@ int main(int argc, char *argv[])
 
 	graphics::Sprite *darkBlueBackgroundS = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
-	std::shared_ptr<scene::Scene> settingScene = std::make_shared<scene::Scene>(darkBlueBackgroundS, std::vector<core::Component *>{pane}, false);
+	std::shared_ptr<scene::Scene> settingScene = std::make_shared<scene::Scene>(
+		darkBlueBackgroundS, 
+		std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(pane)}, 
+		false
+	);
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::SETTINGS), settingScene);
 
@@ -459,7 +483,11 @@ int main(int argc, char *argv[])
 
 	auto dojoPane = new uicomponents::Pane(window, {returnBtnD});
 
-	std::shared_ptr<scene::Scene> dojoScene = std::make_shared<scene::Scene>(dojoBackground, std::vector<core::Component *>{dojoPane}, false);
+	std::shared_ptr<scene::Scene> dojoScene = std::make_shared<scene::Scene>(
+		dojoBackground, 
+		std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(dojoPane)}, 
+		false
+	);
 
 	scene::sceneManager::addScene(static_cast<int>(SceneName::DOJO), dojoScene);
 
