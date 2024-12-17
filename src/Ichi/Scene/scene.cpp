@@ -5,20 +5,62 @@
 
 namespace ichi::scene
 {
-    Scene::Scene(graphics::Sprite *background, std::vector<core::Component *> components = {}, bool pausable = true) : background(std::move(background)), components(std::move(components)), pausable(pausable), paused(false) {}
+    Scene::Scene(
+        graphics::Sprite* background,
+        std::vector<core::Component*> components,
+        bool pausable
+    )
+        : background(background), pausable(pausable), paused(false)
+    {
+        for (auto* comp : components) {
+            this->components.push_back(comp);  // Add raw pointer directly
+        }
+    }
+
+    // Constructor to handle smart pointers
+    Scene::Scene(
+        graphics::Sprite* background,
+        std::vector<std::shared_ptr<core::Component>> components,
+        bool pausable
+    )
+        : background(std::move(background)), pausable(pausable), paused(false)
+    {
+        // Convert smart pointers into std::variant<core::Component*, std::shared_ptr<core::Component>>
+        for (auto& comp : components) {
+            this->components.push_back(comp); // Add shared_ptr directly
+        }
+    }
 
     void Scene::draw() const
     {
         background->draw();
         for (const auto &up_c : components)
-            up_c->draw();
+        {
+            if (auto rawPtr = std::get_if<core::Component *>(&up_c))
+            {
+                (*rawPtr)->draw(); 
+            }
+            else if (auto sharedPtr = std::get_if<std::shared_ptr<core::Component>>(&up_c))
+            {
+                sharedPtr->get()->draw();  
+            }
+        }
     }
 
     void Scene::update()
     {
         background->update();
         for (const auto &up_c : components)
-            up_c->update();
+        {
+            if (auto rawPtr = std::get_if<core::Component *>(&up_c))
+            {
+                (*rawPtr)->update();
+            }
+            else if (auto sharedPtr = std::get_if<std::shared_ptr<core::Component>>(&up_c))
+            {
+                sharedPtr->get()->update();
+            }
+        }
     }
 
     // Returns a vector of immutable Hitbox references to all hitboxes of all components of this Scene.
@@ -28,8 +70,16 @@ namespace ichi::scene
 
         for (const auto &component : components)
         {
-            vec.push_back(component->getHitbox());
+            if (auto rawPtr = std::get_if<core::Component *>(&component))
+            {
+                vec.push_back((*rawPtr)->getHitbox());
+            }
+            else if (auto sharedPtr = std::get_if<std::shared_ptr<core::Component>>(&component))
+            {
+                vec.push_back(sharedPtr->get()->getHitbox());
+            }
         }
+
         return vec;
     }
 
@@ -43,6 +93,11 @@ namespace ichi::scene
         }
         components.push_back(std::move(comp));
     }
+
+    void Scene::addComponent(std::shared_ptr<core::Component> component) {
+        components.push_back(component);
+    }
+
 
     // The unique pointer will automatically delete the Component object!
     void Scene::removeComponent(size_t index)
