@@ -6,36 +6,32 @@
 
 #include <vector>
 #include <memory>
-#include <variant>
 
 namespace ichi::scene
 {
     class Scene
     {
     public:
-        Scene(graphics::Sprite* background, 
-          std::vector<std::shared_ptr<core::Component>> components = {}, 
-          bool pausable = true);
-        
-        ~Scene(){
-            components.clear();
-            delete background;
-            background = nullptr;
-        }
+        Scene(std::shared_ptr<graphics::Sprite> background, std::vector<std::shared_ptr<core::Component>> components = {}, bool pausable = true);
 
         virtual void draw() const;
         virtual void update();
+
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> getCollisionHitboxes() const;
-        void addComponent(std::shared_ptr<core::Component> component);
-        void removeComponent(size_t index);
-        void removeComponent(const std::shared_ptr<core::Component>& c);
-        void setPaused(bool paused);
+        const std::vector<std::shared_ptr<core::Component>> &getComponents() const { return components; }
         bool isPaused() const { return paused; }
         bool isPausable() const { return pausable; }
-        const std::vector<std::shared_ptr<core::Component>>& getComponents() const { return components; }
+
+        void setPaused(bool paused);
+
+        void addComponent(std::shared_ptr<core::Component> component);
+        void removeComponent(size_t index);
+        void removeComponent(const std::shared_ptr<core::Component> &c);
+
+        ~Scene() = default;
 
     protected:
-        graphics::Sprite *background;
+        std::shared_ptr<graphics::Sprite> background;
         std::vector<std::shared_ptr<core::Component>> components;
         bool pausable;
         bool paused;

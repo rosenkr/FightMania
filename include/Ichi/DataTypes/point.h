@@ -51,8 +51,6 @@ namespace ichi::datatypes
             lhs -= rhs;
             return lhs;
         }
-
-        /* Overloaded operators */
     };
 }
 #endif

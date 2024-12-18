@@ -5,36 +5,23 @@
 
 namespace ichi::scene
 {
-    // Constructor to handle smart pointers
-    Scene::Scene(
-        graphics::Sprite* background,
-        std::vector<std::shared_ptr<core::Component>> components,
-        bool pausable
-    )
-        : background(std::move(background)), pausable(pausable), paused(false)
+    Scene::Scene(std::shared_ptr<graphics::Sprite> background, std::vector<std::shared_ptr<core::Component>> components, bool pausable)
+        : background(std::move(background)), components(std::move(components)), pausable(pausable), paused(false)
     {
-        // Convert smart pointers into std::variant<core::Component*, std::shared_ptr<core::Component>>
-        for (auto& comp : components) {
-            this->components.push_back(comp); // Add shared_ptr directly
-        }
     }
 
     void Scene::draw() const
     {
         background->draw();
-        for (const auto& comp : components)
-        {
-            comp->draw();  
-        }
+        for (const auto &comp : components)
+            comp->draw();
     }
 
     void Scene::update()
     {
         background->update();
-        for (const auto& comp : components)
-        {
-            comp->update(); 
-        }
+        for (const auto &comp : components)
+            comp->update();
     }
 
     // Returns a vector of immutable Hitbox references to all hitboxes of all components of this Scene.
@@ -42,19 +29,16 @@ namespace ichi::scene
     {
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> vec;
 
-        for (const auto& component : components)
-        {
-            vec.push_back(component->getHitbox());  // Direct access using shared_ptr
-        }
+        for (const auto &component : components)
+            vec.push_back(component->getHitbox()); // Direct access using shared_ptr
 
         return vec;
-    }   
-
-
-    void Scene::addComponent(std::shared_ptr<core::Component> component) {
-        components.push_back(component);
     }
 
+    void Scene::addComponent(std::shared_ptr<core::Component> component)
+    {
+        components.push_back(component);
+    }
 
     void Scene::removeComponent(size_t index)
     {
@@ -66,18 +50,14 @@ namespace ichi::scene
         components.erase(components.begin() + index);
     }
 
-    void Scene::removeComponent(const std::shared_ptr<core::Component>& c)
+    void Scene::removeComponent(const std::shared_ptr<core::Component> &c)
     {
         auto it = std::find(components.begin(), components.end(), c);
 
         if (it != components.end())
-        {
-            components.erase(it);  // Remove the shared_ptr directly
-        }
+            components.erase(it); // Remove the shared_ptr directly
         else
-        {
             ICHI_ERROR("Could not remove component from list");
-        }
     }
 
     void Scene::setPaused(bool paused)

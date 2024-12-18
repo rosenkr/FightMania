@@ -146,7 +146,7 @@ void SceneLoader::importProfile()
         {
             const Profile *profile = nullptr;
 
-            if (auto tbPtr = dynamic_cast<uicomponents::Textbox *>(ptr->getUIComponents().at(datatypes::Point(150, 15)).get()))
+            if (auto tbPtr = dynamic_cast<uicomponents::Textbox *>(ptr->getUIComponents().at(hbName.getPos()).get()))
                 profile = ProfileHandler::getProfile(tbPtr->getText());
             if (!profile)
             {
@@ -173,7 +173,7 @@ void SceneLoader::removeProfile()
             for (auto ui : ptr->getUIComponents())
                 if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
                 {
-                    if (ui.first != datatypes::Point(150, 15))
+                    if (ui.first != hbName.getPos())
                         continue;
                     ProfileHandler::removeProfile(ptr2->getText());
                     return;
@@ -213,7 +213,7 @@ void SceneLoader::createPopUpMenu()
 
     auto returnToMainMenuBtn = createButton(returnToMainMenuHB, "Main Menu", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToMain);
 
-    auto popUp = std::make_shared<scene::PopUpMenu>(std::vector<uicomponents::UIComponent *>{returnToMainMenuBtn.get()}, popUpBackground, popUpWindowSprite);
+    auto popUp = std::make_shared<scene::PopUpMenu>(std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnToMainMenuBtn}, popUpBackground, popUpWindowSprite);
 
     scene::sceneManager::setPopUpMenu(popUp);
 }
@@ -224,12 +224,10 @@ datatypes::Hitbox hbProfileEditor(datatypes::Point(50, 120), 75, 20, false);
 datatypes::Hitbox hbSettings(datatypes::Point(50, 150), 75, 20, false);
 datatypes::Hitbox hbExit(datatypes::Point(50, 180), 75, 20, false);
 
-datatypes::Hitbox hbDojo(datatypes::Point(150, 150), 75, 20, false);
-
 void SceneLoader::createMainMenu()
 {
 
-    graphics::Sprite *darkBlueBackgroundMain = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+    auto darkBlueBackgroundMain = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
     auto localPlay = createButton(hbLocalPlay, "Local Play", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToLocalPlayCharacterSelection);
     auto training = createButton(hbTraining, "Training", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToTrainingCharacterSelection);
@@ -237,9 +235,7 @@ void SceneLoader::createMainMenu()
     auto settings = createButton(hbSettings, "Settings", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToSettings);
     auto exit = createButton(hbExit, "Exit game", BUTTON_PATH, FOCUSED_BUTTON_PATH, quitGame);
 
-    auto dojo = createButton(hbDojo, "Dojo", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
-
-    auto mainPane = new uicomponents::Pane(window, {localPlay, training, profileEditor, settings, exit, dojo});
+    auto mainPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{localPlay, training, profileEditor, settings, exit});
 
     std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(
         darkBlueBackgroundMain,
@@ -260,9 +256,9 @@ void SceneLoader::createLocalPlayMenu()
     auto redMenu = createMenu(hbRedPlayerMenu, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto blueMenu = createMenu(hbBluePlayerMenu, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
-    graphics::Sprite *characterSelectionBackground = new graphics::Sprite(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
+    auto characterSelectionBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
 
-    auto characterPane = new uicomponents::Pane(window, {returnBtnLP, redMenu, blueMenu});
+    auto characterPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnLP, redMenu, blueMenu});
 
     std::shared_ptr<scene::Scene> characterSelectionScene = std::make_shared<scene::Scene>(
         characterSelectionBackground,
@@ -282,9 +278,9 @@ void SceneLoader::createTrainingMenu()
     auto startTrainingBtn = createButton(hbStartTraining, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
     auto playerMenu = createMenu(hbBluePlayerMenu, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
-    auto trainingPane = new uicomponents::Pane(window, {returnBtnT, playerMenu, startTrainingBtn});
+    auto trainingPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnT, playerMenu, startTrainingBtn});
 
-    graphics::Sprite *trainingSelcetion = new graphics::Sprite(window, BACKGROUND_LAYER, TRAINING_SELECTION_PATH);
+    auto trainingSelcetion = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, TRAINING_SELECTION_PATH);
 
     std::shared_ptr<scene::Scene> trainingSelectionScene = std::make_shared<scene::Scene>(
         trainingSelcetion,
@@ -306,7 +302,7 @@ datatypes::Point heavyPt(50, 135);
 datatypes::Point jumpPt(50, 155);
 datatypes::Point blockPt(50, 175);
 
-datatypes::Hitbox hbName(datatypes::Point(150, namePt.Y), 70, 10, false); // This is directly mapped to import method
+datatypes::Hitbox SceneLoader::hbName(datatypes::Point(150, namePt.Y), 70, 10, false);
 datatypes::Hitbox hbUp(datatypes::Point(150, upPt.Y), 70, 10, false);
 datatypes::Hitbox hbDown(datatypes::Point(150, downPt.Y), 70, 10, false);
 datatypes::Hitbox hbLeft(datatypes::Point(150, leftPt.Y), 70, 10, false);
@@ -350,12 +346,14 @@ void SceneLoader::createProfileEditorMenu()
     auto removeBtn = createButton(hbRemove, "Remove", BUTTON_PATH, FOCUSED_BUTTON_PATH, removeProfile);
     auto saveBtn = createButton(hbSave, "Save", BUTTON_PATH, FOCUSED_BUTTON_PATH, saveProfile);
 
-    auto profileEditorPane = new uicomponents::Pane(window, {returnBtnPE,
-                                                             nameLbl, upLbl, downLbl, leftLbl, rightLbl, lightLbl, heavyLbl, jumpLbl, blockLbl,
-                                                             nameTbx, upTbx, downTbx, leftTbx, rightTbx, lightTbx, heavyTbx, jumpTbx, blockTbx,
-                                                             resetBtn, importBtn, removeBtn, saveBtn});
+    auto profileEditorPane = std::make_shared<uicomponents::Pane>(window,
+                                                                  std::vector<std::shared_ptr<uicomponents::UIComponent>>{
+                                                                      returnBtnPE,
+                                                                      nameLbl, upLbl, downLbl, leftLbl, rightLbl, lightLbl, heavyLbl, jumpLbl, blockLbl,
+                                                                      nameTbx, upTbx, downTbx, leftTbx, rightTbx, lightTbx, heavyTbx, jumpTbx, blockTbx,
+                                                                      resetBtn, importBtn, removeBtn, saveBtn});
 
-    graphics::Sprite *darkBlueBackgroundPE = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+    auto darkBlueBackgroundPE = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
     std::shared_ptr<scene::Scene> profileEditorScene = std::make_shared<scene::Scene>(
         darkBlueBackgroundPE,
@@ -374,9 +372,9 @@ void SceneLoader::createSettingMenu()
     auto returnBtnS = createButton(hbReturnS, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto volumeSlider = createSlideBar(sliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setVolume);
 
-    auto pane = new uicomponents::Pane(window, {returnBtnS, volumeSlider});
+    auto pane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnS, volumeSlider});
 
-    graphics::Sprite *darkBlueBackgroundS = new graphics::Sprite(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+    auto darkBlueBackgroundS = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
     std::shared_ptr<scene::Scene> settingScene = std::make_shared<scene::Scene>(
         darkBlueBackgroundS,
@@ -398,14 +396,9 @@ void SceneLoader::createDojo()
 
     std::shared_ptr<uicomponents::Button> returnBtnD = std::make_shared<uicomponents::Button>(hbReturnD, "", font, black, returnSpriteD, focusedReturnSpriteD, changeSceneToMain);
 
-    graphics::Sprite *dojoBackground = new graphics::Sprite(window, BACKGROUND_LAYER, DOJO_PATH);
+    auto dojoBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DOJO_PATH);
 
-    auto dojoPane = new uicomponents::Pane(window, {returnBtnD});
-
-    std::shared_ptr<scene::Scene> dojoScene = std::make_shared<scene::Scene>(
-        dojoBackground,
-        std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(dojoPane)},
-        false);
+    std::shared_ptr<scene::Scene> dojoScene = std::make_shared<scene::Scene>(dojoBackground, std::vector<std::shared_ptr<core::Component>>{}, true);
 
     scene::sceneManager::addScene(static_cast<int>(SceneName::DOJO), dojoScene);
 
@@ -413,7 +406,7 @@ void SceneLoader::createDojo()
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
 
     std::shared_ptr<ichi::graphics::AnimatedSprite> animation = std::make_shared<ichi::graphics::AnimatedSprite>(
-        robotHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 1}, {1, 1}, {2, 1}, {3, 1}});
+        robotHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
 
     std::shared_ptr<Character> robot = std::make_shared<Character>(
         robotHitbox, 120, 2, 3, animation, false);

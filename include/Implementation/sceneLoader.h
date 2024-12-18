@@ -74,6 +74,7 @@ private:
     inline static const graphics::Sprite::Layer FOREGROUND_LAYER = ichi::graphics::Sprite::Layer::FOREGROUND;
 
     static datatypes::Hitbox window;
+    static datatypes::Hitbox hbName;
 
     inline static const SDL_Color black{0, 0, 0, 255};
     inline static const SDL_Color white{255, 255, 255, 255};

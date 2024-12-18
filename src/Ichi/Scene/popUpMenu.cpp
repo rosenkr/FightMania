@@ -3,7 +3,7 @@
 namespace ichi::scene
 {
 
-    PopUpMenu::PopUpMenu(std::vector<uicomponents::UIComponent *> c, graphics::Sprite b, graphics::Sprite w) : uicomponents(std::move(c)), background(b), window(w)
+    PopUpMenu::PopUpMenu(std::vector<std::shared_ptr<uicomponents::UIComponent>> c, graphics::Sprite b, graphics::Sprite w) : uicomponents(std::move(c)), background(b), window(w)
     {
     }
 

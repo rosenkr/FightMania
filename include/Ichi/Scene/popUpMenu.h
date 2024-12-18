@@ -4,6 +4,7 @@
 #include "Ichi/UIComponents/uicomponent.h"
 #include "Ichi/Graphics/sprite.h"
 
+#include <memory>
 #include <vector>
 
 namespace ichi::scene
@@ -11,21 +12,13 @@ namespace ichi::scene
     class PopUpMenu
     {
     public:
-        PopUpMenu(std::vector<uicomponents::UIComponent *>, graphics::Sprite, graphics::Sprite);
+        PopUpMenu(std::vector<std::shared_ptr<uicomponents::UIComponent>>, graphics::Sprite, graphics::Sprite);
 
         void update();
         void draw() const;
 
-        ~PopUpMenu()
-        {
-            for (auto p : uicomponents)
-                if (p)
-                    delete p;
-            uicomponents.clear();
-        };
-
     private:
-        std::vector<uicomponents::UIComponent *> uicomponents;
+        std::vector<std::shared_ptr<uicomponents::UIComponent>> uicomponents;
         graphics::Sprite background;
         graphics::Sprite window;
     };

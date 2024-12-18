@@ -22,11 +22,11 @@ public:
         startSet();
         timeStarted = SDL_GetTicks();
 
-        startSf = Mix_LoadWAV(SOUND_EFFECT_START_PATH);
-        KOSf = Mix_LoadWAV(SOUND_EFFECT_KO_PATH);
-        perfectSf = Mix_LoadWAV(SOUND_EFFECT_PERFECT_PATH);
-        blueWinsSf = Mix_LoadWAV(SOUND_EFFECT_BLUE_WINS_PATH);
-        redWinsSf = Mix_LoadWAV(SOUND_EFFECT_RED_WINS_PATH);
+        startSf = Mix_LoadWAV(SOUND_EFFECT_START_PATH.c_str());
+        KOSf = Mix_LoadWAV(SOUND_EFFECT_KO_PATH.c_str());
+        perfectSf = Mix_LoadWAV(SOUND_EFFECT_PERFECT_PATH.c_str());
+        blueWinsSf = Mix_LoadWAV(SOUND_EFFECT_BLUE_WINS_PATH.c_str());
+        redWinsSf = Mix_LoadWAV(SOUND_EFFECT_RED_WINS_PATH.c_str());
 
         if (!startSf || !KOSf || !perfectSf || !blueWinsSf || !redWinsSf)
             ICHI_ERROR("Could not init all sound effects: {}", SDL_GetError());
@@ -53,11 +53,11 @@ public:
     void startSuddenDeath();
 
 private:
-    const char *SOUND_EFFECT_START_PATH = "";
-    const char *SOUND_EFFECT_KO_PATH = "";
-    const char *SOUND_EFFECT_PERFECT_PATH = "";
-    const char *SOUND_EFFECT_BLUE_WINS_PATH = "";
-    const char *SOUND_EFFECT_RED_WINS_PATH = "";
+    const std::string SOUND_EFFECT_START_PATH = "";
+    const std::string SOUND_EFFECT_KO_PATH = "";
+    const std::string SOUND_EFFECT_PERFECT_PATH = "";
+    const std::string SOUND_EFFECT_BLUE_WINS_PATH = "";
+    const std::string SOUND_EFFECT_RED_WINS_PATH = "";
 
     Mix_Chunk *startSf;
     Mix_Chunk *KOSf;

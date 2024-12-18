@@ -14,7 +14,6 @@ namespace ichi::uicomponents
     class Textbox : public UIComponent
     {
     public:
-        /* data */
         Textbox(datatypes::Hitbox, TTF_Font *, SDL_Color, graphics::Sprite, graphics::Sprite, int = -1);
 
         void draw() const;
