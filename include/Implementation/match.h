@@ -4,48 +4,38 @@
 #include "Ichi/Core/component.h"
 #include "Ichi/Graphics/textureManager.h"
 #include "Ichi/Audio/audioPlayer.h"
+#include "Implementation/character.h"
 
 using namespace ichi;
 
 class Match : public ichi::core::Component
 {
 public:
-    Match(/*Character blue, Character red*/)
-        : core::Component(datatypes::Hitbox(datatypes::Point(0, 0), 384, 224, false)),
+    struct MixChunkDeleter
+    {
+        void operator()(Mix_Chunk *chunk) const
+        {
+            if (chunk)
+                Mix_FreeChunk(chunk);
+        }
+    };
+    Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red)
+        : core::Component(datatypes::Hitbox(datatypes::Point(0, 0), 384, 224, false)), blueCharacter(std::move(blue)), redCharacter(std::move(red)),
           start(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, START_PATH, startTime.size(), startTime)),
-          KO(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, KO_PATH, KOTime.size(), KOTime)),
-          perfect(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, START_PATH, perfectTime.size(), perfectTime)),
-          blueWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, START_PATH, blueWinsTime.size(), blueWinsTime)),
-          redWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, START_PATH, redWinsTime.size(), redWinsTime))
-    /* , blueCharacter(std::move(blue)), redCharacter(std::move(red))*/
+          KO(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {KO_PATH}, KOTime)),
+          perfect(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {PERFECT_PATH}, perfectTime)),
+          blueWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {BLUE_WINS_PATH}, blueWinsTime)),
+          redWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {RED_WINS_PATH}, redWinsTime))
     {
         startSet();
         timeStarted = SDL_GetTicks();
 
-        startSf = Mix_LoadWAV(SOUND_EFFECT_START_PATH.c_str());
-        KOSf = Mix_LoadWAV(SOUND_EFFECT_KO_PATH.c_str());
-        perfectSf = Mix_LoadWAV(SOUND_EFFECT_PERFECT_PATH.c_str());
-        blueWinsSf = Mix_LoadWAV(SOUND_EFFECT_BLUE_WINS_PATH.c_str());
-        redWinsSf = Mix_LoadWAV(SOUND_EFFECT_RED_WINS_PATH.c_str());
-
-        if (!startSf || !KOSf || !perfectSf || !blueWinsSf || !redWinsSf)
-            ICHI_ERROR("Could not init all sound effects: {}", SDL_GetError());
+        startSf = loadSoundEffect(SOUND_EFFECT_START_PATH);
+        KOSf = loadSoundEffect(SOUND_EFFECT_KO_PATH);
+        perfectSf = loadSoundEffect(SOUND_EFFECT_PERFECT_PATH);
+        blueWinsSf = loadSoundEffect(SOUND_EFFECT_BLUE_WINS_PATH);
+        redWinsSf = loadSoundEffect(SOUND_EFFECT_RED_WINS_PATH);
     }
-
-    ~Match()
-    {
-        Mix_FreeChunk(startSf);
-        Mix_FreeChunk(KOSf);
-        Mix_FreeChunk(perfectSf);
-        Mix_FreeChunk(blueWinsSf);
-        Mix_FreeChunk(redWinsSf);
-
-        startSf = nullptr;
-        KOSf = nullptr;
-        perfectSf = nullptr;
-        blueWinsSf = nullptr;
-        redWinsSf = nullptr;
-    };
 
     void draw() const;
     void update();
@@ -53,29 +43,40 @@ public:
     void startSuddenDeath();
 
 private:
-    const std::string SOUND_EFFECT_START_PATH = "";
-    const std::string SOUND_EFFECT_KO_PATH = "";
-    const std::string SOUND_EFFECT_PERFECT_PATH = "";
-    const std::string SOUND_EFFECT_BLUE_WINS_PATH = "";
-    const std::string SOUND_EFFECT_RED_WINS_PATH = "";
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> loadSoundEffect(const std::string &path)
+    {
+        Mix_Chunk *chunk = Mix_LoadWAV(path.c_str());
+        if (!chunk)
+        {
+            ICHI_ERROR("Could not load sound effect: {}", SDL_GetError());
+            return nullptr;
+        }
+        return std::unique_ptr<Mix_Chunk, MixChunkDeleter>(chunk);
+    }
 
-    Mix_Chunk *startSf;
-    Mix_Chunk *KOSf;
-    Mix_Chunk *perfectSf;
-    Mix_Chunk *blueWinsSf;
-    Mix_Chunk *redWinsSf;
+    const std::string SOUND_EFFECT_START_PATH = "resources/sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_KO_PATH = "resources/sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_PERFECT_PATH = "resources/sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_BLUE_WINS_PATH = "resources/sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_RED_WINS_PATH = "resources/sounds/ChestOpening.wav";
 
-    const std::string START_PATH = "";
-    const std::string KO_PATH = "";
-    const std::string PERFECT_PATH = "";
-    const std::string BLUE_WINS_PATH = "";
-    const std::string RED_WINS_PATH = "";
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> startSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> KOSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> perfectSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> blueWinsSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> redWinsSf;
 
-    std::map<int, Uint32> startTime = {{1, 1000}};
-    std::map<int, Uint32> KOTime = {{1, 1000}};
-    std::map<int, Uint32> perfectTime = {{1, 1000}};
-    std::map<int, Uint32> blueWinsTime = {{1, 1000}};
-    std::map<int, Uint32> redWinsTime = {{1, 1000}};
+    const std::string START_PATH = "resources/images/CutScenes/StartCutscene";
+    const std::string KO_PATH = "resources/images/CutScenes/KO.png";
+    const std::string PERFECT_PATH = "resources/images/CutScenes/Perfect.png";
+    const std::string BLUE_WINS_PATH = "resources/images/CutScenes/BlueWins.png";
+    const std::string RED_WINS_PATH = "resources/images/CutScenes/RedWins.png";
+
+    std::map<int, Uint32> startTime = {{0, 1000}, {1, 1000}, {2, 1000}, {3, 500}};
+    std::map<int, Uint32> KOTime = {{0, 1000}};
+    std::map<int, Uint32> perfectTime = {{0, 1000}};
+    std::map<int, Uint32> blueWinsTime = {{0, 1000}};
+    std::map<int, Uint32> redWinsTime = {{0, 1000}};
 
     // in milli sec
     const Uint32 MAX_TIME = 300 * 1000;
@@ -84,8 +85,8 @@ private:
     bool suddenDeathActive = false;
     bool end = false;
 
-    // Character blueCharacter;
-    // Character redCharacter;
+    std::shared_ptr<Character> blueCharacter;
+    std::shared_ptr<Character> redCharacter;
 
     ichi::graphics::AnimatedSprite start;
     ichi::graphics::AnimatedSprite KO;

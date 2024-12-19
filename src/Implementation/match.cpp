@@ -5,8 +5,8 @@
 
 void Match::draw() const
 {
-    // blueCharacter.draw();
-    // redCharacter.draw();
+    blueCharacter.get()->draw();
+    redCharacter.get()->draw();
     CutsceneHandler::draw();
 }
 
@@ -32,16 +32,16 @@ void Match::update()
         return;
     }
 
-    /*
+    /*if (blueCharacter.get()->getHp() <= 0)
+    {
 
-    if(blueCharacter.getHp() <= 0){
-
-        if (redCharacter.getHp() == Character::MAX_HP)
+        if (redCharacter.get()->etHp() == Character::MAX_HP)
             CutsceneHandler::addCutscene(perfect, perfectSf);
         else
             CutsceneHandler::addCutscene(KO, KOSf);
 
-        if (redCharacter.addWin()){
+        if (redCharacter.get()->addWin())
+        {
             CutsceneHandler::addCutscene(redWins, redWinsSf);
             end = true;
             return;
@@ -49,24 +49,25 @@ void Match::update()
         return;
     }
 
-    if(redCharacter.getHp() <= 0){
+    if (redCharacter.get()->getHp() <= 0)
+    {
 
-        if (blueCharacter.getHp() == Character::MAX_HP)
+        if (blueCharacter.get()->getHp() == Character::MAX_HP)
             CutsceneHandler::addCutscene(perfect, perfectSf);
         else
             CutsceneHandler::addCutscene(KO, KOSf);
 
-        if (blueCharacter.addWin()){
+        if (blueCharacter.get()->addWin())
+        {
             CutsceneHandler::addCutscene(blueWins, blueWinsSf);
             end = true;
             return;
         }
         return;
-    }
+    }*/
 
-    blueCharacter.update();
-    redCharacter.update();
-    */
+    blueCharacter.get()->update();
+    redCharacter.get()->update();
 }
 
 void Match::startSuddenDeath()
@@ -75,7 +76,7 @@ void Match::startSuddenDeath()
     // redCharacter.setPos(datatypes::Point(300, 50));
     // blueCharacter.setHP(1);
     // redCharacter.setHP(1);
-    CutsceneHandler::addCutscene(start, startSf);
+    CutsceneHandler::addCutscene(start, startSf.get());
 }
 
 void Match::startSet()
@@ -84,5 +85,5 @@ void Match::startSet()
     // redCharacter.setPos(datatypes::Point(300, 50));
     // blueCharacter.resetHP();
     // redCharacter.resetHP();
-    CutsceneHandler::addCutscene(start, startSf);
+    CutsceneHandler::addCutscene(start, startSf.get());
 }

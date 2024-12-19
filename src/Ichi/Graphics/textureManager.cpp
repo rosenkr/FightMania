@@ -62,16 +62,16 @@ namespace ichi::graphics
         int i = 0;
         for (auto path : paths)
         {
-            if (auto texture = getTexture(path)) {
+            if (auto texture = getTexture(path))
+            {
                 map[i++] = std::move(texture);
                 ICHI_INFO("Added path {} with index: {}", path, i - 1)
-            } else {
-                ICHI_INFO("Failed to add path {} with index: {}", path, i - 1)
             }
+            else
+                ICHI_INFO("Failed to add path {} with index: {}", path, i - 1)
         }
 
         animatedSpriteMap[as] = std::move(map);
-
     }
 
     std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::getTexture(const std::string &path)

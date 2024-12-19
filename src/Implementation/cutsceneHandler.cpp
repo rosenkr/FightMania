@@ -4,6 +4,9 @@ std::queue<std::pair<ichi::graphics::AnimatedSprite, Mix_Chunk *>> CutsceneHandl
 
 void CutsceneHandler::update()
 {
+    if (queue.empty())
+        return;
+
     if (queue.front().first.hasCompleatedALap())
     {
         queue.pop();
@@ -21,6 +24,8 @@ void CutsceneHandler::update()
 
 void CutsceneHandler::draw()
 {
+    if (queue.empty())
+        return;
     auto as = queue.front().first;
     as.draw();
 }
