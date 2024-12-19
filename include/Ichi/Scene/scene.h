@@ -19,6 +19,7 @@ namespace ichi::scene
 
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> getCollisionHitboxes() const;
         const std::vector<std::shared_ptr<core::Component>> &getComponents() const { return components; }
+        core::Component *getComponent(datatypes::Point p) const;
         bool isPaused() const { return paused; }
         bool isPausable() const { return pausable; }
 

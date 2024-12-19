@@ -13,6 +13,8 @@
 #include "Ichi/Scene/popUpMenu.h"
 #include "Ichi/Scene/scene.h"
 
+#include "Implementation/character.h"
+
 #include <memory>
 
 using namespace ichi;
@@ -70,8 +72,12 @@ private:
 
     inline static const std::string DARK_BLUE_SCREEN_PATH = TEMP + "resources/images/BackGrounds/DarkBlueScreen.png";
     inline static const std::string CHARACTER_SELECTION_PATH = TEMP + "resources/images/BackGrounds/CharcterSelection.png";
-    inline static const std::string TRAINING_SELECTION_PATH = TEMP + "resources/images/BackGrounds/TrainingSelection.png";
+    inline static const std::string TRAINING_SELECTION_PATH = TEMP + "resources/images/BackGrounds/CharcterSelectionTraining.png";
     inline static const std::string DOJO_PATH = TEMP + "resources/images/BackGrounds/Dojo.png";
+    inline static const std::string CP_PATH = TEMP + "resources/images/BackGrounds/Cyberpunk.png";
+
+    // Character names
+    inline static const std::string ROBOT = "ROBOT";
 
     inline static const graphics::Sprite::Layer UI_LAYER = graphics::Sprite::Layer::UICOMPONENT;
     inline static const graphics::Sprite::Layer BACKGROUND_LAYER = ichi::graphics::Sprite::Layer::BACKGROUND;
@@ -79,6 +85,11 @@ private:
 
     static datatypes::Hitbox window;
     static datatypes::Hitbox hbName;
+
+    static datatypes::Hitbox blueProfileDropdownHB;
+    static datatypes::Hitbox blueCharacterDropdownHB;
+    static datatypes::Hitbox redProfileDropdownHB;
+    static datatypes::Hitbox redCharacterDropdownHB;
 
     inline static const SDL_Color black{0, 0, 0, 255};
     inline static const SDL_Color white{255, 255, 255, 255};
@@ -102,6 +113,7 @@ private:
     static std::shared_ptr<uicomponents::DropDownMenu> createMenu(datatypes::Hitbox &, const std::vector<std::string> &, const std::string &, const std::string &, const std::string &);
     static std::shared_ptr<uicomponents::Textbox> createTextbox(datatypes::Hitbox &, const std::string &, const std::string &, int);
     static std::shared_ptr<uicomponents::SlideBar> createSlideBar(datatypes::Hitbox &, const std::string &, int, int, const std::string &, const std::string &, std::function<void(float)>);
+    static std::shared_ptr<Character> createRobot(const Profile *p, datatypes::Hitbox &hb);
 
     static void createPopUpMenu();
     static void createMainMenu();
