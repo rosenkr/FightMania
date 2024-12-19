@@ -27,9 +27,9 @@ private:
     int lives;
 
     const float speed = 1.f;
-    float jumpVelocity = -3.f;
+    float jumpVelocity = -6.9f;
 
-    ichi::datatypes::Vector2D gravity{0, 0.3f};
+    ichi::datatypes::Vector2D gravity{0, 0.35f};
     ichi::datatypes::Vector2D velocity{0, 0};
 
     bool grounded = false;
