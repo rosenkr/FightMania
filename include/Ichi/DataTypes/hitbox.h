@@ -1,6 +1,7 @@
 #ifndef HITBOX_H
 #define HITBOX_H
 #include "Ichi/DataTypes/point.h"
+#include "Ichi/DataTypes/vector2D.h"
 
 #include <SDL2/SDL.h>
 #include <functional>
@@ -25,14 +26,34 @@ namespace ichi::datatypes
         bool isOverlapping(const Hitbox &other) const;
         bool operator==(const Hitbox &other) const { return other.getWidth() == getWidth() && other.getHeight() == getHeight() && other.getX() == getX() && other.getY() == getY(); }
         bool operator!=(const Hitbox &other) const { return !(other == *this); }
+
+        friend Hitbox operator+(Hitbox lhs, const Point &rhs)
+        {
+            lhs += rhs;
+            return lhs;
+        }
+
         Hitbox &operator+=(const Point &p)
         {
             rect = {rect.x + p.X, rect.y + p.Y, rect.w, rect.h};
             return *this;
         }
+
         Hitbox &operator-=(const Point &p)
         {
             rect = {rect.x - p.X, rect.y - p.Y, rect.w, rect.h};
+            return *this;
+        }
+
+        Hitbox &operator+=(const Vector2D &vec)
+        {
+            rect = {rect.x + static_cast<int>(std::round(vec.getX())), rect.y + static_cast<int>(std::round(vec.getY())), rect.w, rect.h};
+            return *this;
+        }
+
+        Hitbox &operator-=(const Vector2D &vec)
+        {
+            rect = {rect.x - static_cast<int>(std::round(vec.getX())), rect.y - static_cast<int>(std::round(vec.getY())), rect.w, rect.h};
             return *this;
         }
 
