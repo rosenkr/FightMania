@@ -9,6 +9,7 @@
 
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/Core/engine.h"
+#include "Implementation/match.h"
 
 #include "Ichi/log.h"
 
@@ -38,7 +39,18 @@ bool SceneLoader::init()
     return font;
 }
 
-void SceneLoader::changeSceneToMain() { ichi::scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN)); }
+void SceneLoader::changeSceneToMain()
+{
+    if (ichi::scene::sceneManager::getActiveScene()->isPausable())
+    {
+        ichi::scene::sceneManager::getActiveScene()->setPaused(false);
+        for (auto c : scene::sceneManager::getActiveScene()->getComponents())
+            if (auto ptr = std::dynamic_pointer_cast<Match>(c))
+                scene::sceneManager::getActiveScene()->removeComponent(ptr);
+    }
+
+    ichi::scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
+}
 
 void SceneLoader::changeSceneToLocalPlayCharacterSelection()
 {
@@ -70,7 +82,8 @@ void SceneLoader::changeSceneToSettings()
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::SETTINGS));
 }
 
-ichi::datatypes::Hitbox robotHitbox(datatypes::Point(50, 0), 120, 120, true);
+ichi::datatypes::Hitbox redCharacterHitbox(datatypes::Point(250, 0), 120, 120, true);
+ichi::datatypes::Hitbox blueCharacterHitbox(datatypes::Point(50, 0), 120, 120, true);
 
 void SceneLoader::changeSceneToDojo()
 {
@@ -91,12 +104,18 @@ void SceneLoader::changeSceneToDojo()
 
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
 
-    std::shared_ptr<ichi::graphics::AnimatedSprite> animation = std::make_shared<ichi::graphics::AnimatedSprite>(
-        robotHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
+    std::shared_ptr<ichi::graphics::AnimatedSprite> blueAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
+        blueCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
 
-    std::shared_ptr<Character> robot = std::make_shared<Character>(robotHitbox, animation, ProfileHandler::getProfile(profile));
+    std::shared_ptr<ichi::graphics::AnimatedSprite> redAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
+        redCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
 
-    scene::sceneManager::getActiveScene()->addComponent(robot);
+    std::shared_ptr<Character> redRobot = std::make_shared<Character>(redCharacterHitbox, redAnimation, ProfileHandler::getProfile(profile));
+    std::shared_ptr<Character> blueRobot = std::make_shared<Character>(blueCharacterHitbox, blueAnimation, ProfileHandler::getProfile(profile));
+
+    auto m = std::make_shared<Match>(redRobot, blueRobot);
+
+    scene::sceneManager::getActiveScene()->addComponent(m);
 }
 
 std::shared_ptr<uicomponents::Button> SceneLoader::createButton(datatypes::Hitbox &hitbox, const std::string &label, const std::string &spritePath, const std::string &focusedSpritePath, const std::function<void()> &onClick)
