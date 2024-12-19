@@ -1,6 +1,7 @@
 #include "Ichi/Scene/scene.h"
 
 #include "Ichi/Graphics/animatedSprite.h"
+#include "Ichi/UIComponents/pane.h"
 #include "Ichi/log.h"
 
 namespace ichi::scene
@@ -22,6 +23,23 @@ namespace ichi::scene
         background->update();
         for (const auto &comp : components)
             comp->update();
+    }
+
+    core::Component *Scene::getComponent(datatypes::Point p) const
+    {
+        core::Component *component = nullptr;
+
+        for (auto c : components)
+        {
+            if (c.get()->getHitbox().getPos() == p)
+                return c.get();
+            if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
+                for (auto uic : ptr.get()->getUIComponents())
+                    if (uic.first == p)
+                        return uic.second.get();
+        }
+
+        return component;
     }
 
     // Returns a vector of immutable Hitbox references to all tangible hitboxes of all components of this Scene.
