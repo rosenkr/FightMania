@@ -70,6 +70,8 @@ void SceneLoader::changeSceneToSettings()
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::SETTINGS));
 }
 
+ichi::datatypes::Hitbox robotHitbox(datatypes::Point(50, 0), 120, 120, true);
+
 void SceneLoader::changeSceneToDojo()
 {
     std::string profile;
@@ -78,13 +80,23 @@ void SceneLoader::changeSceneToDojo()
             for (auto ui : ptr->getUIComponents())
                 if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
                     profile = ptr2->getSelected();
+
     if (ProfileHandler::getProfile(profile) == nullptr)
     {
         ICHI_ERROR("Could not find profile: {}", profile)
         return;
     }
-    // Create character with ProfileHandler::getProfile(profile)
+
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
+
+    std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
+
+    std::shared_ptr<ichi::graphics::AnimatedSprite> animation = std::make_shared<ichi::graphics::AnimatedSprite>(
+        robotHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
+
+    std::shared_ptr<Character> robot = std::make_shared<Character>(robotHitbox, animation, ProfileHandler::getProfile(profile));
+
+    scene::sceneManager::getActiveScene()->addComponent(robot);
 }
 
 std::shared_ptr<uicomponents::Button> SceneLoader::createButton(datatypes::Hitbox &hitbox, const std::string &label, const std::string &spritePath, const std::string &focusedSpritePath, const std::function<void()> &onClick)
@@ -385,7 +397,6 @@ void SceneLoader::createSettingMenu()
 }
 
 datatypes::Hitbox hbReturnD(datatypes::Point(0, 0), 30, 30, false);
-ichi::datatypes::Hitbox robotHitbox(datatypes::Point(0, 0), 120, 120, true);
 ichi::datatypes::Hitbox groundHitbox(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
 
 void SceneLoader::createDojo()
@@ -401,17 +412,6 @@ void SceneLoader::createDojo()
     std::shared_ptr<scene::Scene> dojoScene = std::make_shared<scene::Scene>(dojoBackground, std::vector<std::shared_ptr<core::Component>>{}, true);
 
     scene::sceneManager::addScene(static_cast<int>(SceneName::DOJO), dojoScene);
-
-    // robot
-    std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
-
-    std::shared_ptr<ichi::graphics::AnimatedSprite> animation = std::make_shared<ichi::graphics::AnimatedSprite>(
-        robotHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
-
-    std::shared_ptr<Character> robot = std::make_shared<Character>(
-        robotHitbox, 120, 2, 3, animation, false);
-
-    dojoScene->addComponent(robot);
 
     // ground "hidden under dojo"
     std::string path = BAR_PATH; // just some random img
