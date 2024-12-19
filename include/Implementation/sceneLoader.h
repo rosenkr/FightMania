@@ -63,6 +63,10 @@ private:
     inline static const std::string ROBOT_PATH1 = TEMP + "resources/images/RobotAnimations/1.png";
     inline static const std::string ROBOT_PATH2 = TEMP + "resources/images/RobotAnimations/2.png";
     inline static const std::string ROBOT_PATH3 = TEMP + "resources/images/RobotAnimations/3.png";
+    inline static const std::string FB_PATH0 = TEMP + "resources/images/Attacks/0.png";
+    inline static const std::string FB_PATH1 = TEMP + "resources/images/Attacks/1.png";
+    inline static const std::string FB_PATH2 = TEMP + "resources/images/Attacks/2.png";
+    inline static const std::string FB_PATH3 = TEMP + "resources/images/Attacks/3.png";
 
     inline static const std::string DARK_BLUE_SCREEN_PATH = TEMP + "resources/images/BackGrounds/DarkBlueScreen.png";
     inline static const std::string CHARACTER_SELECTION_PATH = TEMP + "resources/images/BackGrounds/CharcterSelection.png";

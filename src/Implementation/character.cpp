@@ -6,6 +6,8 @@
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Scene/sceneManager.h"
 #include "Implementation/ground.h"
+#include "Ichi/Graphics/sprite.h"
+#include "Implementation/attack.h"
 
 #include <algorithm>
 
@@ -25,6 +27,10 @@ void Character::applyForce()
 
 void Character::handleInput()
 {
+
+    // if key press 'H', spawnAttack(attacks[FIREBALL])
+
+
 
     if (profile->canTakeAction(Profile::Action::UP))
     {
@@ -88,4 +94,22 @@ void Character::checkGroundCollision()
 void Character::draw() const
 {
     animation.get()->draw();
+}
+
+void Character::spawnAttack(AttackType at) const {
+    /*if(direction == LEFT) {
+
+    }*/
+    /*
+        first: switch case on character direction.
+        if left, set attackvelocity x negative. on right, set attackvelocity x positive
+    */
+
+    ichi::datatypes::Hitbox fireballHitbox(ichi::datatypes::Point(???, ???), at.getWidth(), at.getHeight(), true);
+    std::shared_ptr<ichi::graphics::AnimatedSprite> fireballAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
+    fireballHitbox, ichi::graphics::Sprite::Layer::FOREGROUND, attacks.at(FIREBALL).getPaths(), std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
+    std::shared_ptr<Attack> fbAttack = std::make_shared<Attack>(fireballHitbox, fireballAnimation); // create attack
+    // add attack to components
+    ichi::scene::sceneManager::getActiveScene()->addComponent(fbAttack);
+    // not removing attack ever though
 }

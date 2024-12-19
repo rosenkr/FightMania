@@ -4,22 +4,37 @@
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/DataTypes/vector2D.h"
 #include "Ichi/DataTypes/hitbox.h"
-/*
-enum class AttackType { 
-    ICE,
-    FIRE
-};*/
+#include "Ichi/Graphics/animatedSprite.h"
+#include <memory>
 
-// Every attack has a direction which is a vector for example left attack is (-1, 0) direction
 class Attack : public ichi::core::Component{
     public:
-        Attack(ichi::datatypes::Hitbox hb, ichi::datatypes::Vector2D direction, float dmg, float speed): Component(hb), direction(direction), dmg(dmg), speed(speed) {}
+        Attack(ichi::datatypes::Hitbox hb, std::shared_ptr<ichi::graphics::AnimatedSprite> animation): Component(hb), animation(animation){}
         void update();
         void draw() const;
     private:
-        ichi::datatypes::Vector2D direction;
-        float dmg;
-        float speed;
+        std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
+
 };
 
+
+// cant have animation because animations need hitbox which is only relevant for actual attacks on the screen
+class AttackType{
+    public:
+        AttackType(std::vector<std::string> paths, float dmg, float speed, int width, int height): paths(paths), dmg(dmg), speed(speed), width(width), height(height) {}
+        std::vector<std::string> getPaths() const { return paths; }
+        float getDmg() const { return dmg; }
+        float getSpeed() const { return speed; }
+        int getWidth() const { return width; }
+        int getHeight() const { return height; }
+    private:
+        std::vector<std::string> paths;
+        float dmg;
+        float speed;
+        int width;
+        int height;
+};
+
+enum AttackNames { FIREBALL = 0 };
 #endif
+

@@ -6,7 +6,7 @@
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/DataTypes/vector2D.h"
-
+#include "Implementation/attack.h"
 #include "Implementation/profile.h"
 
 #include <map>
@@ -15,8 +15,10 @@
 class Character : public ichi::core::Component
 {
 public:
-    Character(ichi::datatypes::Hitbox &hitbox, std::shared_ptr<ichi::graphics::AnimatedSprite> animation, const Profile *p)
-        : Component(hitbox), hp(100), lives(3), animation(std::move(animation)), profile(p) {}
+    Character(ichi::datatypes::Hitbox &hitbox, std::shared_ptr<ichi::graphics::AnimatedSprite> animation, const Profile *p, std::map<AttackNames, AttackType> attacks)
+        : Component(hitbox), hp(100), lives(3), animation(std::move(animation)), profile(p), attacks(attacks) {}
+
+    void spawnAttack(AttackType at) const;
 
     void handleInput();
     void update();
@@ -35,6 +37,7 @@ private:
     bool grounded = false;
 
     std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
+    std::map<AttackNames, AttackType> attacks;
 
     const Profile *profile;
 
