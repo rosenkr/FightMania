@@ -4,7 +4,6 @@
 
 #include "Ichi/Audio/audioPlayer.h"
 
-#include "Implementation/character.h"
 #include "Implementation/ground.h"
 
 #include "Ichi/DataTypes/hitbox.h"
@@ -55,21 +54,17 @@ void SceneLoader::changeSceneToMain()
 void SceneLoader::changeSceneToLocalPlayCharacterSelection()
 {
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION));
-    for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-        if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
-            for (auto ui : ptr->getUIComponents())
-                if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
-                    ptr2->updateItems(ProfileHandler::getNames());
+    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
+        ptr->updateItems(ProfileHandler::getNames());
+    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(redProfileDropdownHB.getPos())))
+        ptr->updateItems(ProfileHandler::getNames());
 }
 
 void SceneLoader::changeSceneToTrainingCharacterSelection()
 {
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION));
-    for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-        if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
-            for (auto ui : ptr->getUIComponents())
-                if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
-                    ptr2->updateItems(ProfileHandler::getNames());
+    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
+        ptr->updateItems(ProfileHandler::getNames());
 }
 
 void SceneLoader::changeSceneToProfileEditor()
@@ -87,34 +82,35 @@ ichi::datatypes::Hitbox blueCharacterHitbox(datatypes::Point(50, 0), 120, 120, t
 
 void SceneLoader::changeSceneToDojo()
 {
-    std::string profile;
-    for (auto c : scene::sceneManager::getActiveScene()->getComponents())
-        if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
-            for (auto ui : ptr->getUIComponents())
-                if (auto ptr2 = dynamic_cast<uicomponents::DropDownMenu *>(ui.second.get()))
-                    profile = ptr2->getSelected();
+    std::string blueProfile;
+    if (auto ptr = dynamic_cast<const uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
+        blueProfile = ptr->getSelected();
 
-    if (ProfileHandler::getProfile(profile) == nullptr)
+    if (ProfileHandler::getProfile(blueProfile) == nullptr)
     {
-        ICHI_ERROR("Could not find profile: {}", profile)
+        ICHI_ERROR("Could not find profile: {}", blueProfile)
+        return;
+    }
+    std::shared_ptr<Character> blueCharacter;
+    std::shared_ptr<Character> redCharacter;
+
+    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
+        if (ptr->getSelected() == ROBOT)
+            blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox);
+
+    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
+        if (ptr->getSelected() == ROBOT)
+            redCharacter = createRobot(ProfileHandler::getProfile(blueProfile), redCharacterHitbox);
+
+    if (blueCharacter == nullptr || redCharacter == nullptr)
+    {
+        ICHI_ERROR("You have not selected a correct character")
         return;
     }
 
+    auto m = std::make_shared<Match>(redCharacter, blueCharacter);
+
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
-
-    std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
-
-    std::shared_ptr<ichi::graphics::AnimatedSprite> blueAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
-        blueCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
-
-    std::shared_ptr<ichi::graphics::AnimatedSprite> redAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
-        redCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
-
-    std::shared_ptr<Character> redRobot = std::make_shared<Character>(redCharacterHitbox, redAnimation, ProfileHandler::getProfile(profile));
-    std::shared_ptr<Character> blueRobot = std::make_shared<Character>(blueCharacterHitbox, blueAnimation, ProfileHandler::getProfile(profile));
-
-    auto m = std::make_shared<Match>(redRobot, blueRobot);
-
     scene::sceneManager::getActiveScene()->addComponent(m);
 }
 
@@ -148,6 +144,14 @@ std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::H
     graphics::Sprite sprite(hb, UI_LAYER, bar);
 
     return std::make_shared<uicomponents::SlideBar>(hb, sprite, sliderWidth, sliderHeight, slider, focusedSlider, ptr);
+}
+
+std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes::Hitbox &hb)
+{
+    std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
+    std::shared_ptr<ichi::graphics::AnimatedSprite> walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
+
+    return std::make_shared<Character>(hb, walkAnimation, p);
 }
 
 void SceneLoader::quitGame()
@@ -277,19 +281,23 @@ void SceneLoader::createMainMenu()
 }
 
 datatypes::Hitbox hbReturnLP(datatypes::Point(0, 0), 30, 30, false);
-datatypes::Hitbox hbBluePlayerMenu(datatypes::Point(30, 180), 50, 15, false);
-datatypes::Hitbox hbRedPlayerMenu(datatypes::Point(220, 180), 50, 15, false);
+datatypes::Hitbox SceneLoader::blueProfileDropdownHB(datatypes::Point(30, 60), 50, 15, false);
+datatypes::Hitbox SceneLoader::blueCharacterDropdownHB(datatypes::Point(30, 90), 50, 15, false);
+datatypes::Hitbox SceneLoader::redProfileDropdownHB(datatypes::Point(220, 60), 50, 15, false);
+datatypes::Hitbox SceneLoader::redCharacterDropdownHB(datatypes::Point(220, 90), 50, 15, false);
 
 void SceneLoader::createLocalPlayMenu()
 {
 
     auto returnBtnLP = createButton(hbReturnLP, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
-    auto redMenu = createMenu(hbRedPlayerMenu, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
-    auto blueMenu = createMenu(hbBluePlayerMenu, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto redProfileMenu = createMenu(redProfileDropdownHB, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto redCharacterMenu = createMenu(redCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto blueProfileMenu = createMenu(blueProfileDropdownHB, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto blueCharacterMenu = createMenu(blueCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
     auto characterSelectionBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
 
-    auto characterPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnLP, redMenu, blueMenu});
+    auto characterPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnLP, redProfileMenu, redCharacterMenu, blueProfileMenu, blueCharacterMenu});
 
     std::shared_ptr<scene::Scene> characterSelectionScene = std::make_shared<scene::Scene>(
         characterSelectionBackground,
@@ -307,9 +315,10 @@ void SceneLoader::createTrainingMenu()
 
     auto returnBtnT = createButton(hbReturnT, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto startTrainingBtn = createButton(hbStartTraining, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
-    auto playerMenu = createMenu(hbBluePlayerMenu, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto profileMenu = createMenu(blueProfileDropdownHB, {"TestTraining"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto characterMenu = createMenu(blueCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
-    auto trainingPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnT, playerMenu, startTrainingBtn});
+    auto trainingPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnT, profileMenu, characterMenu, startTrainingBtn});
 
     auto trainingSelcetion = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, TRAINING_SELECTION_PATH);
 
