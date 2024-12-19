@@ -4,86 +4,56 @@
 #include "Ichi/Core/engine.h"
 #include "Ichi/Input/keyboard.h"
 #include "Ichi/Input/controllerHandler.h"
-#include "Ichi/log.h"
 #include "Ichi/Scene/sceneManager.h"
 #include "Implementation/ground.h"
 
-#include <cstdlib>
-using namespace ichi::input;
+#include <algorithm>
 
-// Returns position, using Kinematic equation
-float Character::calculateVerticalPositionKinematic(float dt, float v, float g, int y)
+void Character::applyForce()
 {
-    return y + v * dt + (0.5f) * g * dt * dt;
-}
+    // Applies gravity
+    velocity += gravity;
 
-void Character::applyGravity()
-{
+    // Applies force to hitbox
+    hitbox += velocity;
 
-    Uint32 currentTime = SDL_GetTicks();
-    float currentY = hitbox.getY(), newY, gravity = 22.0f, deltaTime;
+    checkGroundCollision();
 
-    if (!grounded)
-    { // if in the air
-        if (jumpTime != 0)
-        {                                                                     // if jumped
-            deltaTime = static_cast<float>(currentTime - jumpTime) / 1000.0f; // time in seconds
-            jumpVelocity += gravity * deltaTime;                              // velocity changes with time
-            newY = calculateVerticalPositionKinematic(deltaTime, jumpVelocity, gravity, currentY);
-
-            if (jumpVelocity >= 0)
-            { // Peak hit at velocity = 0, transition to free-fall
-                jumpTime = 0;
-                jumpVelocity = -50.0f;
-            }
-        }
-        else
-        { // free fall
-            if (fallTime == 0)
-            {
-                fallTime = currentTime;
-            }
-            deltaTime = static_cast<float>(currentTime - fallTime) / 1000.0f;
-            newY = calculateVerticalPositionKinematic(deltaTime, 0, gravity, currentY); // 0 jump velocity, free fall
-        }
-
-        hitbox.setY(newY); // update both just in case
-        animation.get()->setY(newY);
-
-        if (checkGroundCollision())
-        {
-            jumpTime = 0;
-            fallTime = 0;
-            grounded = true;
-            return;
-        }
-    }
-    else
-    {
-        velocity.setY(0); // if grounded
-    }
+    animation.get()->setX(hitbox.getX());
+    animation.get()->setY(hitbox.getY());
 }
 
 void Character::handleInput()
 {
-    bool left = ControllerHandler::anyControllerIsPressing(ControllerHandler::ControllerButton::DPAD_Left) || Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_LEFT) || ControllerHandler::getTotalLeftStickX() < 0;
-    bool right = ControllerHandler::anyControllerIsPressing(ControllerHandler::ControllerButton::DPAD_Right) || Keyboard::keyIsDown(Keyboard::Key::ICHIKEY_RIGHT) || ControllerHandler::getTotalLeftStickX() > 0;
-    bool jump = Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_UP);
 
-    if (jump && grounded)
+    if (profile->canTakeAction(Profile::Action::UP))
     {
-        jumpTime = SDL_GetTicks(); // will affect how gravity is applied
-        grounded = false;
     }
 
-    if (right)
+    if (profile->canTakeAction(Profile::Action::UP))
     {
-        animation.get()->setX(animation.get()->getX() + 1 * ms);
     }
 
-    if (left)
+    if (profile->canTakeAction(Profile::Action::RIGHT))
+        velocity.setX(speed);
+    else if (profile->canTakeAction(Profile::Action::LEFT))
+        velocity.setX(-speed);
+    else
+        velocity.setX(0);
+
+    if (grounded && profile->canTakeAction(Profile::Action::JUMP))
+        velocity.setY(jumpVelocity);
+
+    if (profile->canTakeAction(Profile::Action::LIGHT_ATTACK))
     {
-        animation.get()->setX(animation.get()->getX() - 1 * ms);
+    }
+
+    if (profile->canTakeAction(Profile::Action::HEAVY_ATTACK))
+    {
+    }
+
+    if (profile->canTakeAction(Profile::Action::BLOCK))
+    {
     }
 }
 
@@ -91,38 +61,31 @@ void Character::update()
 {
     animation.get()->update();
     handleInput();
-    applyGravity();
+    applyForce();
 }
 
 // currently must handle both raw pointers and shared pointers
-bool Character::checkGroundCollision()
+void Character::checkGroundCollision()
 {
     ichi::scene::Scene *s = ichi::scene::sceneManager::getActiveScene();
+    grounded = false; // is not grounded untill proven otherwise
 
-    for (auto &c : s->getComponents())
+    for (auto &c : s->getCollisionHitboxes())
     {
-        // Directly use shared_ptr to Component, no need for holds_alternative
-        if (auto componentPtr = std::dynamic_pointer_cast<Ground>(c))
+        if (!(c.get() == hitbox) && c.get().isOverlapping(hitbox + ichi::datatypes::Point(0, 1)))
+            grounded = true;
+
+        if (!(c.get() == hitbox) && c.get().isOverlapping(hitbox))
         {
-            if (collidesWith(*componentPtr))
-            {
-                // Adjust Y position based on the ground's hitbox
-                hitbox.setY(componentPtr->getHitbox().getY() - hitbox.getHeight());
-                animation.get()->setY(componentPtr->getHitbox().getY() - animation.get()->getHeight());
-                return true;
-            }
+            hitbox.setY(c.get().getY() - hitbox.getHeight());
+            velocity.setY(0);
+            grounded = true;
+            return;
         }
     }
-
-    return false;
 }
 
 void Character::draw() const
 {
     animation.get()->draw();
-}
-
-bool Character::collidesWith(const ichi::core::Component &other) const
-{
-    return other.getHitbox().getIsTangible() && hitbox.isOverlapping(other.getHitbox());
 }
