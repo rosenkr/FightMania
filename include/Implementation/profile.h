@@ -7,7 +7,7 @@
 
 #include <string>
 #include <map>
-#include <stack>
+#include <vector>
 
 class Profile
 {
@@ -38,7 +38,7 @@ public:
     bool isController() const { return usingController; }
     const std::vector<std::string> getKeybinds() const;
 
-    std::stack<Action> getActions(int controller = -1);
+    std::vector<Action> getActions(int controller = -1) const;
 
 private:
     std::string name;

@@ -1,41 +1,41 @@
 #include "Implementation/profile.h"
 #include "Implementation/profileHandler.h"
 
-std::stack<Profile::Action> Profile::getActions(int controller)
+std::vector<Profile::Action> Profile::getActions(int controller) const
 {
-    std::stack<Action> actions;
+    std::vector<Action> actions;
 
     if (usingController)
     {
         for (auto pair : controllerButtons)
             if (ichi::input::ControllerHandler::buttonIsDown(controller, pair.first))
-                actions.push(pair.second);
+                actions.push_back(pair.second);
 
         if (joystick.find(ichi::input::ControllerHandler::Joystick::LeftTrigger) != joystick.end() && ichi::input::ControllerHandler::getJoystick(controller, ichi::input::ControllerHandler::Joystick::LeftTrigger) > 0)
-            actions.push(joystick[ichi::input::ControllerHandler::Joystick::LeftTrigger]);
+            actions.push_back(joystick.at(ichi::input::ControllerHandler::Joystick::LeftTrigger));
 
         if (joystick.find(ichi::input::ControllerHandler::Joystick::RightTrigger) != joystick.end() && ichi::input::ControllerHandler::getJoystick(controller, ichi::input::ControllerHandler::Joystick::RightTrigger) > 0)
-            actions.push(joystick[ichi::input::ControllerHandler::Joystick::RightTrigger]);
+            actions.push_back(joystick.at(ichi::input::ControllerHandler::Joystick::LeftTrigger));
 
         if (ichi::input::ControllerHandler::getJoystick(controller, ichi::input::ControllerHandler::Joystick::LeftStickVertical) > 0)
-            actions.push(Action::DOWN);
+            actions.push_back(Action::DOWN);
         if (ichi::input::ControllerHandler::getJoystick(controller, ichi::input::ControllerHandler::Joystick::LeftStickVertical) < 0)
-            actions.push(Action::DOWN);
+            actions.push_back(Action::DOWN);
         if (ichi::input::ControllerHandler::getJoystick(controller, ichi::input::ControllerHandler::Joystick::LeftStickHorizontal) > 0)
-            actions.push(Action::RIGHT);
+            actions.push_back(Action::RIGHT);
         if (ichi::input::ControllerHandler::getJoystick(controller, ichi::input::ControllerHandler::Joystick::LeftStickHorizontal) < 0)
-            actions.push(Action::LEFT);
+            actions.push_back(Action::LEFT);
 
         return actions;
     }
 
     for (auto pair : keyboardKeys)
         if (ichi::input::Keyboard::keyIsDown(pair.first))
-            actions.push(pair.second);
+            actions.push_back(pair.second);
 
     for (auto pair : mouseButtons)
         if (ichi::input::Mouse::buttonIsDown(pair.first))
-            actions.push(pair.second);
+            actions.push_back(pair.second);
 
     return actions;
 }
