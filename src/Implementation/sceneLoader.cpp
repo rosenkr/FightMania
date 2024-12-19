@@ -85,6 +85,7 @@ void SceneLoader::changeSceneToSettings()
 ichi::datatypes::Hitbox redCharacterHitbox(datatypes::Point(250, 0), 120, 120, true);
 ichi::datatypes::Hitbox blueCharacterHitbox(datatypes::Point(50, 0), 120, 120, true);
 
+
 void SceneLoader::changeSceneToDojo()
 {
     std::string profile;
@@ -103,6 +104,7 @@ void SceneLoader::changeSceneToDojo()
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
 
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
+    std::vector<std::string> fireballPaths = {FB_PATH0, FB_PATH1, FB_PATH2, FB_PATH3};
 
     std::shared_ptr<ichi::graphics::AnimatedSprite> blueAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
         blueCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
@@ -110,8 +112,10 @@ void SceneLoader::changeSceneToDojo()
     std::shared_ptr<ichi::graphics::AnimatedSprite> redAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
         redCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
 
-    std::shared_ptr<Character> redRobot = std::make_shared<Character>(redCharacterHitbox, redAnimation, ProfileHandler::getProfile(profile));
-    std::shared_ptr<Character> blueRobot = std::make_shared<Character>(blueCharacterHitbox, blueAnimation, ProfileHandler::getProfile(profile));
+    AttackType fb{fireballPaths, 25.0, 20.0, 45, 25};
+    std::map<int, AttackType> robotAttacks = { {AttackNames::FIREBALL, fb} };
+    std::shared_ptr<Character> redRobot = std::make_shared<Character>(redCharacterHitbox, redAnimation, ProfileHandler::getProfile(profile), robotAttacks);
+    std::shared_ptr<Character> blueRobot = std::make_shared<Character>(blueCharacterHitbox, blueAnimation, ProfileHandler::getProfile(profile), robotAttacks);
 
     auto m = std::make_shared<Match>(redRobot, blueRobot);
 
