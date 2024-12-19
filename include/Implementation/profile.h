@@ -38,7 +38,7 @@ public:
     bool isController() const { return usingController; }
     const std::vector<std::string> getKeybinds() const;
 
-    std::vector<Action> getActions(int controller = -1) const;
+    bool canTakeAction(Action, int controller = -1) const;
 
 private:
     std::string name;
