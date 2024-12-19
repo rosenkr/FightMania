@@ -24,13 +24,14 @@ namespace ichi::scene
             comp->update();
     }
 
-    // Returns a vector of immutable Hitbox references to all hitboxes of all components of this Scene.
+    // Returns a vector of immutable Hitbox references to all tangible hitboxes of all components of this Scene.
     std::vector<std::reference_wrapper<const datatypes::Hitbox>> Scene::getCollisionHitboxes() const
     {
         std::vector<std::reference_wrapper<const datatypes::Hitbox>> vec;
 
         for (const auto &component : components)
-            vec.push_back(component->getHitbox()); // Direct access using shared_ptr
+            if (component.get()->getHitbox().getIsTangible())
+                vec.push_back(component->getHitbox()); // Direct access using shared_ptr
 
         return vec;
     }
