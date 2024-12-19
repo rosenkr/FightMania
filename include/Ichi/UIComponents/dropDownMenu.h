@@ -20,7 +20,7 @@ namespace ichi::uicomponents
         void update();
         void draw() const;
 
-        std::string getSelected() { return selected; }
+        std::string getSelected() const { return selected; }
         void updateItems(std::vector<std::string> items);
 
         ~DropDownMenu()
