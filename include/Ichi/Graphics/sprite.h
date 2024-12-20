@@ -31,6 +31,18 @@ namespace ichi::graphics
 
         bool operator<(const Sprite &other) const { return path < other.path; }
 
+        Sprite &operator=(const Sprite &other)
+        {
+            if (this == &other)
+                return *this;
+
+            hitbox = other.hitbox;
+            layer = other.layer;
+            path = other.path;
+
+            return *this;
+        }
+
         virtual ~Sprite() = default;
 
         const datatypes::Hitbox &getHitbox() const;
@@ -41,10 +53,10 @@ namespace ichi::graphics
         int getY() const { return hitbox.getY(); };
 
     protected:
-        Sprite(datatypes::Hitbox& h, Layer l) : hitbox(h), layer(l)
+        Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l)
         {
         }
-        datatypes::Hitbox &hitbox;
+        datatypes::Hitbox hitbox;
         Layer layer;
         std::string path;
     };
