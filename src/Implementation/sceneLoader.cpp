@@ -80,7 +80,6 @@ void SceneLoader::changeSceneToSettings()
 ichi::datatypes::Hitbox redCharacterHitbox(datatypes::Point(250, 0), 120, 120, true);
 ichi::datatypes::Hitbox blueCharacterHitbox(datatypes::Point(50, 0), 120, 120, true);
 
-
 void SceneLoader::changeSceneToDojo()
 {
     std::string blueProfile;
@@ -150,8 +149,15 @@ std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::H
 std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes::Hitbox &hb)
 {
     std::vector<std::string> fireballPaths = {FB_PATH0, FB_PATH1, FB_PATH2, FB_PATH3};
-    AttackType fb{fireballPaths, 60, 40};
-    std::map<AttackNames, AttackType> robotAttacks = { {AttackNames::FIREBALL, fb} };
+    std::map<int, Uint32> fireballTimes = {{0, 200}, {1, 200}, {2, 200}, {3, 200}};
+
+    datatypes::Hitbox fireBallHB(datatypes::Point(0, 50), 60, 40, false);
+
+    auto animation = std::make_shared<ichi::graphics::AnimatedSprite>(fireBallHB, UI_LAYER, fireballPaths, fireballTimes);
+
+    auto fb = std::make_shared<ProjectileAttack>(animation, 2, 20, 1000);
+
+    std::map<Character::AttackType, std::shared_ptr<Attack>> robotAttacks = {{Character::AttackType::SIDE_HEAVY, fb}};
 
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
     std::shared_ptr<ichi::graphics::AnimatedSprite> walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});

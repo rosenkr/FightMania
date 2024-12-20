@@ -174,8 +174,8 @@ ProfileHandler::split(const string &s, const string &delimiter)
     return tokens;
 }
 
-std::string ProfileHandler::PROFILE_PATH = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/resources/Profiles.txt";
-//std::string ProfileHandler::PROFILE_PATH = "resources/Profiles.txt";
+// std::string ProfileHandler::PROFILE_PATH = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/resources/Profiles.txt";
+std::string ProfileHandler::PROFILE_PATH = "resources/Profiles.txt";
 std::map<std::string, Profile> ProfileHandler::profiles;
 std::map<std::string, ichi::input::ControllerHandler::Joystick> ProfileHandler::joystickStrings{{"LT", ichi::input::ControllerHandler::Joystick::LeftTrigger}, {"RT", ichi::input::ControllerHandler::Joystick::RightTrigger}};
 std::map<std::string, ichi::input::ControllerHandler::ControllerButton> ProfileHandler::controllerStrings{
@@ -193,11 +193,11 @@ std::map<std::string, ichi::input::ControllerHandler::ControllerButton> ProfileH
     {"Right", ichi::input::ControllerHandler::ControllerButton::DPAD_Right},
 };
 std::map<std::string, ichi::input::Mouse::MouseButton> ProfileHandler::mouseStrings{
-    {"LEFT", ichi::input::Mouse::MouseButton::LEFT},
-    {"MIDDLE", ichi::input::Mouse::MouseButton::MIDDLE},
-    {"RIGHT", ichi::input::Mouse::MouseButton::RIGHT},
-    {"X1", ichi::input::Mouse::MouseButton::X1},
-    {"X2", ichi::input::Mouse::MouseButton::X2},
+    {"MLEFT", ichi::input::Mouse::MouseButton::LEFT},
+    {"MMIDDLE", ichi::input::Mouse::MouseButton::MIDDLE},
+    {"MRIGHT", ichi::input::Mouse::MouseButton::RIGHT},
+    {"MX1", ichi::input::Mouse::MouseButton::X1},
+    {"MX2", ichi::input::Mouse::MouseButton::X2},
 };
 std::map<std::string, ichi::input::Keyboard::Key> ProfileHandler::keyStrings{
     {"A", ichi::input::Keyboard::Key::ICHIKEY_A},

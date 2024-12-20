@@ -6,43 +6,64 @@
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/DataTypes/vector2D.h"
+#include "Implementation/projectileAttack.h"
 #include "Implementation/attack.h"
 #include "Implementation/profile.h"
 
 #include <map>
 #include <memory>
 
+class Attack;
+
 class Character : public ichi::core::Component
 {
-public:
-    Character(ichi::datatypes::Hitbox &hitbox, std::shared_ptr<ichi::graphics::AnimatedSprite> animation, const Profile *p, std::map<AttackNames, AttackType> attacks)
-        : Component(hitbox), hp(100), lives(3), animation(std::move(animation)), profile(p), attacks(attacks) {}
 
-    void spawnAttack(AttackType at) const;
+    enum class Direction
+    {
+        NEUTRAL,
+        DOWN,
+        SIDE,
+    };
+
+public:
+    enum class AttackType
+    {
+        NEUTRAL_LIGHT,
+        SIDE_LIGHT,
+        DOWN_LIGHT,
+        NEUTRAL_HEAVY,
+        SIDE_HEAVY,
+        DOWN_HEAVY,
+    };
+    Character(ichi::datatypes::Hitbox &hitbox, std::shared_ptr<ichi::graphics::AnimatedSprite> animation, const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks)
+        : Component(hitbox), hp(100), lives(3), animation(std::move(animation)), profile(p), attacks(attacks) {}
 
     void handleInput();
     void update();
     void draw() const;
+    void setDirection(bool facingRight) { this->facingRight = facingRight; }
 
 private:
-    ichi::datatypes::Point drawPointAttack(AttackType) const;
+    const float speed = 1.f;
+    const float jumpVelocity = -6.9f;
+    const float gravity = 0.35f;
+
     float hp;
     int lives;
-    const float speed = 1.f;
-    float jumpVelocity = -6.9f;
 
-    ichi::datatypes::Vector2D gravity{0, 0.35f};
-    ichi::datatypes::Vector2D velocity{0, 0};
-    ichi::datatypes::Vector2D direction{-1, 0}; // left
-    void setDirection(ichi::datatypes::Vector2D& dir){ direction = dir; }
-
-
+    bool facingRight = true;
     bool grounded = false;
+    bool isBlocking = false;
+
+    ichi::datatypes::Vector2D velocity{0, 0};
+    Direction direciton = Direction::NEUTRAL;
 
     std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
 
     const Profile *profile;
-    std::map<AttackNames, AttackType> attacks;
+
+    std::map<AttackType, std::shared_ptr<Attack>> attacks;
+
     void applyForce();
     void checkGroundCollision();
 };
