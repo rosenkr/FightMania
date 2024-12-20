@@ -8,6 +8,7 @@
 #include "Implementation/ground.h"
 #include "Ichi/Graphics/sprite.h"
 #include "Implementation/attack.h"
+#include "Ichi/log.h"
 
 #include <algorithm>
 
@@ -24,11 +25,9 @@ void Character::applyForce()
     animation.get()->setX(hitbox.getX());
     animation.get()->setY(hitbox.getY());
 }
-
+bool cooldown = false;
 void Character::handleInput()
 {
-
-    // if key press 'H', spawnAttack(attacks[FIREBALL])
 
 
 
@@ -54,8 +53,18 @@ void Character::handleInput()
     {
     }
 
-    if (profile->canTakeAction(Profile::Action::HEAVY_ATTACK))
+    if (!cooldown && profile->canTakeAction(Profile::Action::HEAVY_ATTACK))
     {
+        ICHI_INFO("pressed K for heavy attack");
+        auto it = attacks.find(AttackNames::FIREBALL);
+        if (it != attacks.end()) {
+            spawnAttack(it->second); 
+        } else {
+            ICHI_ERROR("Did not find attacktype for attackname (FIREBALL = 0)");
+            SDL_Quit();
+        }
+
+       cooldown = true;
     }
 
     if (profile->canTakeAction(Profile::Action::BLOCK))
@@ -70,23 +79,23 @@ void Character::update()
     applyForce();
 }
 
-// currently must handle both raw pointers and shared pointers
 void Character::checkGroundCollision()
 {
     ichi::scene::Scene *s = ichi::scene::sceneManager::getActiveScene();
     grounded = false; // is not grounded untill proven otherwise
-
-    for (auto &c : s->getCollisionHitboxes())
+    for (auto &c : s->getComponents()) // for every component
     {
-        if (!(c.get() == hitbox) && c.get().isOverlapping(hitbox + ichi::datatypes::Point(0, 1)))
-            grounded = true;
+        if(auto g = dynamic_cast<Ground*>(c.get())){ // if component is Ground 
+            if (!(g->getHitbox() == hitbox) && g->getHitbox().isOverlapping(hitbox + ichi::datatypes::Point(0, 1)))
+                grounded = true;
 
-        if (!(c.get() == hitbox) && c.get().isOverlapping(hitbox))
-        {
-            hitbox.setY(c.get().getY() - hitbox.getHeight());
-            velocity.setY(0);
-            grounded = true;
-            return;
+            if (!(g->getHitbox() == hitbox) && g->getHitbox().isOverlapping(hitbox))
+            {
+                hitbox.setY(g->getHitbox().getY() - hitbox.getHeight());
+                velocity.setY(0);
+                grounded = true;
+                return;
+            }
         }
     }
 }
@@ -96,20 +105,29 @@ void Character::draw() const
     animation.get()->draw();
 }
 
+// currently hardcoded for fireball, not general attack type
 void Character::spawnAttack(AttackType at) const {
-    /*if(direction == LEFT) {
 
-    }*/
-    /*
-        first: switch case on character direction.
-        if left, set attackvelocity x negative. on right, set attackvelocity x positive
-    */
+    ichi::datatypes::Point fireballDrawPt = drawPointAttack(at);
+    ICHI_INFO("spawnAttack drawpoint: x: {}, y: {}", fireballDrawPt.X, fireballDrawPt.Y);
+    
+    ichi::datatypes::Hitbox fireballHitbox(fireballDrawPt, at.getWidth(), at.getHeight(), true);
+    ICHI_INFO("spawnAttack hitbox: width: {}, height: {}", fireballHitbox.getWidth(), fireballHitbox.getHeight());
 
-    ichi::datatypes::Hitbox fireballHitbox(ichi::datatypes::Point(???, ???), at.getWidth(), at.getHeight(), true);
     std::shared_ptr<ichi::graphics::AnimatedSprite> fireballAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
-    fireballHitbox, ichi::graphics::Sprite::Layer::FOREGROUND, attacks.at(FIREBALL).getPaths(), std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
-    std::shared_ptr<Attack> fbAttack = std::make_shared<Attack>(fireballHitbox, fireballAnimation); // create attack
-    // add attack to components
-    ichi::scene::sceneManager::getActiveScene()->addComponent(fbAttack);
-    // not removing attack ever though
+    fireballHitbox, ichi::graphics::Sprite::Layer::UICOMPONENT, at.getPaths(), std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}}); // animation for attack
+    ICHI_INFO("spawnAttack character direction x: {}, y: {} ", direction.getX(), direction.getY());
+    std::shared_ptr<Attack> fbAttack = std::make_shared<Attack>(fireballHitbox, fireballAnimation, direction, 23.0, 1.0); // create attack
+
+    ichi::scene::sceneManager::getActiveScene()->addComponent(fbAttack); // add attack to components
+}
+
+ichi::datatypes::Point Character::drawPointAttack(AttackType at) const{
+    if(direction == ichi::datatypes::Vector2D{1,0}) // character facing right
+        return ichi::datatypes::Point{hitbox.getX() + hitbox.getWidth() + 1, hitbox.getHeight() / 2};
+
+    if(direction == ichi::datatypes::Vector2D(-1,0)) // character facing left
+        return ichi::datatypes::Point{hitbox.getX() - (1 + at.getWidth()), hitbox.getHeight() / 2};
+
+    return ichi::datatypes::Point{0, 0}; // temp default in case direction is neither left nor right
 }

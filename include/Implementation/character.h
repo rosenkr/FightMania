@@ -25,22 +25,24 @@ public:
     void draw() const;
 
 private:
+    ichi::datatypes::Point drawPointAttack(AttackType) const;
     float hp;
     int lives;
-
     const float speed = 1.f;
     float jumpVelocity = -6.9f;
 
     ichi::datatypes::Vector2D gravity{0, 0.35f};
     ichi::datatypes::Vector2D velocity{0, 0};
+    ichi::datatypes::Vector2D direction{-1, 0}; // left
+    void setDirection(ichi::datatypes::Vector2D& dir){ direction = dir; }
+
 
     bool grounded = false;
 
     std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
-    std::map<AttackNames, AttackType> attacks;
 
     const Profile *profile;
-
+    std::map<AttackNames, AttackType> attacks;
     void applyForce();
     void checkGroundCollision();
 };
