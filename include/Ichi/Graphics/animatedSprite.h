@@ -11,8 +11,8 @@ namespace ichi::graphics
     class AnimatedSprite : public Sprite
     {
     public:
-        AnimatedSprite(datatypes::Hitbox& hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
-        AnimatedSprite(datatypes::Hitbox& hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime);
+        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
+        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime);
 
         void draw();
         void update();
@@ -20,6 +20,21 @@ namespace ichi::graphics
         bool hasCompleatedALap() { return compleatedALap; }
 
         bool operator<(const AnimatedSprite &other) const { return paths < other.paths; }
+
+        AnimatedSprite(const AnimatedSprite &as) : Sprite(as.hitbox, as.layer), frameTime(as.frameTime), paths(as.paths) {}
+        AnimatedSprite &operator=(const AnimatedSprite &other)
+        {
+            if (this == &other)
+                return *this;
+
+            this->frameTime = other.frameTime;
+            this->paths = other.paths;
+            this->lastUpdatedOn = other.lastUpdatedOn;
+            this->currentFrame = other.currentFrame;
+            this->compleatedALap = other.compleatedALap;
+
+            return *this;
+        }
 
         ~AnimatedSprite() = default;
 
