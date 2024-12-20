@@ -41,6 +41,11 @@ namespace ichi::datatypes
             return *this; // return the result by reference
         }
 
+        bool operator==(const Vector2D &rhs) const
+        {
+            return X == rhs.getX() && Y == rhs.getY();
+        }
+
         friend Vector2D operator-(Vector2D lhs, const Vector2D &rhs)
         {
             lhs -= rhs;
