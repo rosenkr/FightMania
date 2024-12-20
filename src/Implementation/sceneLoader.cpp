@@ -112,26 +112,6 @@ void SceneLoader::changeSceneToDojo()
     auto m = std::make_shared<Match>(redCharacter, blueCharacter);
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
-<<<<<<< HEAD
-
-    std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
-    std::vector<std::string> fireballPaths = {FB_PATH0, FB_PATH1, FB_PATH2, FB_PATH3};
-
-    std::shared_ptr<ichi::graphics::AnimatedSprite> blueAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
-        blueCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
-
-    std::shared_ptr<ichi::graphics::AnimatedSprite> redAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(
-        redCharacterHitbox, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
-
-    AttackType fb{fireballPaths, 25.0, 20.0, 45, 25};
-    std::map<int, AttackType> robotAttacks = { {AttackNames::FIREBALL, fb} };
-    std::shared_ptr<Character> redRobot = std::make_shared<Character>(redCharacterHitbox, redAnimation, ProfileHandler::getProfile(profile), robotAttacks);
-    std::shared_ptr<Character> blueRobot = std::make_shared<Character>(blueCharacterHitbox, blueAnimation, ProfileHandler::getProfile(profile), robotAttacks);
-
-    auto m = std::make_shared<Match>(redRobot, blueRobot);
-
-=======
->>>>>>> 6bd096ba482694130e039c7a3f6b33aa0cf2f714
     scene::sceneManager::getActiveScene()->addComponent(m);
 }
 
@@ -169,10 +149,14 @@ std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::H
 
 std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes::Hitbox &hb)
 {
+    std::vector<std::string> fireballPaths = {FB_PATH0, FB_PATH1, FB_PATH2, FB_PATH3};
+    AttackType fb{fireballPaths, 60, 40};
+    std::map<AttackNames, AttackType> robotAttacks = { {AttackNames::FIREBALL, fb} };
+
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
     std::shared_ptr<ichi::graphics::AnimatedSprite> walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
 
-    return std::make_shared<Character>(hb, walkAnimation, p);
+    return std::make_shared<Character>(hb, walkAnimation, p, robotAttacks);
 }
 
 void SceneLoader::quitGame()

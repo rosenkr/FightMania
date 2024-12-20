@@ -36,8 +36,8 @@ public:
     static bool init();
 
 private:
-    // const std::string TEMP = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/";
-    inline static const std::string TEMP = "";
+    inline static const std::string TEMP = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/";
+    //inline static const std::string TEMP = "";
 
     inline static const std::string FONT_PATH = TEMP + "resources/fonts/PRSTART.TTF";
 

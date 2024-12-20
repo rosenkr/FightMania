@@ -174,8 +174,8 @@ ProfileHandler::split(const string &s, const string &delimiter)
     return tokens;
 }
 
-// std::string ProfileHandler::PROFILE_PATH = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/resources/Profiles.txt";
-std::string ProfileHandler::PROFILE_PATH = "resources/Profiles.txt";
+std::string ProfileHandler::PROFILE_PATH = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/resources/Profiles.txt";
+//std::string ProfileHandler::PROFILE_PATH = "resources/Profiles.txt";
 std::map<std::string, Profile> ProfileHandler::profiles;
 std::map<std::string, ichi::input::ControllerHandler::Joystick> ProfileHandler::joystickStrings{{"LT", ichi::input::ControllerHandler::Joystick::LeftTrigger}, {"RT", ichi::input::ControllerHandler::Joystick::RightTrigger}};
 std::map<std::string, ichi::input::ControllerHandler::ControllerButton> ProfileHandler::controllerStrings{
