@@ -18,6 +18,7 @@ namespace ichi::graphics
 
     const datatypes::Hitbox &Sprite::getHitbox() const
     {
+        ICHI_DEBUG("Returning Hitbox with x: {}, y: {}", hitbox.getX(), hitbox.getY());
         return hitbox;
     }
 
