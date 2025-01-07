@@ -4,8 +4,6 @@
 
 #include "Ichi/Audio/audioPlayer.h"
 
-#include "Implementation/ground.h"
-
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/Core/engine.h"
 #include "Implementation/match.h"
