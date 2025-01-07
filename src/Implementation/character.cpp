@@ -27,12 +27,12 @@ void Character::applyForce()
 }
 void Character::handleInput()
 {
-    if (profile->canTakeAction(Profile::Action::RIGHT))
+    if (profile->canTakeAction(Profile::Action::RIGHT, controllerID))
     {
         direciton = Direction::SIDE;
         velocity.setX(speed);
     }
-    else if (profile->canTakeAction(Profile::Action::LEFT))
+    else if (profile->canTakeAction(Profile::Action::LEFT, controllerID))
     {
         direciton = Direction::SIDE;
         velocity.setX(-speed);
@@ -43,21 +43,21 @@ void Character::handleInput()
         velocity.setX(0);
     }
 
-    if (profile->canTakeAction(Profile::Action::UP))
+    if (profile->canTakeAction(Profile::Action::UP, controllerID))
     {
         direciton = Direction::NEUTRAL;
     }
 
-    if (profile->canTakeAction(Profile::Action::DOWN))
+    if (profile->canTakeAction(Profile::Action::DOWN, controllerID))
     {
         direciton = Direction::DOWN;
         // implement crouch
     }
 
-    if (grounded && profile->canTakeAction(Profile::Action::JUMP))
+    if (grounded && profile->canTakeAction(Profile::Action::JUMP, controllerID))
         velocity.setY(jumpVelocity);
 
-    if (profile->canTakeAction(Profile::Action::LIGHT_ATTACK))
+    if (profile->canTakeAction(Profile::Action::LIGHT_ATTACK, controllerID))
     {
         if (direciton == Direction::NEUTRAL && attacks.find(AttackType::NEUTRAL_LIGHT) != attacks.end())
         {
@@ -76,7 +76,7 @@ void Character::handleInput()
         }
     }
 
-    if (profile->canTakeAction(Profile::Action::HEAVY_ATTACK))
+    if (profile->canTakeAction(Profile::Action::HEAVY_ATTACK, controllerID))
     {
         if (direciton == Direction::NEUTRAL && attacks.find(AttackType::NEUTRAL_HEAVY) != attacks.end())
         {
@@ -95,7 +95,7 @@ void Character::handleInput()
         }
     }
 
-    if (profile->canTakeAction(Profile::Action::BLOCK))
+    if (profile->canTakeAction(Profile::Action::BLOCK, controllerID))
         isBlocking = true;
     else
         isBlocking = false;

@@ -35,8 +35,8 @@ public:
         SIDE_HEAVY,
         DOWN_HEAVY,
     };
-    Character(ichi::datatypes::Hitbox &hitbox, std::shared_ptr<ichi::graphics::AnimatedSprite> animation, const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks)
-        : Component(hitbox), hp(100), lives(3), animation(std::move(animation)), profile(p), attacks(attacks) {}
+    Character(ichi::datatypes::Hitbox &hitbox, std::shared_ptr<ichi::graphics::AnimatedSprite> animation, const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks, int id = -1)
+        : Component(hitbox), hp(100), lives(3), animation(std::move(animation)), profile(p), controllerID(id), attacks(attacks) {}
 
     void handleInput();
     void update();
@@ -61,6 +61,7 @@ private:
     std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
 
     const Profile *profile;
+    int controllerID;
 
     std::map<AttackType, std::shared_ptr<Attack>> attacks;
 
