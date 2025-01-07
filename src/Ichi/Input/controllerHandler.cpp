@@ -50,6 +50,16 @@ namespace ichi::input
         return controllers.count(controllerId) > 0;
     }
 
+    std::vector<int> ControllerHandler::getActiveControllerIDs()
+    {
+        std::vector<int> ids;
+
+        for (auto it = controllers.begin(); it != controllers.end(); ++it)
+            ids.push_back(it->first);
+
+        return ids;
+    }
+
     bool ControllerHandler::buttonIsDown(int controllerId, ControllerButton button)
     {
         auto it = controllers.find(controllerId);
@@ -123,6 +133,12 @@ namespace ichi::input
 
             int mapIndex = getNextFreeIndex();
 
+            if (mapIndex == -1)
+            {
+                ICHI_ERROR("Could not find controller on onConect event")
+                return;
+            }
+
             ICHI_TRACE("Joystick connected: mapIndex({}), deviceIndex({})", mapIndex, deviceIndex);
 
             controllers[mapIndex] = std::move(c);
@@ -151,7 +167,7 @@ namespace ichi::input
     bool ControllerHandler::anyControllerIsPressing(ControllerButton button)
     {
         for (auto it = controllers.begin(); it != controllers.end(); it++)
-            if (it->second.get() && buttonIsDown(it->first, button))
+            if (it->second.get() && buttonIsPressed(it->first, button))
                 return true;
         return false;
     }
