@@ -17,13 +17,15 @@ namespace ichi::scene
         virtual void draw() const;
         virtual void update();
 
-        std::vector<std::reference_wrapper<const datatypes::Hitbox>> getCollisionHitboxes() const;
+        std::vector<std::shared_ptr<datatypes::Hitbox>> getCollisionHitboxes() const { return collisionHitboxes; }
         const std::vector<std::shared_ptr<core::Component>> &getComponents() const { return components; }
         core::Component *getComponent(datatypes::Point p) const;
         bool isPaused() const { return paused; }
         bool isPausable() const { return pausable; }
 
         void setPaused(bool paused);
+
+        void addCollisionHitbox(std::shared_ptr<datatypes::Hitbox> hb);
 
         void addComponent(std::shared_ptr<core::Component> component);
         void removeComponent(size_t index);
@@ -34,6 +36,7 @@ namespace ichi::scene
     protected:
         std::shared_ptr<graphics::Sprite> background;
         std::vector<std::shared_ptr<core::Component>> components;
+        std::vector<std::shared_ptr<datatypes::Hitbox>> collisionHitboxes;
         bool pausable;
         bool paused;
     };

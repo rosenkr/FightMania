@@ -42,16 +42,15 @@ namespace ichi::scene
         return component;
     }
 
-    // Returns a vector of immutable Hitbox references to all tangible hitboxes of all components of this Scene.
-    std::vector<std::reference_wrapper<const datatypes::Hitbox>> Scene::getCollisionHitboxes() const
+    void Scene::addCollisionHitbox(std::shared_ptr<datatypes::Hitbox> hb)
     {
-        std::vector<std::reference_wrapper<const datatypes::Hitbox>> vec;
+        if (!hb || !hb->getIsTangible())
+        {
+            ICHI_DEBUG("Tried to add a hitbox that was not tangible to collision hitboxes");
+            return;
+        }
 
-        for (const auto &component : components)
-            if (component.get()->getHitbox().getIsTangible())
-                vec.push_back(component->getHitbox()); // Direct access using shared_ptr
-
-        return vec;
+        collisionHitboxes.push_back(hb);
     }
 
     void Scene::addComponent(std::shared_ptr<core::Component> component)
