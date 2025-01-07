@@ -2,6 +2,7 @@
 
 #include "Ichi/log.h"
 #include "Ichi/Input/keyboard.h"
+#include "Ichi/Input/controllerHandler.h"
 
 #include <memory>
 
@@ -78,7 +79,7 @@ namespace ichi::scene::sceneManager
             return;
         }
 
-        if (input::Keyboard::keyIsPressed(input::Keyboard::Key::ICHIKEY_ESCAPE) && activeScene.get()->isPausable())
+        if ((input::Keyboard::keyIsPressed(input::Keyboard::Key::ICHIKEY_ESCAPE) || input::ControllerHandler::anyControllerIsPressing(input::ControllerHandler::ControllerButton::Start)) && activeScene.get()->isPausable())
             activeScene.get()->setPaused(!activeScene.get()->isPaused());
 
         if (activeScene.get()->isPaused())
