@@ -55,6 +55,8 @@ namespace ichi::input
         static float getTotalLeftStickX();
         static float getTotalLeftStickY();
 
+        static std::vector<int> getActiveControllerIDs();
+
         static bool buttonIsDown(int controllerId, ControllerButton button);
         static bool buttonIsPressed(int controllerId, ControllerButton button);
         static bool buttonIsReleased(int controllerId, ControllerButton button);
