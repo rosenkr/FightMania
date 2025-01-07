@@ -66,6 +66,7 @@ private:
     std::map<AttackType, std::shared_ptr<Attack>> attacks;
 
     void applyForce();
+    void checkWallCollision();
     void checkGroundCollision();
 };
 #endif

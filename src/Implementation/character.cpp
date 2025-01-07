@@ -5,7 +5,6 @@
 #include "Ichi/Input/keyboard.h"
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Scene/sceneManager.h"
-#include "Implementation/ground.h"
 #include "Ichi/Graphics/sprite.h"
 #include "Implementation/attack.h"
 #include "Ichi/log.h"
@@ -21,6 +20,7 @@ void Character::applyForce()
     hitbox += velocity;
 
     checkGroundCollision();
+    checkWallCollision();
 
     animation.get()->setX(hitbox.getX());
     animation.get()->setY(hitbox.getY());
@@ -114,21 +114,45 @@ void Character::update()
 void Character::checkGroundCollision()
 {
     ichi::scene::Scene *s = ichi::scene::sceneManager::getActiveScene();
-    grounded = false;                  // is not grounded untill proven otherwise
-    for (auto &c : s->getComponents()) // for every component
+    grounded = false; // is not grounded untill proven otherwise
+    for (auto &c : s->getCollisionHitboxes())
     {
-        if (auto g = dynamic_cast<Ground *>(c.get()))
-        { // if component is Ground
-            if (!(g->getHitbox() == hitbox) && g->getHitbox().isOverlapping(hitbox + ichi::datatypes::Point(0, 1)))
-                grounded = true;
+        if (c.get()->getY() < hitbox.getY() || *c.get() == hitbox)
+            continue;
 
-            if (!(g->getHitbox() == hitbox) && g->getHitbox().isOverlapping(hitbox))
-            {
-                hitbox.setY(g->getHitbox().getY() - hitbox.getHeight());
-                velocity.setY(0);
-                grounded = true;
-                return;
-            }
+        if (c.get()->isOverlapping(hitbox))
+        {
+            hitbox.setY(c.get()->getY() - hitbox.getHeight());
+            velocity.setY(0);
+            grounded = true;
+            return;
+        }
+
+        if (c.get()->isOverlapping(hitbox + ichi::datatypes::Point(0, 1)))
+        {
+            grounded = true;
+            return;
+        }
+    }
+}
+
+void Character::checkWallCollision()
+{
+    ichi::scene::Scene *s = ichi::scene::sceneManager::getActiveScene();
+    for (auto &c : s->getCollisionHitboxes())
+    {
+        if (c.get()->getY() > hitbox.getY() || *c.get() == hitbox)
+            continue;
+
+        if (c.get()->isOverlapping(hitbox))
+        {
+            if (hitbox.getX() < c.get()->getX())
+                hitbox.setX(c.get()->getX() - hitbox.getHeight());
+            else
+                hitbox.setX(c.get()->getX() + c.get()->getWidth());
+
+            velocity.setX(0);
+            return;
         }
     }
 }
