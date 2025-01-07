@@ -94,9 +94,21 @@ void SceneLoader::changeSceneToDojo()
     std::shared_ptr<Character> blueCharacter;
     std::shared_ptr<Character> redCharacter;
 
+    int controllerID = -1;
+    if (ProfileHandler::getProfile(blueProfile)->isController())
+    {
+        if (input::ControllerHandler::getActiveControllerIDs().size() == 0)
+        {
+            ICHI_ERROR("Could not find any controllers to use");
+            return;
+        }
+        else
+            controllerID = input::ControllerHandler::getActiveControllerIDs().at(0);
+    }
+
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
         if (ptr->getSelected() == ROBOT)
-            blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox);
+            blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID);
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
         if (ptr->getSelected() == ROBOT)
@@ -139,6 +151,17 @@ std::shared_ptr<uicomponents::Textbox> SceneLoader::createTextbox(datatypes::Hit
     return std::make_shared<uicomponents::Textbox>(hb, font, black, defaultSprite, focusedSprite, cap);
 }
 
+std::shared_ptr<uicomponents::Checkbox> SceneLoader::createCheckbox(datatypes::Hitbox &hb)
+{
+    graphics::Sprite defaultSprite(hb, UI_LAYER, CHECKBOX_PATH);
+    graphics::Sprite focusedSprite(hb, UI_LAYER, FOCUSED_Checkbox_PATH);
+
+    graphics::Sprite defaultCheckedSprite(hb, UI_LAYER, CHECKED_CHECKBOX_PATH);
+    graphics::Sprite focusedCheckedSprite(hb, UI_LAYER, FOCUSED_Checked_Checkbox_PATH);
+
+    return std::make_shared<uicomponents::Checkbox>(hb, focusedSprite, focusedCheckedSprite, defaultSprite, defaultCheckedSprite);
+}
+
 std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::Hitbox &hb, const std::string &bar, int sliderWidth, int sliderHeight, const std::string &slider, const std::string &focusedSlider, std::function<void(float)> ptr)
 {
     graphics::Sprite sprite(hb, UI_LAYER, bar);
@@ -146,7 +169,7 @@ std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::H
     return std::make_shared<uicomponents::SlideBar>(hb, sprite, sliderWidth, sliderHeight, slider, focusedSlider, ptr);
 }
 
-std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes::Hitbox &hb)
+std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes::Hitbox &hb, int controllerID)
 {
     std::vector<std::string> fireballPaths = {FB_PATH0, FB_PATH1, FB_PATH2, FB_PATH3};
     std::map<int, Uint32> fireballTimes = {{0, 200}, {1, 200}, {2, 200}, {3, 200}};
@@ -162,7 +185,7 @@ std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes:
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
     std::shared_ptr<ichi::graphics::AnimatedSprite> walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
 
-    return std::make_shared<Character>(hb, walkAnimation, p, robotAttacks);
+    return std::make_shared<Character>(hb, walkAnimation, p, robotAttacks, controllerID);
 }
 
 void SceneLoader::quitGame()
@@ -235,24 +258,21 @@ void SceneLoader::saveProfile()
     {
         if (auto ptr = std::dynamic_pointer_cast<uicomponents::Pane>(c))
             for (auto ui : ptr->getUIComponents())
+            {
                 if (auto ptr2 = dynamic_cast<uicomponents::Textbox *>(ui.second.get()))
                     strings.push_back(ptr2->getText());
-
-        if (auto ptr = std::dynamic_pointer_cast<uicomponents::Textbox>(c))
-            strings.push_back(ptr->getText());
-
-        if (auto ptr = std::dynamic_pointer_cast<uicomponents::Checkbox>(c))
-            isChecked = ptr->isChecked();
+                if (auto ptr2 = dynamic_cast<uicomponents::Checkbox *>(ui.second.get()))
+                    isChecked = ptr2->isChecked();
+            }
     }
 
     ProfileHandler::saveProfile(strings, isChecked);
 }
 
-datatypes::Hitbox popUpWindowHB(datatypes::Point(122, 50), 110, 140, false);
-datatypes::Hitbox returnToMainMenuHB(datatypes::Point(142, 150), 70, 20, false);
-
 void SceneLoader::createPopUpMenu()
 {
+    datatypes::Hitbox popUpWindowHB(datatypes::Point(122, 50), 110, 140, false);
+    datatypes::Hitbox returnToMainMenuHB(datatypes::Point(142, 150), 70, 20, false);
 
     graphics::Sprite popUpWindowSprite(popUpWindowHB, UI_LAYER, POP_UP_MENU_PATH);
     graphics::Sprite popUpBackground(window, UI_LAYER, TRANSPARENT_BLACK_PATH);
@@ -264,14 +284,13 @@ void SceneLoader::createPopUpMenu()
     scene::sceneManager::setPopUpMenu(popUp);
 }
 
-datatypes::Hitbox hbLocalPlay(datatypes::Point(50, 60), 75, 20, false);
-datatypes::Hitbox hbTraining(datatypes::Point(50, 90), 75, 20, false);
-datatypes::Hitbox hbProfileEditor(datatypes::Point(50, 120), 75, 20, false);
-datatypes::Hitbox hbSettings(datatypes::Point(50, 150), 75, 20, false);
-datatypes::Hitbox hbExit(datatypes::Point(50, 180), 75, 20, false);
-
 void SceneLoader::createMainMenu()
 {
+    datatypes::Hitbox hbLocalPlay(datatypes::Point(50, 60), 75, 20, false);
+    datatypes::Hitbox hbTraining(datatypes::Point(50, 90), 75, 20, false);
+    datatypes::Hitbox hbProfileEditor(datatypes::Point(50, 120), 75, 20, false);
+    datatypes::Hitbox hbSettings(datatypes::Point(50, 150), 75, 20, false);
+    datatypes::Hitbox hbExit(datatypes::Point(50, 180), 75, 20, false);
 
     auto darkBlueBackgroundMain = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
@@ -291,7 +310,7 @@ void SceneLoader::createMainMenu()
     scene::sceneManager::addScene(static_cast<int>(SceneName::MAIN), mainScene);
 }
 
-datatypes::Hitbox hbReturnLP(datatypes::Point(0, 0), 30, 30, false);
+datatypes::Hitbox SceneLoader::returnHB(datatypes::Point(0, 0), 30, 30, false);
 datatypes::Hitbox SceneLoader::blueProfileDropdownHB(datatypes::Point(30, 60), 50, 15, false);
 datatypes::Hitbox SceneLoader::blueCharacterDropdownHB(datatypes::Point(30, 90), 50, 15, false);
 datatypes::Hitbox SceneLoader::redProfileDropdownHB(datatypes::Point(220, 60), 50, 15, false);
@@ -300,7 +319,7 @@ datatypes::Hitbox SceneLoader::redCharacterDropdownHB(datatypes::Point(220, 90),
 void SceneLoader::createLocalPlayMenu()
 {
 
-    auto returnBtnLP = createButton(hbReturnLP, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+    auto returnBtnLP = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto redProfileMenu = createMenu(redProfileDropdownHB, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto redCharacterMenu = createMenu(redCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto blueProfileMenu = createMenu(blueProfileDropdownHB, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
@@ -318,13 +337,11 @@ void SceneLoader::createLocalPlayMenu()
     scene::sceneManager::addScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION), characterSelectionScene);
 }
 
-datatypes::Hitbox hbStartTraining(datatypes::Point(160, 110), 70, 15, false);
-datatypes::Hitbox hbReturnT(datatypes::Point(0, 0), 30, 30, false);
-
 void SceneLoader::createTrainingMenu()
 {
+    datatypes::Hitbox hbStartTraining(datatypes::Point(160, 110), 70, 15, false);
 
-    auto returnBtnT = createButton(hbReturnT, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+    auto returnBtnT = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto startTrainingBtn = createButton(hbStartTraining, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
     auto profileMenu = createMenu(blueProfileDropdownHB, {"TestTraining"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto characterMenu = createMenu(blueCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
@@ -341,35 +358,34 @@ void SceneLoader::createTrainingMenu()
     scene::sceneManager::addScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION), trainingSelectionScene);
 }
 
-datatypes::Hitbox hbReturnPE(datatypes::Point(0, 0), 30, 30, false);
-
 datatypes::Point namePt(50, 15);
-datatypes::Point upPt(50, 35);
-datatypes::Point downPt(50, 55);
-datatypes::Point leftPt(50, 75);
-datatypes::Point rightPt(50, 95);
-datatypes::Point lightPt(50, 115);
-datatypes::Point heavyPt(50, 135);
-datatypes::Point jumpPt(50, 155);
-datatypes::Point blockPt(50, 175);
-
 datatypes::Hitbox SceneLoader::hbName(datatypes::Point(150, namePt.Y), 70, 10, false);
-datatypes::Hitbox hbUp(datatypes::Point(150, upPt.Y), 70, 10, false);
-datatypes::Hitbox hbDown(datatypes::Point(150, downPt.Y), 70, 10, false);
-datatypes::Hitbox hbLeft(datatypes::Point(150, leftPt.Y), 70, 10, false);
-datatypes::Hitbox hbRight(datatypes::Point(150, rightPt.Y), 70, 10, false);
-datatypes::Hitbox hbLight(datatypes::Point(150, lightPt.Y), 70, 10, false);
-datatypes::Hitbox hbHeavy(datatypes::Point(150, heavyPt.Y), 70, 10, false);
-datatypes::Hitbox hbJump(datatypes::Point(150, jumpPt.Y), 70, 10, false);
-datatypes::Hitbox hbBlock(datatypes::Point(150, blockPt.Y), 70, 10, false);
-
-datatypes::Hitbox hbReset(datatypes::Point(250, 30), 45, 15, false);
-datatypes::Hitbox hbImport(datatypes::Point(250, 60), 45, 15, false);
-datatypes::Hitbox hbRemove(datatypes::Point(250, 90), 45, 15, false);
-datatypes::Hitbox hbSave(datatypes::Point(165, 200), 45, 15, false);
 
 void SceneLoader::createProfileEditorMenu()
 {
+    datatypes::Point upPt(50, 35);
+    datatypes::Point downPt(50, 55);
+    datatypes::Point leftPt(50, 75);
+    datatypes::Point rightPt(50, 95);
+    datatypes::Point lightPt(50, 115);
+    datatypes::Point heavyPt(50, 135);
+    datatypes::Point jumpPt(50, 155);
+    datatypes::Point blockPt(50, 175);
+    datatypes::Point isControllerPt(250, 125);
+
+    datatypes::Hitbox hbUp(datatypes::Point(150, upPt.Y), 70, 10, false);
+    datatypes::Hitbox hbDown(datatypes::Point(150, downPt.Y), 70, 10, false);
+    datatypes::Hitbox hbLeft(datatypes::Point(150, leftPt.Y), 70, 10, false);
+    datatypes::Hitbox hbRight(datatypes::Point(150, rightPt.Y), 70, 10, false);
+    datatypes::Hitbox hbLight(datatypes::Point(150, lightPt.Y), 70, 10, false);
+    datatypes::Hitbox hbHeavy(datatypes::Point(150, heavyPt.Y), 70, 10, false);
+    datatypes::Hitbox hbJump(datatypes::Point(150, jumpPt.Y), 70, 10, false);
+    datatypes::Hitbox hbBlock(datatypes::Point(150, blockPt.Y), 70, 10, false);
+
+    datatypes::Hitbox hbReset(datatypes::Point(250, 30), 45, 15, false);
+    datatypes::Hitbox hbImport(datatypes::Point(250, 60), 45, 15, false);
+    datatypes::Hitbox hbRemove(datatypes::Point(250, 90), 45, 15, false);
+    datatypes::Hitbox hbSave(datatypes::Point(165, 200), 45, 15, false);
 
     auto nameLbl = std::make_shared<uicomponents::Label>(namePt, "Name: ", font, white);
     auto upLbl = std::make_shared<uicomponents::Label>(upPt, "Up Key: ", font, white);
@@ -380,6 +396,7 @@ void SceneLoader::createProfileEditorMenu()
     auto heavyLbl = std::make_shared<uicomponents::Label>(heavyPt, "Heavy Attack: ", font, white);
     auto jumpLbl = std::make_shared<uicomponents::Label>(jumpPt, "Jump Key: ", font, white);
     auto blockLbl = std::make_shared<uicomponents::Label>(blockPt, "Block Key: ", font, white);
+    auto isControllerLbl = std::make_shared<uicomponents::Label>(isControllerPt, "Is Controller: ", font, white);
 
     auto nameTbx = createTextbox(hbName, TEXTBOX_PATH, FOCUSED_TEXTBOX_PATH, 8);
     auto upTbx = createTextbox(hbUp, TEXTBOX_PATH, FOCUSED_TEXTBOX_PATH, 8);
@@ -391,7 +408,10 @@ void SceneLoader::createProfileEditorMenu()
     auto jumpTbx = createTextbox(hbJump, TEXTBOX_PATH, FOCUSED_TEXTBOX_PATH, 8);
     auto blockTbx = createTextbox(hbBlock, TEXTBOX_PATH, FOCUSED_TEXTBOX_PATH, 8);
 
-    auto returnBtnPE = createButton(hbReturnPE, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+    datatypes::Hitbox checkBoxHb(datatypes::Point(isControllerPt.X, 150), 30, 30, false);
+    auto controllerCheckbox = createCheckbox(checkBoxHb);
+
+    auto returnBtnPE = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto resetBtn = createButton(hbReset, "Reset", BUTTON_PATH, FOCUSED_BUTTON_PATH, resetTextboxes);
     auto importBtn = createButton(hbImport, "Import", BUTTON_PATH, FOCUSED_BUTTON_PATH, importProfile);
     auto removeBtn = createButton(hbRemove, "Remove", BUTTON_PATH, FOCUSED_BUTTON_PATH, removeProfile);
@@ -400,9 +420,9 @@ void SceneLoader::createProfileEditorMenu()
     auto profileEditorPane = std::make_shared<uicomponents::Pane>(window,
                                                                   std::vector<std::shared_ptr<uicomponents::UIComponent>>{
                                                                       returnBtnPE,
-                                                                      nameLbl, upLbl, downLbl, leftLbl, rightLbl, lightLbl, heavyLbl, jumpLbl, blockLbl,
+                                                                      nameLbl, upLbl, downLbl, leftLbl, rightLbl, lightLbl, heavyLbl, jumpLbl, blockLbl, isControllerLbl,
                                                                       nameTbx, upTbx, downTbx, leftTbx, rightTbx, lightTbx, heavyTbx, jumpTbx, blockTbx,
-                                                                      resetBtn, importBtn, removeBtn, saveBtn});
+                                                                      resetBtn, importBtn, removeBtn, saveBtn, controllerCheckbox});
 
     auto darkBlueBackgroundPE = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
@@ -414,13 +434,11 @@ void SceneLoader::createProfileEditorMenu()
     scene::sceneManager::addScene(static_cast<int>(SceneName::PROFILE_EDITOR), profileEditorScene);
 }
 
-datatypes::Hitbox hbReturnS(datatypes::Point(0, 0), 30, 30, false);
-datatypes::Hitbox sliderHb(datatypes::Point(120, 50), 70, 15, false);
-
 void SceneLoader::createSettingMenu()
 {
+    datatypes::Hitbox sliderHb(datatypes::Point(120, 50), 70, 15, false);
 
-    auto returnBtnS = createButton(hbReturnS, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+    auto returnBtnS = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto volumeSlider = createSlideBar(sliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setVolume);
 
     auto pane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnS, volumeSlider});
@@ -435,16 +453,11 @@ void SceneLoader::createSettingMenu()
     scene::sceneManager::addScene(static_cast<int>(SceneName::SETTINGS), settingScene);
 }
 
-datatypes::Hitbox hbReturnD(datatypes::Point(0, 0), 30, 30, false);
-ichi::datatypes::Hitbox groundHitbox(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
-
 void SceneLoader::createDojo()
 {
+    datatypes::Hitbox groundHitbox(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
 
-    graphics::Sprite returnSpriteD(hbReturnD, UI_LAYER, RETURN_BTN_PATH);
-    graphics::Sprite focusedReturnSpriteD(hbReturnD, UI_LAYER, FOCUSED_RETURN_BTN_PATH);
-
-    std::shared_ptr<uicomponents::Button> returnBtnD = std::make_shared<uicomponents::Button>(hbReturnD, "", font, black, returnSpriteD, focusedReturnSpriteD, changeSceneToMain);
+    std::shared_ptr<uicomponents::Button> returnBtnD = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
 
     auto dojoBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DOJO_PATH);
 

@@ -1,6 +1,8 @@
 #include "Implementation/profileHandler.h"
 #include "Ichi/log.h"
 
+#include "Constants.h"
+
 #include <fstream>
 #include <algorithm>
 
@@ -45,7 +47,7 @@ void ProfileHandler::saveProfile(vector<string> strings, bool isController)
     }
 
     if (isController)
-        for (size_t i = 4; i < strings.size(); i++)
+        for (size_t i = 5; i < strings.size(); i++)
             if (joystickStrings.find(strings.at(i)) == joystickStrings.end() && controllerStrings.find(strings.at(i)) == controllerStrings.end())
             {
                 ICHI_ERROR("Could not match arguments to controller for {}", strings.at(0))
@@ -122,6 +124,9 @@ void ProfileHandler::addToVector(vector<string> list, bool isController)
     string name = list[0];
     vector<string> copy(list.begin() + 1, list.end());
 
+    if (isController)
+        copy = vector<string>(copy.begin() + 4, copy.end());
+
     addToVector(name, isController, copy);
 }
 void ProfileHandler::addToVector(vector<string> list)
@@ -174,8 +179,7 @@ ProfileHandler::split(const string &s, const string &delimiter)
     return tokens;
 }
 
-// std::string ProfileHandler::PROFILE_PATH = "/home/sasha/Documents/Uni/Course3/projects/fight_mania/resources/Profiles.txt";
-std::string ProfileHandler::PROFILE_PATH = "resources/Profiles.txt";
+std::string ProfileHandler::PROFILE_PATH = constants::gResPath + "Profiles.txt";
 std::map<std::string, Profile> ProfileHandler::profiles;
 std::map<std::string, ichi::input::ControllerHandler::Joystick> ProfileHandler::joystickStrings{{"LT", ichi::input::ControllerHandler::Joystick::LeftTrigger}, {"RT", ichi::input::ControllerHandler::Joystick::RightTrigger}};
 std::map<std::string, ichi::input::ControllerHandler::ControllerButton> ProfileHandler::controllerStrings{
