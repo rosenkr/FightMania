@@ -19,23 +19,7 @@ public:
                 Mix_FreeChunk(chunk);
         }
     };
-    Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red)
-        : core::Component(datatypes::Hitbox(datatypes::Point(0, 0), 384, 224, false)), blueCharacter(std::move(blue)), redCharacter(std::move(red)),
-          start(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, START_PATH, startTime.size(), startTime)),
-          KO(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {KO_PATH}, KOTime)),
-          perfect(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {PERFECT_PATH}, perfectTime)),
-          blueWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {BLUE_WINS_PATH}, blueWinsTime)),
-          redWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {RED_WINS_PATH}, redWinsTime))
-    {
-        startSet();
-        timeStarted = SDL_GetTicks();
-
-        startSf = loadSoundEffect(SOUND_EFFECT_START_PATH);
-        KOSf = loadSoundEffect(SOUND_EFFECT_KO_PATH);
-        perfectSf = loadSoundEffect(SOUND_EFFECT_PERFECT_PATH);
-        blueWinsSf = loadSoundEffect(SOUND_EFFECT_BLUE_WINS_PATH);
-        redWinsSf = loadSoundEffect(SOUND_EFFECT_RED_WINS_PATH);
-    }
+    Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red);
 
     void draw() const;
     void update();
