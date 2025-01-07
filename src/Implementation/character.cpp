@@ -27,6 +27,17 @@ void Character::applyForce()
 }
 void Character::handleInput()
 {
+    if (profile->canTakeAction(Profile::Action::UP, controllerID))
+    {
+        direciton = Direction::NEUTRAL;
+    }
+
+    if (profile->canTakeAction(Profile::Action::DOWN, controllerID))
+    {
+        direciton = Direction::DOWN;
+        // implement crouch
+    }
+
     if (profile->canTakeAction(Profile::Action::RIGHT, controllerID))
     {
         direciton = Direction::SIDE;
@@ -41,17 +52,6 @@ void Character::handleInput()
     {
         direciton = Direction::NEUTRAL;
         velocity.setX(0);
-    }
-
-    if (profile->canTakeAction(Profile::Action::UP, controllerID))
-    {
-        direciton = Direction::NEUTRAL;
-    }
-
-    if (profile->canTakeAction(Profile::Action::DOWN, controllerID))
-    {
-        direciton = Direction::DOWN;
-        // implement crouch
     }
 
     if (grounded && profile->canTakeAction(Profile::Action::JUMP, controllerID))

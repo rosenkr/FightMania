@@ -25,7 +25,10 @@ void ProjectileAttack::spawnProjectile(bool isGoingRight, ichi::datatypes::Point
     if (SDL_GetTicks() < lastSpawned + cooldownTime)
         return;
 
-    projectiles.push_back(Projectile(animation, speed, p));
+    if (isGoingRight)
+        projectiles.push_back(Projectile(animation, speed, p));
+    else
+        projectiles.push_back(Projectile(animation, -speed, p));
     lastSpawned = SDL_GetTicks();
 }
 
