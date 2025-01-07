@@ -29,7 +29,10 @@ namespace ichi::uicomponents
             focused = hitbox.pointIsInRect(Point(input::Mouse::getX(), input::Mouse::getY()));
 
         if (hitbox.pointIsInRect(Point(input::Mouse::getX(), input::Mouse::getY())) && input::Mouse::buttonIsDown(input::Mouse::MouseButton::LEFT))
+        {
             sliderSprite->setX(input::Mouse::getX() - sliderSprite->getWidth() / 2);
+            focusedSliderSprite->setX(sliderSprite->getX());
+        }
 
         updateNormalizedSliderValue();
     }
