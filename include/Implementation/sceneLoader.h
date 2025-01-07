@@ -104,6 +104,7 @@ private:
     static void changeSceneToProfileEditor();
     static void changeSceneToSettings();
     static void changeSceneToDojo();
+    static void changeSceneToCyberPunk();
 
     static void quitGame();
     static void resetTextboxes();
@@ -125,6 +126,7 @@ private:
     static void createProfileEditorMenu();
     static void createSettingMenu();
     static void createDojo();
+    static void createCyberPunk();
 
     SceneLoader() = delete;
     ~SceneLoader() { TTF_CloseFont(font); }

@@ -32,6 +32,7 @@ bool SceneLoader::init()
     createProfileEditorMenu();
     createSettingMenu();
     createDojo();
+    createCyberPunk();
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
 
@@ -123,6 +124,64 @@ void SceneLoader::changeSceneToDojo()
     auto m = std::make_shared<Match>(redCharacter, blueCharacter);
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
+    scene::sceneManager::getActiveScene()->addComponent(m);
+}
+
+void SceneLoader::changeSceneToCyberPunk()
+{
+    std::string blueProfile;
+    if (auto ptr = dynamic_cast<const uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
+        blueProfile = ptr->getSelected();
+    std::string redProfile;
+    if (auto ptr = dynamic_cast<const uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(redProfileDropdownHB.getPos())))
+        redProfile = ptr->getSelected();
+
+    if (ProfileHandler::getProfile(blueProfile) == nullptr)
+    {
+        ICHI_ERROR("Could not find profile: {}", blueProfile)
+        return;
+    }
+    if (ProfileHandler::getProfile(redProfile) == nullptr)
+    {
+        ICHI_ERROR("Could not find profile: {}", redProfile)
+        return;
+    }
+
+    std::shared_ptr<Character> blueCharacter;
+    std::shared_ptr<Character> redCharacter;
+
+    int blueID = -1;
+    int redID = -1;
+    size_t controllerAmount = ProfileHandler::getProfile(blueProfile)->isController() + ProfileHandler::getProfile(redProfile)->isController();
+    if (input::ControllerHandler::getActiveControllerIDs().size() < controllerAmount)
+    {
+        ICHI_ERROR("Not enough controllers available. Required: {}, Active: {}", controllerAmount, input::ControllerHandler::getActiveControllerIDs().size());
+        return;
+    }
+    int i = 0;
+    if (ProfileHandler::getProfile(blueProfile)->isController())
+        blueID = input::ControllerHandler::getActiveControllerIDs().at(i++);
+
+    if (ProfileHandler::getProfile(redProfile)->isController())
+        redID = input::ControllerHandler::getActiveControllerIDs().at(i);
+
+    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
+        if (ptr->getSelected() == ROBOT)
+            blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID);
+
+    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(redCharacterDropdownHB.getPos())))
+        if (ptr->getSelected() == ROBOT)
+            redCharacter = createRobot(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID);
+
+    if (blueCharacter == nullptr || redCharacter == nullptr)
+    {
+        ICHI_ERROR("You have not selected a correct character")
+        return;
+    }
+
+    auto m = std::make_shared<Match>(redCharacter, blueCharacter);
+
+    scene::sceneManager::setActiveScene(static_cast<int>(SceneName::CYBER_PUNK));
     scene::sceneManager::getActiveScene()->addComponent(m);
 }
 
@@ -318,8 +377,11 @@ datatypes::Hitbox SceneLoader::redCharacterDropdownHB(datatypes::Point(220, 90),
 
 void SceneLoader::createLocalPlayMenu()
 {
+    datatypes::Hitbox startMatchHb(datatypes::Point(160, 110), 70, 15, false);
 
-    auto returnBtnLP = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+    auto returnBtn = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+    auto startMatchBtn = createButton(startMatchHb, "Start Match", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToCyberPunk);
+
     auto redProfileMenu = createMenu(redProfileDropdownHB, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto redCharacterMenu = createMenu(redCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto blueProfileMenu = createMenu(blueProfileDropdownHB, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
@@ -327,7 +389,8 @@ void SceneLoader::createLocalPlayMenu()
 
     auto characterSelectionBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
 
-    auto characterPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnLP, redProfileMenu, redCharacterMenu, blueProfileMenu, blueCharacterMenu});
+    auto characterPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{
+                                                                          returnBtn, redProfileMenu, redCharacterMenu, blueProfileMenu, blueCharacterMenu, startMatchBtn});
 
     std::shared_ptr<scene::Scene> characterSelectionScene = std::make_shared<scene::Scene>(
         characterSelectionBackground,
@@ -455,19 +518,26 @@ void SceneLoader::createSettingMenu()
 
 void SceneLoader::createDojo()
 {
-    datatypes::Hitbox groundHitbox(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
-
-    std::shared_ptr<uicomponents::Button> returnBtnD = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
+    auto groundHitbox = std::make_shared<datatypes::Hitbox>(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
 
     auto dojoBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DOJO_PATH);
 
     std::shared_ptr<scene::Scene> dojoScene = std::make_shared<scene::Scene>(dojoBackground, std::vector<std::shared_ptr<core::Component>>{}, true);
 
-    scene::sceneManager::addScene(static_cast<int>(SceneName::DOJO), dojoScene);
+    dojoScene->addCollisionHitbox(groundHitbox);
 
-    // ground "hidden under dojo"
-    std::string path = BAR_PATH; // just some random img
-    std::shared_ptr<ichi::graphics::Sprite> sprite = std::make_shared<ichi::graphics::Sprite>(groundHitbox, UI_LAYER, path);
-    std::shared_ptr<Ground> dojoGround = std::make_shared<Ground>(groundHitbox);
-    dojoScene->addComponent(dojoGround);
+    scene::sceneManager::addScene(static_cast<int>(SceneName::DOJO), dojoScene);
+}
+
+void SceneLoader::createCyberPunk()
+{
+    auto groundHitbox = std::make_shared<datatypes::Hitbox>(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
+
+    auto cyberBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, CP_PATH);
+
+    std::shared_ptr<scene::Scene> cyberPunkScene = std::make_shared<scene::Scene>(cyberBackground, std::vector<std::shared_ptr<core::Component>>{}, true);
+
+    cyberPunkScene->addCollisionHitbox(groundHitbox);
+
+    scene::sceneManager::addScene(static_cast<int>(SceneName::CYBER_PUNK), cyberPunkScene);
 }
