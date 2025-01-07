@@ -11,7 +11,7 @@ class Projectile
 public:
     Projectile(std::shared_ptr<ichi::graphics::AnimatedSprite> animation, float speed, ichi::datatypes::Point pos) : speed(speed)
     {
-        this->animation = animation;
+        this->animation = std::make_shared<ichi::graphics::AnimatedSprite>(*animation.get());
         this->animation.get()->setX(pos.X);
         this->animation.get()->setY(pos.Y);
     }
