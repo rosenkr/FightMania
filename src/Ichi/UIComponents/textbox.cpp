@@ -41,10 +41,16 @@ namespace ichi::uicomponents
         bool wasChanged = false;
 
         if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_LEFT))
+        {
             cursor--;
+            wasChanged = true;
+        }
 
         if (Keyboard::keyIsPressed(Keyboard::Key::ICHIKEY_RIGHT))
+        {
             cursor++;
+            wasChanged = true;
+        }
 
         if (cursor > (int)text.size())
             cursor = text.size();
@@ -97,10 +103,10 @@ namespace ichi::uicomponents
             texture = nullptr;
         }
 
-        if (text.size() == 0)
-            return;
+        std::string temp = text;
+        temp.insert(temp.begin() + cursor, '|');
 
-        SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
+        SDL_Surface *surf = TTF_RenderText_Blended(font, temp.c_str(), color);
 
         if (surf == nullptr)
         {
