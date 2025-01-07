@@ -27,9 +27,17 @@ namespace ichi::uicomponents
 
     void Checkbox::draw() const
     {
+        if (!focused)
+        {
+            if (checked)
+                checkedSprite.draw();
+            else
+                uncheckedSprite.draw();
+            return;
+        }
         if (checked)
-            checkedSprite.draw();
+            focusedCheckedSprite.draw();
         else
-            uncheckedSprite.draw();
+            focusedUncheckedSprite.draw();
     }
 }
