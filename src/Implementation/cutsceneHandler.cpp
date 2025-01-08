@@ -26,8 +26,7 @@ void CutsceneHandler::draw()
 {
     if (queue.empty())
         return;
-    auto as = queue.front().first;
-    as.draw();
+    queue.front().first.draw();
 }
 
 void CutsceneHandler::addCutscene(ichi::graphics::AnimatedSprite as, Mix_Chunk *chunk)
