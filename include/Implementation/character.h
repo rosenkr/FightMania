@@ -26,6 +26,20 @@ class Character : public ichi::core::Component
     };
 
 public:
+    enum class AnimationState
+    {
+        LEFT_IDLE,
+        LEFT_WALKING,
+        LEFT_JUMPING,
+        LEFT_FALLING,
+        LEFT_ATTACKING,
+        RIGHT_IDLE,
+        RIGHT_WALKING,
+        RIGHT_JUMPING,
+        RIGHT_FALLING,
+        RIGHT_ATTACKING,
+    };
+
     enum class AttackType
     {
         NEUTRAL_LIGHT,
@@ -35,8 +49,8 @@ public:
         SIDE_HEAVY,
         DOWN_HEAVY,
     };
-    Character(ichi::datatypes::Hitbox &hitbox, std::shared_ptr<ichi::graphics::AnimatedSprite> animation, const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks, int id = -1)
-        : Component(hitbox), hp(100), lives(3), animation(std::move(animation)), profile(p), controllerID(id), attacks(attacks) {}
+    Character(ichi::datatypes::Hitbox &hitbox, std::map<AnimationState, std::shared_ptr<ichi::graphics::AnimatedSprite>> animations, const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks, int id = -1)
+        : Component(hitbox), hp(100), lives(3), animations(animations), profile(p), controllerID(id), attacks(attacks) {}
 
     void handleInput();
     void update();
@@ -58,13 +72,15 @@ private:
     ichi::datatypes::Vector2D velocity{0, 0};
     Direction direciton = Direction::NEUTRAL;
 
-    std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
+    AnimationState activeState = AnimationState::LEFT_IDLE;
+    std::map<AnimationState, std::shared_ptr<ichi::graphics::AnimatedSprite>> animations;
 
     const Profile *profile;
     int controllerID;
 
     std::map<AttackType, std::shared_ptr<Attack>> attacks;
 
+    void updateAnimationState();
     void applyForce();
     void checkWallCollision();
     void checkGroundCollision();

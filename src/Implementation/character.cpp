@@ -22,9 +22,15 @@ void Character::applyForce()
     checkGroundCollision();
     checkWallCollision();
 
-    animation.get()->setX(hitbox.getX());
-    animation.get()->setY(hitbox.getY());
+    if (animations.find(activeState) != animations.end())
+    {
+        animations.at(activeState).get()->setX(hitbox.getX());
+        animations.at(activeState).get()->setY(hitbox.getY());
+    }
+    else
+        ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
 }
+
 void Character::handleInput()
 {
     if (profile->canTakeAction(Profile::Action::UP, controllerID))
@@ -103,12 +109,70 @@ void Character::handleInput()
 
 void Character::update()
 {
-    animation.get()->update();
     handleInput();
     applyForce();
+    updateAnimationState();
+
+    if (animations.find(activeState) != animations.end())
+        animations.at(activeState).get()->update();
+    else
+        ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
 
     for (auto a : attacks)
         a.second.get()->update();
+}
+
+void Character::draw() const
+{
+    if (animations.find(activeState) != animations.end())
+        animations.at(activeState).get()->draw();
+    else
+        ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
+    for (auto a : attacks)
+        a.second.get()->draw();
+}
+
+void Character::updateAnimationState()
+{
+    if (facingRight)
+    {
+        if (velocity.getY() < 0)
+        {
+            activeState = AnimationState::RIGHT_JUMPING;
+            return;
+        }
+        if (velocity.getY() > 0)
+        {
+            activeState = AnimationState::RIGHT_FALLING;
+            return;
+        }
+
+        if (velocity.getX() != 0)
+        {
+            activeState = AnimationState::RIGHT_WALKING;
+            return;
+        }
+        activeState = AnimationState::RIGHT_IDLE;
+        return;
+    }
+
+    if (velocity.getY() < 0 && !grounded)
+    {
+        activeState = AnimationState::LEFT_JUMPING;
+        return;
+    }
+    if (velocity.getY() > 0 && !grounded)
+    {
+        activeState = AnimationState::LEFT_FALLING;
+        return;
+    }
+
+    if (velocity.getX() != 0)
+    {
+        activeState = AnimationState::LEFT_WALKING;
+        return;
+    }
+    activeState = AnimationState::LEFT_IDLE;
 }
 
 void Character::checkGroundCollision()
@@ -155,11 +219,4 @@ void Character::checkWallCollision()
             return;
         }
     }
-}
-
-void Character::draw() const
-{
-    animation.get()->draw();
-    for (auto a : attacks)
-        a.second.get()->draw();
 }
