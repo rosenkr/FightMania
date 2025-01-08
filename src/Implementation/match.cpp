@@ -11,14 +11,15 @@ Match::Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red)
       blueWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {BLUE_WINS_PATH}, blueWinsTime)),
       redWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {RED_WINS_PATH}, redWinsTime))
 {
-    startSet();
-    timeStarted = SDL_GetTicks();
 
     startSf = loadSoundEffect(SOUND_EFFECT_START_PATH);
     KOSf = loadSoundEffect(SOUND_EFFECT_KO_PATH);
     perfectSf = loadSoundEffect(SOUND_EFFECT_PERFECT_PATH);
     blueWinsSf = loadSoundEffect(SOUND_EFFECT_BLUE_WINS_PATH);
     redWinsSf = loadSoundEffect(SOUND_EFFECT_RED_WINS_PATH);
+
+    startSet();
+    timeStarted = SDL_GetTicks();
 }
 
 void Match::draw() const

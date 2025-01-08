@@ -6,6 +6,8 @@
 #include "Ichi/Audio/audioPlayer.h"
 #include "Implementation/character.h"
 
+#include "Constants.h"
+
 using namespace ichi;
 
 class Match : public ichi::core::Component
@@ -38,11 +40,11 @@ private:
         return std::unique_ptr<Mix_Chunk, MixChunkDeleter>(chunk);
     }
 
-    const std::string SOUND_EFFECT_START_PATH = "resources/sounds/ChestOpening.wav";
-    const std::string SOUND_EFFECT_KO_PATH = "resources/sounds/ChestOpening.wav";
-    const std::string SOUND_EFFECT_PERFECT_PATH = "resources/sounds/ChestOpening.wav";
-    const std::string SOUND_EFFECT_BLUE_WINS_PATH = "resources/sounds/ChestOpening.wav";
-    const std::string SOUND_EFFECT_RED_WINS_PATH = "resources/sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_START_PATH = constants::gResPath + "sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_KO_PATH = constants::gResPath + "/sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_PERFECT_PATH = constants::gResPath + "sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_BLUE_WINS_PATH = constants::gResPath + "sounds/ChestOpening.wav";
+    const std::string SOUND_EFFECT_RED_WINS_PATH = constants::gResPath + "sounds/ChestOpening.wav";
 
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> startSf;
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> KOSf;
@@ -50,11 +52,11 @@ private:
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> blueWinsSf;
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> redWinsSf;
 
-    const std::string START_PATH = "resources/images/CutScenes/StartCutscene";
-    const std::string KO_PATH = "resources/images/CutScenes/KO.png";
-    const std::string PERFECT_PATH = "resources/images/CutScenes/Perfect.png";
-    const std::string BLUE_WINS_PATH = "resources/images/CutScenes/BlueWins.png";
-    const std::string RED_WINS_PATH = "resources/images/CutScenes/RedWins.png";
+    const std::string START_PATH = constants::gResPath + "images/CutScenes/StartCutscene";
+    const std::string KO_PATH = constants::gResPath + "images/CutScenes/KO.png";
+    const std::string PERFECT_PATH = constants::gResPath + "images/CutScenes/Perfect.png";
+    const std::string BLUE_WINS_PATH = constants::gResPath + "images/CutScenes/BlueWins.png";
+    const std::string RED_WINS_PATH = constants::gResPath + "images/CutScenes/RedWins.png";
 
     std::map<int, Uint32> startTime = {{0, 1000}, {1, 1000}, {2, 1000}, {3, 500}};
     std::map<int, Uint32> KOTime = {{0, 1000}};
