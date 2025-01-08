@@ -91,7 +91,7 @@ void SceneLoader::changeSceneToDojo()
         return;
     }
     std::shared_ptr<Character> blueCharacter;
-    std::shared_ptr<Character> redCharacter;
+    std::shared_ptr<Character> dummy;
 
     int controllerID = -1;
     if (ProfileHandler::getProfile(blueProfile)->isController())
@@ -106,20 +106,23 @@ void SceneLoader::changeSceneToDojo()
     }
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
+    {
         if (ptr->getSelected() == ROBOT)
             blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID);
+        if (ptr->getSelected() == KENNY)
+            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID);
+    }
 
-    if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
-        if (ptr->getSelected() == ROBOT)
-            redCharacter = createRobot(ProfileHandler::getProfile(blueProfile), redCharacterHitbox);
+    // placeholder for the dummy
+    dummy = createRobot(ProfileHandler::getProfile(blueProfile), redCharacterHitbox, controllerID);
 
-    if (blueCharacter == nullptr || redCharacter == nullptr)
+    if (blueCharacter == nullptr || dummy == nullptr)
     {
         ICHI_ERROR("You have not selected a correct character")
         return;
     }
 
-    auto m = std::make_shared<Match>(redCharacter, blueCharacter);
+    auto m = std::make_shared<Match>(blueCharacter, dummy);
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
     scene::sceneManager::getActiveScene()->addComponent(m);
@@ -164,12 +167,20 @@ void SceneLoader::changeSceneToCyberPunk()
         redID = input::ControllerHandler::getActiveControllerIDs().at(i);
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
+    {
         if (ptr->getSelected() == ROBOT)
             blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID);
+        if (ptr->getSelected() == KENNY)
+            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID);
+    }
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(redCharacterDropdownHB.getPos())))
+    {
         if (ptr->getSelected() == ROBOT)
             redCharacter = createRobot(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID);
+        if (ptr->getSelected() == KENNY)
+            redCharacter = createKenny(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID);
+    }
 
     if (blueCharacter == nullptr || redCharacter == nullptr)
     {
@@ -240,9 +251,25 @@ std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes:
     std::map<Character::AttackType, std::shared_ptr<Attack>> robotAttacks = {{Character::AttackType::SIDE_HEAVY, fb}};
 
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
-    std::shared_ptr<ichi::graphics::AnimatedSprite> walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
+    auto walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
 
-    return std::make_shared<Character>(hb, walkAnimation, p, robotAttacks, controllerID);
+    std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {{Character::AnimationState::LEFT_WALKING, walkAnimation}};
+
+    return std::make_shared<Character>(hb, animations, p, robotAttacks, controllerID);
+}
+
+std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID)
+{
+    std::map<Character::AttackType, std::shared_ptr<Attack>> robotAttacks = {};
+
+    auto walkLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_LEFT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
+    auto idleLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_IDLE_LEFT, KENNY_IDLE_TIME.size(), KENNY_IDLE_TIME);
+
+    std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {
+        {Character::AnimationState::LEFT_WALKING, walkLeftAnimation},
+        {Character::AnimationState::LEFT_IDLE, idleLeftAnimation}};
+
+    return std::make_shared<Character>(hb, animations, p, robotAttacks, controllerID);
 }
 
 void SceneLoader::quitGame()
@@ -381,9 +408,9 @@ void SceneLoader::createLocalPlayMenu()
     auto startMatchBtn = createButton(startMatchHb, "Start Match", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToCyberPunk);
 
     auto redProfileMenu = createMenu(redProfileDropdownHB, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
-    auto redCharacterMenu = createMenu(redCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto redCharacterMenu = createMenu(redCharacterDropdownHB, {ROBOT, KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto blueProfileMenu = createMenu(blueProfileDropdownHB, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
-    auto blueCharacterMenu = createMenu(blueCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto blueCharacterMenu = createMenu(blueCharacterDropdownHB, {ROBOT, KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
     auto characterSelectionBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
 
@@ -405,7 +432,7 @@ void SceneLoader::createTrainingMenu()
     auto returnBtnT = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto startTrainingBtn = createButton(hbStartTraining, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
     auto profileMenu = createMenu(blueProfileDropdownHB, {"TestTraining"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
-    auto characterMenu = createMenu(blueCharacterDropdownHB, {ROBOT}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto characterMenu = createMenu(blueCharacterDropdownHB, {ROBOT, KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
     auto trainingPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnT, profileMenu, characterMenu, startTrainingBtn});
 

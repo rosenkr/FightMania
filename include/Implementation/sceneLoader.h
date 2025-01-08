@@ -62,14 +62,24 @@ private:
     inline static const std::string TEXTBOX_PATH = constants::gResPath + "images/UIComponents/Textbox.png";
     inline static const std::string FOCUSED_RETURN_BTN_PATH = constants::gResPath + "images/UIComponents/FocusedReturnBtn.png";
     inline static const std::string RETURN_BTN_PATH = constants::gResPath + "images/UIComponents/ReturnBtn.png";
-    inline static const std::string ROBOT_PATH0 = constants::gResPath + "images/RobotAnimations/0.png";
-    inline static const std::string ROBOT_PATH1 = constants::gResPath + "images/RobotAnimations/1.png";
-    inline static const std::string ROBOT_PATH2 = constants::gResPath + "images/RobotAnimations/2.png";
-    inline static const std::string ROBOT_PATH3 = constants::gResPath + "images/RobotAnimations/3.png";
+
     inline static const std::string FB_PATH0 = constants::gResPath + "images/Attacks/0.png";
     inline static const std::string FB_PATH1 = constants::gResPath + "images/Attacks/1.png";
     inline static const std::string FB_PATH2 = constants::gResPath + "images/Attacks/2.png";
     inline static const std::string FB_PATH3 = constants::gResPath + "images/Attacks/3.png";
+
+    inline static const std::string ROBOT_PATH0 = constants::gResPath + "images/RobotAnimations/0.png";
+    inline static const std::string ROBOT_PATH1 = constants::gResPath + "images/RobotAnimations/1.png";
+    inline static const std::string ROBOT_PATH2 = constants::gResPath + "images/RobotAnimations/2.png";
+    inline static const std::string ROBOT_PATH3 = constants::gResPath + "images/RobotAnimations/3.png";
+
+    inline static std::map<int, Uint32> KENNY_IDLE_TIME = {{0, 200}, {1, 200}, {2, 200}, {3, 200}, {4, 200}};
+    inline static std::map<int, Uint32> KENNY_WALK_TIME = {{0, 200}, {1, 200}, {2, 200}, {3, 200}, {4, 200}, {5, 200}, {6, 200}, {7, 200}};
+    inline static std::map<int, Uint32> KENNY_SIDE_LIGHT_TIME = {{0, 300}, {1, 300}};
+
+    inline static const std::string KENNY_IDLE_LEFT = constants::gResPath + "images/kenny/idle/left";
+    inline static const std::string KENNY_WALK_LEFT = constants::gResPath + "images/kenny/walk/left";
+    inline static const std::string KENNY_SIDE_LIGHT_LEFT = constants::gResPath + "images/kenny/sideLight/left";
 
     inline static const std::string DARK_BLUE_SCREEN_PATH = constants::gResPath + "images/BackGrounds/DarkBlueScreen.png";
     inline static const std::string CHARACTER_SELECTION_PATH = constants::gResPath + "images/BackGrounds/CharcterSelection.png";
@@ -79,6 +89,7 @@ private:
 
     // Character names
     inline static const std::string ROBOT = "ROBOT";
+    inline static const std::string KENNY = "KENNY";
 
     inline static const graphics::Sprite::Layer UI_LAYER = graphics::Sprite::Layer::UICOMPONENT;
     inline static const graphics::Sprite::Layer BACKGROUND_LAYER = ichi::graphics::Sprite::Layer::BACKGROUND;
@@ -118,6 +129,7 @@ private:
     static std::shared_ptr<uicomponents::Checkbox> createCheckbox(datatypes::Hitbox &);
     static std::shared_ptr<uicomponents::SlideBar> createSlideBar(datatypes::Hitbox &, const std::string &, int, int, const std::string &, const std::string &, std::function<void(float)>);
     static std::shared_ptr<Character> createRobot(const Profile *p, datatypes::Hitbox &hb, int controllerID = -1);
+    static std::shared_ptr<Character> createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID);
 
     static void createPopUpMenu();
     static void createMainMenu();
