@@ -65,10 +65,9 @@ namespace ichi::graphics
             if (auto texture = getTexture(path))
             {
                 map[i++] = std::move(texture);
-                ICHI_INFO("Added path {} with index: {}", path, i - 1)
             }
             else
-                ICHI_INFO("Failed to add path {} with index: {}", path, i - 1)
+                ICHI_ERROR("Failed to add path {} with index: {}", path, i - 1)
         }
 
         animatedSpriteMap[as] = std::move(map);
