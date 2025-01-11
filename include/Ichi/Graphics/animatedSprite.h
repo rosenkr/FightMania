@@ -14,8 +14,17 @@ namespace ichi::graphics
         AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
         AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime);
 
-        void draw();
+        int getCurrentFrame() const { return currentFrame; }
+        int getFrameCount() { return (int)frameTime.size(); }
+
+        void draw() const;
         void update();
+        void reset()
+        {
+            currentFrame = 0;
+            compleatedALap = false;
+            lastUpdatedOn = 0;
+        }
 
         bool hasCompleatedALap() { return compleatedALap; }
 

@@ -19,6 +19,9 @@ namespace ichi::graphics
 
     void AnimatedSprite::update()
     {
+        if (lastUpdatedOn == 0)
+            lastUpdatedOn = SDL_GetTicks();
+
         if (lastUpdatedOn + frameTime[currentFrame] > SDL_GetTicks())
             return;
 
@@ -31,7 +34,7 @@ namespace ichi::graphics
         lastUpdatedOn = SDL_GetTicks();
     }
 
-    void AnimatedSprite::draw()
+    void AnimatedSprite::draw() const
     {
         SDL_Renderer *renderer = core::Engine::getInstance()->getRenderer();
         SDL_Texture *texture = TextureManager::getTextureFor(*this, currentFrame);
