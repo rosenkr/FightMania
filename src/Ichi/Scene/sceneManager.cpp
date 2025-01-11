@@ -53,7 +53,6 @@ namespace ichi::scene::sceneManager
         }
 
         activeScene = scenes[key];
-        ICHI_INFO("Active scene was set with key {}", key);
     }
 
     void setPopUpMenu(std::shared_ptr<PopUpMenu> menu)
