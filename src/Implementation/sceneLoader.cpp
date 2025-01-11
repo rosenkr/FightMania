@@ -1,12 +1,13 @@
 #include "Implementation/sceneLoader.h"
-
 #include "Implementation/profileHandler.h"
+#include "Implementation/match.h"
+#include "Implementation/projectileAttack.h"
+#include "Implementation/meleeAttack.h"
 
 #include "Ichi/Audio/audioPlayer.h"
 
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/Core/engine.h"
-#include "Implementation/match.h"
 
 #include "Ichi/log.h"
 
@@ -246,12 +247,12 @@ std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes:
 
     auto animation = std::make_shared<ichi::graphics::AnimatedSprite>(fireBallHB, UI_LAYER, fireballPaths, fireballTimes);
 
-    auto fb = std::make_shared<ProjectileAttack>(animation, 2, 20, 1000);
-
-    std::map<Character::AttackType, std::shared_ptr<Attack>> robotAttacks = {{Character::AttackType::SIDE_HEAVY, fb}};
-
     std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
     auto walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
+
+    auto fb = std::make_shared<ProjectileAttack>(animation, walkAnimation, 2, 20, 1000);
+
+    std::map<Character::AttackType, std::shared_ptr<Attack>> robotAttacks = {{Character::AttackType::SIDE_HEAVY, fb}};
 
     std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {{Character::AnimationState::LEFT_WALKING, walkAnimation}};
 
@@ -260,16 +261,49 @@ std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes:
 
 std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID)
 {
-    std::map<Character::AttackType, std::shared_ptr<Attack>> robotAttacks = {};
+    datatypes::Hitbox slash(datatypes::Point(0, 0), 35, 70, false);
 
     auto walkLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_LEFT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
     auto idleLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_IDLE_LEFT, KENNY_IDLE_TIME.size(), KENNY_IDLE_TIME);
+    auto fallingLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_FALLING_LEFT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
+    auto jumpingLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_JUMPING_LEFT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
 
     std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {
         {Character::AnimationState::LEFT_WALKING, walkLeftAnimation},
-        {Character::AnimationState::LEFT_IDLE, idleLeftAnimation}};
+        {Character::AnimationState::LEFT_IDLE, idleLeftAnimation},
+        {Character::AnimationState::LEFT_FALLING, fallingLeftAnimation},
+        {Character::AnimationState::LEFT_JUMPING, jumpingLeftAnimation}};
 
-    return std::make_shared<Character>(hb, animations, p, robotAttacks, controllerID);
+    auto sideLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto downLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto neutralLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+
+    auto sideHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
+    auto downHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
+    auto neutralHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_NEUTRAL_HEAVY_LEFT, KENNY_NEUTRAL_HEAVY_TIME.size(), KENNY_NEUTRAL_HEAVY_TIME);
+
+    auto swordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_LEFT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
+
+    auto sideLight = std::make_shared<MeleeAttack>(10, sideLightAnimation, sideLightAnimation);
+    auto downLight = std::make_shared<MeleeAttack>(10, sideLightAnimation, sideLightAnimation);
+    auto neutralLight = std::make_shared<MeleeAttack>(10, sideLightAnimation, sideLightAnimation);
+
+    auto sideHeavy = std::make_shared<MeleeAttack>(10, sideHeavyAnimation, sideHeavyAnimation);
+    auto downHeavy = std::make_shared<ProjectileAttack>(swordSlash, neutralHeavyAnimation, 1, 10, 2000);
+    auto neutralHeavy = std::make_shared<ProjectileAttack>(swordSlash, neutralHeavyAnimation, 1, 10, 2000);
+
+    std::map<Character::AttackType, std::shared_ptr<Attack>> attacks = {
+        {Character::AttackType::SIDE_LIGHT, sideLight},
+        {Character::AttackType::SIDE_HEAVY, sideHeavy},
+
+        {Character::AttackType::DOWN_LIGHT, downLight},
+        {Character::AttackType::DOWN_HEAVY, downHeavy},
+
+        {Character::AttackType::NEUTRAL_LIGHT, neutralLight},
+        {Character::AttackType::NEUTRAL_HEAVY, neutralHeavy},
+    };
+
+    return std::make_shared<Character>(hb, animations, p, attacks, controllerID);
 }
 
 void SceneLoader::quitGame()
@@ -556,13 +590,17 @@ void SceneLoader::createDojo()
 
 void SceneLoader::createCyberPunk()
 {
-    auto groundHitbox = std::make_shared<datatypes::Hitbox>(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
+    auto groundHitbox = std::make_shared<datatypes::Hitbox>(datatypes::Point(0, 200), WINDOW_WIDTH, WINDOW_HEIGHT, true);              // coords and w/h should be approximately at bottom of screen
+    auto rightHitbox = std::make_shared<datatypes::Hitbox>(datatypes::Point(WINDOW_WIDTH - 10, 0), WINDOW_WIDTH, WINDOW_HEIGHT, true); // coords and w/h should be approximately at bottom of screen
+    auto leftHitbox = std::make_shared<datatypes::Hitbox>(datatypes::Point(10 - WINDOW_WIDTH, 0), WINDOW_WIDTH, WINDOW_HEIGHT, true);  // coords and w/h should be approximately at bottom of screen
 
     auto cyberBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, CP_PATH);
 
     std::shared_ptr<scene::Scene> cyberPunkScene = std::make_shared<scene::Scene>(cyberBackground, std::vector<std::shared_ptr<core::Component>>{}, true);
 
     cyberPunkScene->addCollisionHitbox(groundHitbox);
+    cyberPunkScene->addCollisionHitbox(rightHitbox);
+    cyberPunkScene->addCollisionHitbox(leftHitbox);
 
     scene::sceneManager::addScene(static_cast<int>(SceneName::CYBER_PUNK), cyberPunkScene);
 }
