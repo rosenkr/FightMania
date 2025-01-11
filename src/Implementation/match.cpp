@@ -62,17 +62,17 @@ void Match::update()
         redCharacter.get()->setDirection(true);
     }
 
-    /*if (blueCharacter.get()->getHp() <= 0)
+    if (blueCharacter.get()->getHp() <= 0)
     {
 
-        if (redCharacter.get()->etHp() == Character::MAX_HP)
-            CutsceneHandler::addCutscene(perfect, perfectSf);
+        if (redCharacter.get()->getHp() == Character::MAX_HP)
+            CutsceneHandler::addCutscene(perfect, perfectSf.get());
         else
-            CutsceneHandler::addCutscene(KO, KOSf);
+            CutsceneHandler::addCutscene(KO, KOSf.get());
 
         if (redCharacter.get()->addWin())
         {
-            CutsceneHandler::addCutscene(redWins, redWinsSf);
+            CutsceneHandler::addCutscene(redWins, redWinsSf.get());
             end = true;
             return;
         }
@@ -83,18 +83,18 @@ void Match::update()
     {
 
         if (blueCharacter.get()->getHp() == Character::MAX_HP)
-            CutsceneHandler::addCutscene(perfect, perfectSf);
+            CutsceneHandler::addCutscene(perfect, perfectSf.get());
         else
-            CutsceneHandler::addCutscene(KO, KOSf);
+            CutsceneHandler::addCutscene(KO, KOSf.get());
 
         if (blueCharacter.get()->addWin())
         {
-            CutsceneHandler::addCutscene(blueWins, blueWinsSf);
+            CutsceneHandler::addCutscene(blueWins, blueWinsSf.get());
             end = true;
             return;
         }
         return;
-    }*/
+    }
 
     blueCharacter.get()->update();
     redCharacter.get()->update();
