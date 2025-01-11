@@ -6,7 +6,8 @@
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Scene/sceneManager.h"
 #include "Ichi/Graphics/sprite.h"
-#include "Implementation/attack.h"
+#include "Implementation/meleeAttack.h"
+#include "Implementation/projectileAttack.h"
 #include "Ichi/log.h"
 
 #include <algorithm>
@@ -33,6 +34,9 @@ void Character::applyForce()
 
 void Character::handleInput()
 {
+    if (currentAttack != AttackType::NONE)
+        return;
+
     if (profile->canTakeAction(Profile::Action::UP, controllerID))
     {
         direciton = Direction::NEUTRAL;
@@ -41,7 +45,7 @@ void Character::handleInput()
     if (profile->canTakeAction(Profile::Action::DOWN, controllerID))
     {
         direciton = Direction::DOWN;
-        // implement crouch
+        // implement crouch?
     }
 
     if (profile->canTakeAction(Profile::Action::RIGHT, controllerID))
@@ -66,39 +70,29 @@ void Character::handleInput()
     if (profile->canTakeAction(Profile::Action::LIGHT_ATTACK, controllerID))
     {
         if (direciton == Direction::NEUTRAL && attacks.find(AttackType::NEUTRAL_LIGHT) != attacks.end())
-        {
-            if (auto ptr = dynamic_cast<ProjectileAttack *>(attacks.at(AttackType::NEUTRAL_LIGHT).get()))
-                ptr->spawnProjectile(facingRight, hitbox.getPos()); // The projectile should go the same way the character is facing
-        }
-        if (direciton == Direction::SIDE && attacks.find(AttackType::SIDE_LIGHT) != attacks.end())
-        {
-            if (auto ptr = dynamic_cast<ProjectileAttack *>(attacks.at(AttackType::SIDE_LIGHT).get()))
-                ptr->spawnProjectile(facingRight, hitbox.getPos()); // The projectile should go the same way the character is facing
-        }
+            currentAttack = AttackType::NEUTRAL_LIGHT;
+
         if (direciton == Direction::DOWN && attacks.find(AttackType::DOWN_LIGHT) != attacks.end())
-        {
-            if (auto ptr = dynamic_cast<ProjectileAttack *>(attacks.at(AttackType::DOWN_LIGHT).get()))
-                ptr->spawnProjectile(facingRight, hitbox.getPos()); // The projectile should go the same way the character is facing
-        }
+            currentAttack = AttackType::DOWN_LIGHT;
+
+        if (direciton == Direction::SIDE && attacks.find(AttackType::SIDE_LIGHT) != attacks.end())
+            currentAttack = AttackType::SIDE_LIGHT;
+        startAttack();
+        return;
     }
 
     if (profile->canTakeAction(Profile::Action::HEAVY_ATTACK, controllerID))
     {
         if (direciton == Direction::NEUTRAL && attacks.find(AttackType::NEUTRAL_HEAVY) != attacks.end())
-        {
-            if (auto ptr = dynamic_cast<ProjectileAttack *>(attacks.at(AttackType::NEUTRAL_HEAVY).get()))
-                ptr->spawnProjectile(facingRight, hitbox.getPos()); // The projectile should go the same way the character is facing
-        }
-        if (direciton == Direction::SIDE && attacks.find(AttackType::SIDE_HEAVY) != attacks.end())
-        {
-            if (auto ptr = dynamic_cast<ProjectileAttack *>(attacks.at(AttackType::SIDE_HEAVY).get()))
-                ptr->spawnProjectile(facingRight, hitbox.getPos()); // The projectile should go the same way the character is facing
-        }
+            currentAttack = AttackType::NEUTRAL_HEAVY;
+
         if (direciton == Direction::DOWN && attacks.find(AttackType::DOWN_HEAVY) != attacks.end())
-        {
-            if (auto ptr = dynamic_cast<ProjectileAttack *>(attacks.at(AttackType::DOWN_HEAVY).get()))
-                ptr->spawnProjectile(facingRight, hitbox.getPos()); // The projectile should go the same way the character is facing
-        }
+            currentAttack = AttackType::DOWN_HEAVY;
+
+        if (direciton == Direction::SIDE && attacks.find(AttackType::SIDE_HEAVY) != attacks.end())
+            currentAttack = AttackType::SIDE_HEAVY;
+        startAttack();
+        return;
     }
 
     if (profile->canTakeAction(Profile::Action::BLOCK, controllerID))
@@ -109,33 +103,121 @@ void Character::handleInput()
 
 void Character::update()
 {
-    handleInput();
-    applyForce();
-    updateAnimationState();
+    if (attacks.find(currentAttack) != attacks.end() && currentAttack != AttackType::NONE)
+    {
+        if ((*attacks.find(currentAttack)).second.get()->isDone())
+            currentAttack = AttackType::NONE;
+    }
 
-    if (animations.find(activeState) != animations.end())
-        animations.at(activeState).get()->update();
-    else
-        ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
+    handleInput();
+    updateAnimationState();
+    applyForce();
 
     for (auto a : attacks)
-        a.second.get()->update();
+    {
+        if (a.first == currentAttack)
+        {
+            a.second.get()->update();
+            continue;
+        }
+
+        if (auto ptr = dynamic_cast<ProjectileAttack *>(a.second.get()))
+            ptr->update();
+    }
+
+    if (currentAttack != AttackType::NONE)
+        return;
+
+    if (animations.find(activeState) != animations.end())
+    {
+        animations.at(activeState).get()->update();
+        return;
+    }
+
+    ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
 }
 
 void Character::draw() const
 {
-    if (animations.find(activeState) != animations.end())
-        animations.at(activeState).get()->draw();
+    for (const auto &a : attacks)
+    {
+        if (a.first == currentAttack)
+        {
+            if (a.second)
+            {
+                a.second->draw();
+            }
+            else
+            {
+                ICHI_ERROR("Attack with type {} has a null pointer.", static_cast<int>(a.first));
+            }
+            continue;
+        }
+
+        if (auto ptr = dynamic_cast<ProjectileAttack *>(a.second.get()))
+        {
+            ptr->draw();
+        }
+    }
+
+    if (currentAttack != AttackType::NONE)
+    {
+        if (attacks.find(currentAttack) == attacks.end())
+        {
+            ICHI_ERROR("Invalid current attack: {} not found in attacks map.", static_cast<int>(currentAttack));
+        }
+        return;
+    }
+
+    auto animIt = animations.find(activeState);
+    if (animIt != animations.end() && animIt->second)
+    {
+        animIt->second->draw();
+    }
     else
+    {
         ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
-    for (auto a : attacks)
-        a.second.get()->draw();
+    }
+}
+
+void Character::startAttack()
+{
+    if (currentAttack == AttackType::NONE)
+    {
+        ICHI_ERROR("Tried to start a attack with the attackType beeing NONE");
+        return;
+    }
+
+    if (attacks.find(currentAttack) == attacks.end())
+    {
+        ICHI_ERROR("Could not find attack with id: {} in map", static_cast<int>(currentAttack));
+        return;
+    }
+
+    auto attack = (*attacks.find(currentAttack)).second.get();
+
+    if (animations.find(activeState) != animations.end())
+    {
+        auto pos = (*animations.find(activeState)).second.get()->getHitbox().getPos();
+        attack->reset(pos);
+        return;
+    }
+
+    if (auto ptr = dynamic_cast<ProjectileAttack *>(attack))
+        ptr->spawnProjectile(facingRight, hitbox.getPos());
 }
 
 void Character::updateAnimationState()
 {
+
     if (facingRight)
     {
+        if (currentAttack != AttackType::NONE)
+        {
+            activeState = AnimationState::RIGHT_ATTACKING;
+            return;
+        }
+
         if (velocity.getY() < 0)
         {
             activeState = AnimationState::RIGHT_JUMPING;
@@ -153,6 +235,12 @@ void Character::updateAnimationState()
             return;
         }
         activeState = AnimationState::RIGHT_IDLE;
+        return;
+    }
+
+    if (currentAttack != AttackType::NONE)
+    {
+        activeState = AnimationState::LEFT_ATTACKING;
         return;
     }
 
