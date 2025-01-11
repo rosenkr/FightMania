@@ -33,7 +33,13 @@ namespace ichi::uicomponents
     void Textbox::update()
     {
         if (Mouse::DX() != 0 || Mouse::DY() != 0)
+        {
+            auto wasFocused = focused;
             focused = hitbox.pointIsInRect(datatypes::Point(Mouse::getX(), Mouse::getY()));
+
+            if ((wasFocused && !focused) || (!wasFocused && focused)) // updates texture on mouse enter and when mouse leaves
+                updateTextTexture();
+        }
 
         if (!focused)
             return;
@@ -104,7 +110,8 @@ namespace ichi::uicomponents
         }
 
         std::string temp = text;
-        temp.insert(temp.begin() + cursor, '|');
+        if (focused)
+            temp.insert(temp.begin() + cursor, '|');
 
         SDL_Surface *surf = TTF_RenderText_Blended(font, temp.c_str(), color);
 
