@@ -32,10 +32,13 @@ private:
 class ProjectileAttack : public Attack
 {
 public:
-    ProjectileAttack(std::shared_ptr<ichi::graphics::AnimatedSprite> animation, float speed, float dmg, Uint32 cooldownTime) : Attack(dmg), animation(std::move(animation)), speed(speed), cooldownTime(cooldownTime) {}
+    ProjectileAttack(std::shared_ptr<ichi::graphics::AnimatedSprite> pa, std::shared_ptr<ichi::graphics::AnimatedSprite> ca, float speed, float dmg, Uint32 cooldownTime)
+        : Attack(dmg), projectileAnimation(pa), characterAnimation(ca), speed(speed), cooldownTime(cooldownTime) {}
 
-    void update();
-    void draw() const;
+    void draw() const override;
+    void update() override;
+    void reset(ichi::datatypes::Point) override;
+    bool isDone() override { return characterAnimation.get()->hasCompleatedALap(); }
 
     void spawnProjectile(bool isGoingRight, ichi::datatypes::Point p);
     float getDamage() { return damage; }
@@ -43,7 +46,8 @@ public:
 
 private:
     std::vector<Projectile> projectiles;
-    std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
+    std::shared_ptr<ichi::graphics::AnimatedSprite> projectileAnimation;
+    std::shared_ptr<ichi::graphics::AnimatedSprite> characterAnimation;
     float speed;
     Uint32 cooldownTime;
     Uint32 lastSpawned = 0;

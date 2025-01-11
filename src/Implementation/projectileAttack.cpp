@@ -4,6 +4,8 @@
 
 void ProjectileAttack::update()
 {
+    if (!characterAnimation.get()->hasCompleatedALap())
+        characterAnimation.get()->update();
     for (auto it = projectiles.begin(); it != projectiles.end();)
     {
         it->moveInDirectionWithSpeed();
@@ -16,8 +18,17 @@ void ProjectileAttack::update()
 
 void ProjectileAttack::draw() const
 {
+    if (!characterAnimation.get()->hasCompleatedALap())
+        characterAnimation.get()->draw();
     for (auto p : projectiles)
         p.draw();
+}
+
+void ProjectileAttack::reset(ichi::datatypes::Point pt)
+{
+    characterAnimation.get()->setX(pt.X);
+    characterAnimation.get()->setY(pt.Y);
+    characterAnimation.get()->reset();
 }
 
 void ProjectileAttack::spawnProjectile(bool isGoingRight, ichi::datatypes::Point p)
@@ -25,10 +36,13 @@ void ProjectileAttack::spawnProjectile(bool isGoingRight, ichi::datatypes::Point
     if (SDL_GetTicks() < lastSpawned + cooldownTime)
         return;
 
+    characterAnimation.get()->setX(p.X);
+    characterAnimation.get()->setY(p.Y);
+
     if (isGoingRight)
-        projectiles.push_back(Projectile(animation, speed, p));
+        projectiles.push_back(Projectile(projectileAnimation, speed, p));
     else
-        projectiles.push_back(Projectile(animation, -speed, p));
+        projectiles.push_back(Projectile(projectileAnimation, -speed, p));
     lastSpawned = SDL_GetTicks();
 }
 
