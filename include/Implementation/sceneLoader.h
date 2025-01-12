@@ -84,17 +84,25 @@ private:
 
     inline static std::map<int, Uint32> SWORD_SLASH_TIME = {{0, 150}, {1, 150}, {2, 150}};
 
-    inline static const std::string KENNY_FALLING_LEFT = constants::gResPath + "images/kenny/falling/Left";
-    inline static const std::string KENNY_JUMPING_LEFT = constants::gResPath + "images/kenny/jumping/Left";
+    inline static const std::string KENNY_FALLING_LEFT = constants::gResPath + "images/kenny/falling/left";
+    inline static const std::string KENNY_FALLING_RIGHT = constants::gResPath + "images/kenny/falling/right";
+    inline static const std::string KENNY_JUMPING_LEFT = constants::gResPath + "images/kenny/jumping/left";
+    inline static const std::string KENNY_JUMPING_RIGHT = constants::gResPath + "images/kenny/jumping/right";
 
     inline static const std::string KENNY_IDLE_LEFT = constants::gResPath + "images/kenny/idle/left";
+    inline static const std::string KENNY_IDLE_RIGHT = constants::gResPath + "images/kenny/idle/right";
     inline static const std::string KENNY_WALK_LEFT = constants::gResPath + "images/kenny/walk/left";
+    inline static const std::string KENNY_WALK_RIGHT = constants::gResPath + "images/kenny/walk/right";
 
-    inline static const std::string KENNY_NEUTRAL_HEAVY_LEFT = constants::gResPath + "images/kenny/neutralHeavy/Left";
-    inline static const std::string KENNY_SIDE_HEAVY_LEFT = constants::gResPath + "images/kenny/sideHeavy/Left";
+    inline static const std::string KENNY_NEUTRAL_HEAVY_RIGHT = constants::gResPath + "images/kenny/neutralHeavy/left";
+    inline static const std::string KENNY_NEUTRAL_HEAVY_LEFT = constants::gResPath + "images/kenny/neutralHeavy/right";
+    inline static const std::string KENNY_SIDE_HEAVY_LEFT = constants::gResPath + "images/kenny/sideHeavy/left";
+    inline static const std::string KENNY_SIDE_HEAVY_RIGHT = constants::gResPath + "images/kenny/sideHeavy/right";
     inline static const std::string KENNY_SIDE_LIGHT_LEFT = constants::gResPath + "images/kenny/sideLight/left";
+    inline static const std::string KENNY_SIDE_LIGHT_RIGHT = constants::gResPath + "images/kenny/sideLight/right";
 
-    inline static const std::string SWORD_SLASH_LEFT = constants::gResPath + "images/kenny/swordSlash/Left";
+    inline static const std::string SWORD_SLASH_LEFT = constants::gResPath + "images/kenny/swordSlash/left";
+    inline static const std::string SWORD_SLASH_RIGHT = constants::gResPath + "images/kenny/swordSlash/right";
 
     inline static const std::string DARK_BLUE_SCREEN_PATH = constants::gResPath + "images/BackGrounds/DarkBlueScreen.png";
     inline static const std::string CHARACTER_SELECTION_PATH = constants::gResPath + "images/BackGrounds/CharcterSelection.png";

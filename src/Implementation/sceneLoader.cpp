@@ -264,33 +264,47 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes:
     datatypes::Hitbox slash(datatypes::Point(0, 0), 35, 70, false);
 
     auto walkLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_LEFT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
+    auto walkRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_RIGHT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
+
     auto idleLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_IDLE_LEFT, KENNY_IDLE_TIME.size(), KENNY_IDLE_TIME);
+    auto idleRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_IDLE_RIGHT, KENNY_IDLE_TIME.size(), KENNY_IDLE_TIME);
+
     auto fallingLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_FALLING_LEFT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
+    auto fallingRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_FALLING_RIGHT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
+
     auto jumpingLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_JUMPING_LEFT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
+    auto jumpingRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_JUMPING_RIGHT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
 
     std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {
         {Character::AnimationState::LEFT_WALKING, walkLeftAnimation},
         {Character::AnimationState::LEFT_IDLE, idleLeftAnimation},
         {Character::AnimationState::LEFT_FALLING, fallingLeftAnimation},
-        {Character::AnimationState::LEFT_JUMPING, jumpingLeftAnimation}};
+        {Character::AnimationState::LEFT_JUMPING, jumpingLeftAnimation},
 
-    auto sideLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
-    auto downLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
-    auto neutralLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+        {Character::AnimationState::RIGHT_WALKING, walkRightAnimation},
+        {Character::AnimationState::RIGHT_IDLE, idleRightAnimation},
+        {Character::AnimationState::RIGHT_FALLING, fallingRightAnimation},
+        {Character::AnimationState::RIGHT_JUMPING, jumpingRightAnimation},
+    };
 
-    auto sideHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
-    auto downHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
-    auto neutralHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_NEUTRAL_HEAVY_LEFT, KENNY_NEUTRAL_HEAVY_TIME.size(), KENNY_NEUTRAL_HEAVY_TIME);
+    auto leftSideLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto leftDownLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto leftNeutralLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
 
-    auto swordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_LEFT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
+    auto leftSideHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
+    auto leftDownHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
+    auto leftNeutralHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_NEUTRAL_HEAVY_LEFT, KENNY_NEUTRAL_HEAVY_TIME.size(), KENNY_NEUTRAL_HEAVY_TIME);
 
-    auto sideLight = std::make_shared<MeleeAttack>(10, sideLightAnimation, sideLightAnimation);
-    auto downLight = std::make_shared<MeleeAttack>(10, sideLightAnimation, sideLightAnimation);
-    auto neutralLight = std::make_shared<MeleeAttack>(10, sideLightAnimation, sideLightAnimation);
+    auto leftSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_LEFT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
+    auto rightSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_RIGHT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
 
-    auto sideHeavy = std::make_shared<MeleeAttack>(10, sideHeavyAnimation, sideHeavyAnimation);
-    auto downHeavy = std::make_shared<ProjectileAttack>(swordSlash, neutralHeavyAnimation, 1, 10, 2000);
-    auto neutralHeavy = std::make_shared<ProjectileAttack>(swordSlash, neutralHeavyAnimation, 1, 10, 2000);
+    auto sideLight = std::make_shared<MeleeAttack>(10, leftSideLightAnimation, leftSideLightAnimation);
+    auto downLight = std::make_shared<MeleeAttack>(10, leftSideLightAnimation, leftSideLightAnimation);
+    auto neutralLight = std::make_shared<MeleeAttack>(10, leftSideLightAnimation, leftSideLightAnimation);
+
+    auto sideHeavy = std::make_shared<MeleeAttack>(10, leftSideHeavyAnimation, leftSideHeavyAnimation);
+    auto downHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, leftNeutralHeavyAnimation, 1, 10, 2000);
+    auto neutralHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, leftNeutralHeavyAnimation, 1, 10, 2000);
 
     std::map<Character::AttackType, std::shared_ptr<Attack>> attacks = {
         {Character::AttackType::SIDE_LIGHT, sideLight},
