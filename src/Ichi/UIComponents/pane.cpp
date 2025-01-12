@@ -1,5 +1,7 @@
 #include "Ichi/UIComponents/pane.h"
 
+#include "Ichi/UIComponents/textbox.h"
+
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Input/keyboard.h"
 
@@ -12,13 +14,19 @@ namespace ichi::uicomponents
     {
         lastFocused = focused;
 
+        bool everyComponentIsUnFocused = true;
+
         for (auto c : uiComponents)
         {
             c.second.get()->update();
-            if (c.second.get()->isFocused() && c.second.get()->getHitbox().getPos() != focused)
+            if (c.second.get()->isFocused())
             {
-                focused = c.first;
-                break;
+                everyComponentIsUnFocused = false;
+                if (c.second.get()->getHitbox().getPos() != focused)
+                {
+                    focused = c.first;
+                    break;
+                }
             }
         }
 
@@ -29,6 +37,12 @@ namespace ichi::uicomponents
 
         if ((down && up) || (left && right))
             return;
+
+        if (everyComponentIsUnFocused && !(down || up || left || right)) //
+        {
+            focused = {-1, -1};
+            return;
+        }
 
         datatypes::Point p;
 
@@ -50,14 +64,28 @@ namespace ichi::uicomponents
         {
             p = findClosestPoint(-1, 0);
             if (p != datatypes::Point{-1, -1})
+            {
+                auto it = uiComponents.find(focused);
+                if (it != uiComponents.end())
+                    if (auto ptr = dynamic_cast<uicomponents::Textbox *>(it->second.get()))
+                        if (left && ptr->canMoveCursorLeft())
+                            return;
                 focused = p;
+            }
         }
 
         if (right)
         {
             p = findClosestPoint(1, 0);
             if (p != datatypes::Point{-1, -1})
+            {
+                auto it = uiComponents.find(focused);
+                if (it != uiComponents.end())
+                    if (auto ptr = dynamic_cast<uicomponents::Textbox *>(it->second.get()))
+                        if (right && ptr->canMoveCursorRight())
+                            return;
                 focused = p;
+            }
         }
 
         if (lastFocused != focused && uiComponents.find(lastFocused) != uiComponents.end())
