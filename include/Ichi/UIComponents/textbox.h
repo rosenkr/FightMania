@@ -27,6 +27,9 @@ namespace ichi::uicomponents
         }
         void clear();
 
+        bool canMoveCursorLeft();
+        bool canMoveCursorRight();
+
         ~Textbox() = default;
 
     private:
@@ -42,6 +45,8 @@ namespace ichi::uicomponents
         SDL_Texture *texture = nullptr;
 
         void updateTextTexture();
+
+        bool wasFocused = false;
     };
 
 } // namespace ichi::uicomponents
