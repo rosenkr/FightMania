@@ -218,12 +218,12 @@ void Character::updateAnimationState()
             return;
         }
 
-        if (velocity.getY() < 0)
+        if (velocity.getY() < 0 && !grounded)
         {
             activeState = AnimationState::RIGHT_JUMPING;
             return;
         }
-        if (velocity.getY() > 0)
+        if (velocity.getY() > 0 && !grounded)
         {
             activeState = AnimationState::RIGHT_FALLING;
             return;
