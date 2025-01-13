@@ -14,6 +14,35 @@
 
 void Character::draw() const
 {
+    healthBar.get()->draw();
+
+    switch (wins)
+    {
+    case 0:
+        emptyWin1.get()->draw();
+        emptyWin2.get()->draw();
+        emptyWin3.get()->draw();
+        break;
+    case 1:
+        win1.get()->draw();
+        emptyWin2.get()->draw();
+        emptyWin3.get()->draw();
+        break;
+    case 2:
+        win1.get()->draw();
+        win2.get()->draw();
+        emptyWin3.get()->draw();
+        break;
+    case 3:
+        win1.get()->draw();
+        win2.get()->draw();
+        win3.get()->draw();
+        break;
+
+    default:
+        break;
+    }
+
     for (const auto &a : attacks)
     {
         if (a.first == currentAttack)
@@ -53,6 +82,8 @@ void Character::draw() const
 
 void Character::update()
 {
+    healthBar.get()->setProcentageFilled(hp / MAX_HP);
+
     if (attacks.find(currentAttack) != attacks.end() && currentAttack != AttackType::NONE)
         if ((*attacks.find(currentAttack)).second.get()->isDone())
             currentAttack = AttackType::NONE;
@@ -249,6 +280,22 @@ void Character::updateAnimationState()
         return;
     }
     activeState = AnimationState::LEFT_IDLE;
+}
+
+void Character::setPosition(ichi::datatypes::Point pt)
+{
+    for (auto animation : animations)
+    {
+        animation.second.get()->setX(pt.X);
+        animation.second.get()->setY(pt.Y);
+    }
+}
+
+void Character::checkForHit(Character &other)
+{
+    for (auto attack : attacks)
+        if (attack.second.get()->hits(other))
+            other.takeDamage(attack.second.get()->getDamage());
 }
 
 void Character::checkGroundCollision()
