@@ -108,14 +108,12 @@ void SceneLoader::changeSceneToDojo()
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
     {
-        if (ptr->getSelected() == ROBOT)
-            blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID);
         if (ptr->getSelected() == KENNY)
             blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID);
     }
 
     // placeholder for the dummy
-    dummy = createRobot(ProfileHandler::getProfile(blueProfile), redCharacterHitbox, controllerID);
+    dummy = createKenny(ProfileHandler::getProfile(blueProfile), redCharacterHitbox, controllerID);
 
     if (blueCharacter == nullptr || dummy == nullptr)
     {
@@ -169,16 +167,12 @@ void SceneLoader::changeSceneToCyberPunk()
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
     {
-        if (ptr->getSelected() == ROBOT)
-            blueCharacter = createRobot(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID);
         if (ptr->getSelected() == KENNY)
             blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID);
     }
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(redCharacterDropdownHB.getPos())))
     {
-        if (ptr->getSelected() == ROBOT)
-            redCharacter = createRobot(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID);
         if (ptr->getSelected() == KENNY)
             redCharacter = createKenny(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID);
     }
@@ -238,27 +232,6 @@ std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::H
     return std::make_shared<uicomponents::SlideBar>(hb, sprite, sliderWidth, sliderHeight, slider, focusedSlider, ptr);
 }
 
-std::shared_ptr<Character> SceneLoader::createRobot(const Profile *p, datatypes::Hitbox &hb, int controllerID)
-{
-    std::vector<std::string> fireballPaths = {FB_PATH0, FB_PATH1, FB_PATH2, FB_PATH3};
-    std::map<int, Uint32> fireballTimes = {{0, 200}, {1, 200}, {2, 200}, {3, 200}};
-
-    datatypes::Hitbox fireBallHB(datatypes::Point(0, 50), 60, 40, false);
-
-    auto animation = std::make_shared<ichi::graphics::AnimatedSprite>(fireBallHB, UI_LAYER, fireballPaths, fireballTimes);
-
-    std::vector<std::string> paths = {ROBOT_PATH0, ROBOT_PATH1, ROBOT_PATH2, ROBOT_PATH3};
-    auto walkAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, paths, std::map<int, Uint32>{{0, 200}, {1, 200}, {2, 200}, {3, 200}});
-
-    auto fb = std::make_shared<ProjectileAttack>(animation, walkAnimation, 2, 20, 1000);
-
-    std::map<Character::AttackType, std::shared_ptr<Attack>> robotAttacks = {{Character::AttackType::SIDE_HEAVY, fb}};
-
-    std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {{Character::AnimationState::LEFT_WALKING, walkAnimation}};
-
-    return std::make_shared<Character>(hb, animations, p, robotAttacks, controllerID);
-}
-
 std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID)
 {
     datatypes::Hitbox slash(datatypes::Point(0, 0), 35, 70, false);
@@ -295,16 +268,24 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes:
     auto leftDownHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
     auto leftNeutralHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_NEUTRAL_HEAVY_LEFT, KENNY_NEUTRAL_HEAVY_TIME.size(), KENNY_NEUTRAL_HEAVY_TIME);
 
+    auto rightSideLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_RIGHT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto rightDownLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_RIGHT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto rightNeutralLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_RIGHT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+
+    auto rightSideHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_RIGHT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
+    auto rightDownHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_RIGHT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
+    auto rightNeutralHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_NEUTRAL_HEAVY_RIGHT, KENNY_NEUTRAL_HEAVY_TIME.size(), KENNY_NEUTRAL_HEAVY_TIME);
+
     auto leftSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_LEFT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
     auto rightSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_RIGHT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
 
-    auto sideLight = std::make_shared<MeleeAttack>(10, leftSideLightAnimation, leftSideLightAnimation);
-    auto downLight = std::make_shared<MeleeAttack>(10, leftSideLightAnimation, leftSideLightAnimation);
-    auto neutralLight = std::make_shared<MeleeAttack>(10, leftSideLightAnimation, leftSideLightAnimation);
+    auto sideLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation);
+    auto downLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation);
+    auto neutralLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation);
 
-    auto sideHeavy = std::make_shared<MeleeAttack>(10, leftSideHeavyAnimation, leftSideHeavyAnimation);
-    auto downHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, leftNeutralHeavyAnimation, 1, 10, 2000);
-    auto neutralHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, leftNeutralHeavyAnimation, 1, 10, 2000);
+    auto sideHeavy = std::make_shared<MeleeAttack>(10, 1000, leftSideHeavyAnimation, rightSideHeavyAnimation);
+    auto downHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 1, 10, 2000);
+    auto neutralHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 1, 10, 2000);
 
     std::map<Character::AttackType, std::shared_ptr<Attack>> attacks = {
         {Character::AttackType::SIDE_LIGHT, sideLight},
@@ -456,9 +437,9 @@ void SceneLoader::createLocalPlayMenu()
     auto startMatchBtn = createButton(startMatchHb, "Start Match", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToCyberPunk);
 
     auto redProfileMenu = createMenu(redProfileDropdownHB, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
-    auto redCharacterMenu = createMenu(redCharacterDropdownHB, {ROBOT, KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto redCharacterMenu = createMenu(redCharacterDropdownHB, {KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto blueProfileMenu = createMenu(blueProfileDropdownHB, {"TestBlue"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
-    auto blueCharacterMenu = createMenu(blueCharacterDropdownHB, {ROBOT, KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto blueCharacterMenu = createMenu(blueCharacterDropdownHB, {KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
     auto characterSelectionBackground = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, CHARACTER_SELECTION_PATH);
 
@@ -480,7 +461,7 @@ void SceneLoader::createTrainingMenu()
     auto returnBtnT = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto startTrainingBtn = createButton(hbStartTraining, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
     auto profileMenu = createMenu(blueProfileDropdownHB, {"TestTraining"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
-    auto characterMenu = createMenu(blueCharacterDropdownHB, {ROBOT, KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
+    auto characterMenu = createMenu(blueCharacterDropdownHB, {KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
 
     auto trainingPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnT, profileMenu, characterMenu, startTrainingBtn});
 

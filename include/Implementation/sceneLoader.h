@@ -94,8 +94,8 @@ private:
     inline static const std::string KENNY_WALK_LEFT = constants::gResPath + "images/kenny/walk/left";
     inline static const std::string KENNY_WALK_RIGHT = constants::gResPath + "images/kenny/walk/right";
 
-    inline static const std::string KENNY_NEUTRAL_HEAVY_RIGHT = constants::gResPath + "images/kenny/neutralHeavy/left";
-    inline static const std::string KENNY_NEUTRAL_HEAVY_LEFT = constants::gResPath + "images/kenny/neutralHeavy/right";
+    inline static const std::string KENNY_NEUTRAL_HEAVY_LEFT = constants::gResPath + "images/kenny/neutralHeavy/left";
+    inline static const std::string KENNY_NEUTRAL_HEAVY_RIGHT = constants::gResPath + "images/kenny/neutralHeavy/right";
     inline static const std::string KENNY_SIDE_HEAVY_LEFT = constants::gResPath + "images/kenny/sideHeavy/left";
     inline static const std::string KENNY_SIDE_HEAVY_RIGHT = constants::gResPath + "images/kenny/sideHeavy/right";
     inline static const std::string KENNY_SIDE_LIGHT_LEFT = constants::gResPath + "images/kenny/sideLight/left";
@@ -111,7 +111,6 @@ private:
     inline static const std::string CP_PATH = constants::gResPath + "images/BackGrounds/Cyberpunk.png";
 
     // Character names
-    inline static const std::string ROBOT = "ROBOT";
     inline static const std::string KENNY = "KENNY";
 
     inline static const graphics::Sprite::Layer UI_LAYER = graphics::Sprite::Layer::UICOMPONENT;
@@ -151,7 +150,6 @@ private:
     static std::shared_ptr<uicomponents::Textbox> createTextbox(datatypes::Hitbox &, const std::string &, const std::string &, int);
     static std::shared_ptr<uicomponents::Checkbox> createCheckbox(datatypes::Hitbox &);
     static std::shared_ptr<uicomponents::SlideBar> createSlideBar(datatypes::Hitbox &, const std::string &, int, int, const std::string &, const std::string &, std::function<void(float)>);
-    static std::shared_ptr<Character> createRobot(const Profile *p, datatypes::Hitbox &hb, int controllerID = -1);
     static std::shared_ptr<Character> createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID);
 
     static void createPopUpMenu();
