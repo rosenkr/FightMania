@@ -31,12 +31,10 @@ public:
         LEFT_WALKING,
         LEFT_JUMPING,
         LEFT_FALLING,
-        LEFT_ATTACKING,
         RIGHT_IDLE,
         RIGHT_WALKING,
         RIGHT_JUMPING,
         RIGHT_FALLING,
-        RIGHT_ATTACKING,
     };
 
     enum class AttackType
@@ -56,6 +54,7 @@ public:
     void update();
     void draw() const;
     void setDirection(bool facingRight) { this->facingRight = facingRight; }
+    bool isFacingRight() const { return facingRight; }
 
     void setPosition(ichi::datatypes::Point &pt);
 

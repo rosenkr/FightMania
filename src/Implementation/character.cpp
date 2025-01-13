@@ -12,6 +12,81 @@
 
 #include <algorithm>
 
+void Character::draw() const
+{
+    for (const auto &a : attacks)
+    {
+        if (a.first == currentAttack)
+        {
+            if (a.second)
+                a.second->draw(facingRight);
+            else
+                ICHI_ERROR("Attack with type {} has a null pointer.", static_cast<int>(a.first));
+            continue;
+        }
+
+        if (auto ptr = dynamic_cast<ProjectileAttack *>(a.second.get()))
+        {
+            ptr->draw(facingRight);
+        }
+    }
+
+    if (currentAttack != AttackType::NONE)
+    {
+        if (attacks.find(currentAttack) == attacks.end())
+        {
+            ICHI_ERROR("Invalid current attack: {} not found in attacks map.", static_cast<int>(currentAttack));
+        }
+        return;
+    }
+
+    auto animIt = animations.find(activeState);
+    if (animIt != animations.end() && animIt->second)
+    {
+        animIt->second->draw();
+    }
+    else
+    {
+        ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
+    }
+}
+
+void Character::update()
+{
+    if (attacks.find(currentAttack) != attacks.end() && currentAttack != AttackType::NONE)
+        if ((*attacks.find(currentAttack)).second.get()->isDone())
+            currentAttack = AttackType::NONE;
+
+    handleInput();
+    updateAnimationState();
+    applyForce();
+
+    if (animations.find(activeState) == animations.end())
+    {
+        ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
+        return;
+    }
+
+    for (auto a : attacks)
+    {
+        auto pos = (*animations.find(activeState)).second.get()->getHitbox().getPos();
+
+        if (a.first == currentAttack)
+        {
+            a.second.get()->update(pos, facingRight);
+            continue;
+        }
+
+        if (auto ptr = dynamic_cast<ProjectileAttack *>(a.second.get()))
+            ptr->update(pos, facingRight);
+    }
+
+    if (currentAttack != AttackType::NONE)
+        return;
+
+    animations.at(activeState).get()->update();
+}
+
 void Character::applyForce()
 {
     // Applies gravity
@@ -101,85 +176,6 @@ void Character::handleInput()
         isBlocking = false;
 }
 
-void Character::update()
-{
-    if (attacks.find(currentAttack) != attacks.end() && currentAttack != AttackType::NONE)
-    {
-        if ((*attacks.find(currentAttack)).second.get()->isDone())
-            currentAttack = AttackType::NONE;
-    }
-
-    handleInput();
-    updateAnimationState();
-    applyForce();
-
-    for (auto a : attacks)
-    {
-        if (a.first == currentAttack)
-        {
-            a.second.get()->update();
-            continue;
-        }
-
-        if (auto ptr = dynamic_cast<ProjectileAttack *>(a.second.get()))
-            ptr->update();
-    }
-
-    if (currentAttack != AttackType::NONE)
-        return;
-
-    if (animations.find(activeState) != animations.end())
-    {
-        animations.at(activeState).get()->update();
-        return;
-    }
-
-    ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
-}
-
-void Character::draw() const
-{
-    for (const auto &a : attacks)
-    {
-        if (a.first == currentAttack)
-        {
-            if (a.second)
-            {
-                a.second->draw();
-            }
-            else
-            {
-                ICHI_ERROR("Attack with type {} has a null pointer.", static_cast<int>(a.first));
-            }
-            continue;
-        }
-
-        if (auto ptr = dynamic_cast<ProjectileAttack *>(a.second.get()))
-        {
-            ptr->draw();
-        }
-    }
-
-    if (currentAttack != AttackType::NONE)
-    {
-        if (attacks.find(currentAttack) == attacks.end())
-        {
-            ICHI_ERROR("Invalid current attack: {} not found in attacks map.", static_cast<int>(currentAttack));
-        }
-        return;
-    }
-
-    auto animIt = animations.find(activeState);
-    if (animIt != animations.end() && animIt->second)
-    {
-        animIt->second->draw();
-    }
-    else
-    {
-        ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
-    }
-}
-
 void Character::startAttack()
 {
     if (currentAttack == AttackType::NONE)
@@ -196,27 +192,24 @@ void Character::startAttack()
 
     auto attack = (*attacks.find(currentAttack)).second.get();
 
-    if (animations.find(activeState) != animations.end())
+    if (!attack->canAttack())
     {
-        auto pos = (*animations.find(activeState)).second.get()->getHitbox().getPos();
-        attack->reset(pos);
+        currentAttack = AttackType::NONE;
         return;
     }
 
+    attack->reset();
     if (auto ptr = dynamic_cast<ProjectileAttack *>(attack))
         ptr->spawnProjectile(facingRight, hitbox.getPos());
 }
 
 void Character::updateAnimationState()
 {
+    if (currentAttack != AttackType::NONE)
+        return;
 
     if (facingRight)
     {
-        if (currentAttack != AttackType::NONE)
-        {
-            activeState = AnimationState::RIGHT_ATTACKING;
-            return;
-        }
 
         if (velocity.getY() < 0 && !grounded)
         {
@@ -238,17 +231,12 @@ void Character::updateAnimationState()
         return;
     }
 
-    if (currentAttack != AttackType::NONE)
-    {
-        activeState = AnimationState::LEFT_ATTACKING;
-        return;
-    }
-
     if (velocity.getY() < 0 && !grounded)
     {
         activeState = AnimationState::LEFT_JUMPING;
         return;
     }
+
     if (velocity.getY() > 0 && !grounded)
     {
         activeState = AnimationState::LEFT_FALLING;
