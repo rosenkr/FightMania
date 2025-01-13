@@ -28,7 +28,7 @@ namespace ichi::uicomponents
     {
         auto hb = datatypes::Hitbox(datatypes::Point(hitbox.getX(), hitbox.getY()), hitbox.getWidth() * procentageFilled, hitbox.getHeight(), false);
         if (isMirrored)
-            hb.setX(hitbox.getX() - hb.getWidth());
+            hb.setX(hitbox.getX() + (hitbox.getWidth() - hb.getWidth()));
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), color, NULL, hb.getSDLRect());
 
         bar.draw();
