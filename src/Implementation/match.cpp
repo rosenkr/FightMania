@@ -3,7 +3,7 @@
 #include "Ichi/Scene/sceneManager.h"
 #include "Implementation/cutsceneHandler.h"
 
-Match::Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red)
+Match::Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red, TTF_Font *font)
     : core::Component(datatypes::Hitbox(datatypes::Point(0, 0), 384, 224, false)), blueCharacter(std::move(blue)), redCharacter(std::move(red)),
       start(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, START_PATH, startTime.size(), startTime)),
       KO(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {KO_PATH}, KOTime)),
@@ -20,10 +20,13 @@ Match::Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red)
 
     startSet();
     timeStarted = SDL_GetTicks();
+
+    time = std::make_unique<uicomponents::Label>(datatypes::Point(192, 10), "test", font, SDL_Color{255, 255, 0, 255});
 }
 
 void Match::draw() const
 {
+    time.get()->draw();
     blueCharacter.get()->draw();
     redCharacter.get()->draw();
     CutsceneHandler::draw();
@@ -31,6 +34,8 @@ void Match::draw() const
 
 void Match::update()
 {
+    time.get()->updateText(std::to_string((MAX_TIME - SDL_GetTicks() + timeStarted) / 1000));
+
     if (!suddenDeathActive && SDL_GetTicks() - timeStarted > MAX_TIME)
     {
         suddenDeathActive = true;
@@ -46,10 +51,13 @@ void Match::update()
 
     if (end)
     {
-        scene::sceneManager::getActiveScene()->removeComponent(std::shared_ptr<core::Component>(this));
+        scene::sceneManager::getActiveScene()->removeComponent(this);
         scene::sceneManager::setActiveScene(1); // local play selection
         return;
     }
+
+    blueCharacter.get()->checkForHit(*redCharacter.get());
+    redCharacter.get()->checkForHit(*blueCharacter.get());
 
     if (blueCharacter.get()->getHitbox().getX() < redCharacter.get()->getHitbox().getX())
     {
@@ -74,8 +82,9 @@ void Match::update()
         {
             CutsceneHandler::addCutscene(redWins, redWinsSf.get());
             end = true;
-            return;
         }
+        else
+            startSet();
         return;
     }
 
@@ -91,8 +100,9 @@ void Match::update()
         {
             CutsceneHandler::addCutscene(blueWins, blueWinsSf.get());
             end = true;
-            return;
         }
+        else
+            startSet();
         return;
     }
 
@@ -102,18 +112,19 @@ void Match::update()
 
 void Match::startSuddenDeath()
 {
-    // blueCharacter.setPos(datatypes::Point(50, 50));
-    // redCharacter.setPos(datatypes::Point(300, 50));
-    // blueCharacter.setHP(1);
-    // redCharacter.setHP(1);
+    blueCharacter.get()->setPosition(datatypes::Point(50, 50));
+    redCharacter.get()->setPosition(datatypes::Point(300, 50));
+    blueCharacter.get()->takeDamage(blueCharacter.get()->getHp() - 1); // sets the hp to 1
+    redCharacter.get()->takeDamage(redCharacter.get()->getHp() - 1);
     CutsceneHandler::addCutscene(start, startSf.get());
 }
 
 void Match::startSet()
 {
-    // blueCharacter.setPos(datatypes::Point(50, 50));
-    // redCharacter.setPos(datatypes::Point(300, 50));
-    // blueCharacter.resetHP();
-    // redCharacter.resetHP();
+    blueCharacter.get()->setPosition(datatypes::Point(50, 50));
+    redCharacter.get()->setPosition(datatypes::Point(300, 50));
+    blueCharacter.get()->resetHp();
+    redCharacter.get()->resetHp();
+    timeStarted = SDL_GetTicks();
     CutsceneHandler::addCutscene(start, startSf.get());
 }

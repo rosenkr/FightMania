@@ -4,6 +4,7 @@
 #include "Ichi/Core/component.h"
 #include "Ichi/Graphics/textureManager.h"
 #include "Ichi/Audio/audioPlayer.h"
+#include "Ichi/UIComponents/label.h"
 #include "Implementation/character.h"
 
 #include "Constants.h"
@@ -21,7 +22,7 @@ public:
                 Mix_FreeChunk(chunk);
         }
     };
-    Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red);
+    Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red, TTF_Font *font);
 
     void draw() const;
     void update();
@@ -79,6 +80,8 @@ private:
     ichi::graphics::AnimatedSprite perfect;
     ichi::graphics::AnimatedSprite blueWins;
     ichi::graphics::AnimatedSprite redWins;
+
+    std::unique_ptr<ichi::uicomponents::Label> time;
 };
 
 #endif // MATCH_H
