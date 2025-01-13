@@ -4,28 +4,41 @@
 #include "Ichi/Graphics/textureManager.h"
 #include "Ichi/log.h"
 
-MeleeAttack::MeleeAttack(float dmg, std::shared_ptr<ichi::graphics::AnimatedSprite> person, std::shared_ptr<ichi::graphics::AnimatedSprite> hitboxAnimation) : Attack(dmg), animation(person)
+MeleeAttack::MeleeAttack(float dmg, Uint32 cooldown, std::shared_ptr<ichi::graphics::AnimatedSprite> leftPerson, std::shared_ptr<ichi::graphics::AnimatedSprite> rightPerson)
+    : Attack(dmg, cooldown), left(leftPerson), right(rightPerson) {}
+
+void MeleeAttack::draw(bool isRight) const
 {
+    if (isRight)
+        right.get()->draw();
+    else
+        left.get()->draw();
 }
 
-void MeleeAttack::draw() const
+void MeleeAttack::update(ichi::datatypes::Point pt, bool isFacingRight)
 {
-    animation.get()->draw();
+    if (isFacingRight)
+    {
+        right.get()->setX(pt.X);
+        right.get()->setY(pt.Y);
+        right.get()->update();
+        return;
+    }
+    left.get()->setX(pt.X);
+    left.get()->setY(pt.Y);
+    left.get()->update();
 }
 
-void MeleeAttack::update()
+void MeleeAttack::reset()
 {
-    animation.get()->update();
-}
-
-void MeleeAttack::reset(ichi::datatypes::Point pt)
-{
-    animation.get()->setX(pt.X);
-    animation.get()->setY(pt.Y);
-    animation.get()->reset();
+    lastUsed = SDL_GetTicks();
+    left.get()->reset();
+    right.get()->reset();
 }
 
 bool MeleeAttack::hits(Character c)
 {
-    return hitboxes.at(animation.get()->getCurrentFrame()).isOverlapping(c.getHitbox());
+    if (c.isFacingRight())
+        return hitboxes.at(left.get()->getCurrentFrame()).isOverlapping(c.getHitbox());
+    return hitboxes.at(right.get()->getCurrentFrame()).isOverlapping(c.getHitbox());
 }

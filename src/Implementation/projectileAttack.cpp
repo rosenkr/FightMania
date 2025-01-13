@@ -2,10 +2,22 @@
 #include "Ichi/Core/window.h"
 #include "Ichi/log.h"
 
-void ProjectileAttack::update()
+void ProjectileAttack::update(ichi::datatypes::Point pt, bool isFacingRight)
 {
-    if (!characterAnimation.get()->hasCompleatedALap())
-        characterAnimation.get()->update();
+    if (!isFacingRight && !leftCharacterAnimation.get()->hasCompleatedALap())
+    {
+        leftCharacterAnimation.get()->setX(pt.X);
+        leftCharacterAnimation.get()->setY(pt.Y);
+        leftCharacterAnimation.get()->update();
+    }
+
+    if (isFacingRight && !rightCharacterAnimation.get()->hasCompleatedALap())
+    {
+        rightCharacterAnimation.get()->setX(pt.X);
+        rightCharacterAnimation.get()->setY(pt.Y);
+        rightCharacterAnimation.get()->update();
+    }
+
     for (auto it = projectiles.begin(); it != projectiles.end();)
     {
         it->moveInDirectionWithSpeed();
@@ -16,34 +28,31 @@ void ProjectileAttack::update()
     }
 }
 
-void ProjectileAttack::draw() const
+void ProjectileAttack::draw(bool isFacingRight) const
 {
-    if (!characterAnimation.get()->hasCompleatedALap())
-        characterAnimation.get()->draw();
+    if (!isFacingRight && !leftCharacterAnimation.get()->hasCompleatedALap())
+        leftCharacterAnimation.get()->draw();
+
+    if (isFacingRight && !rightCharacterAnimation.get()->hasCompleatedALap())
+        rightCharacterAnimation.get()->draw();
+
     for (auto p : projectiles)
         p.draw();
 }
 
-void ProjectileAttack::reset(ichi::datatypes::Point pt)
+void ProjectileAttack::reset()
 {
-    characterAnimation.get()->setX(pt.X);
-    characterAnimation.get()->setY(pt.Y);
-    characterAnimation.get()->reset();
+    leftCharacterAnimation.get()->reset();
+    rightCharacterAnimation.get()->reset();
 }
 
 void ProjectileAttack::spawnProjectile(bool isGoingRight, ichi::datatypes::Point p)
 {
-    if (SDL_GetTicks() < lastSpawned + cooldownTime)
-        return;
-
-    characterAnimation.get()->setX(p.X);
-    characterAnimation.get()->setY(p.Y);
-
+    lastUsed = SDL_GetTicks();
     if (isGoingRight)
-        projectiles.push_back(Projectile(projectileAnimation, speed, p));
+        projectiles.push_back(Projectile(rightProjectileAnimation, speed, p + ichi::datatypes::Point{60, 0}));
     else
-        projectiles.push_back(Projectile(projectileAnimation, -speed, p));
-    lastSpawned = SDL_GetTicks();
+        projectiles.push_back(Projectile(leftProjectileAnimation, -speed, p + ichi::datatypes::Point{60, 0}));
 }
 
 bool ProjectileAttack::hits(Character c)

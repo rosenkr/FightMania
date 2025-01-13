@@ -6,10 +6,12 @@
 
 #include <memory>
 
+typedef std::shared_ptr<ichi::graphics::AnimatedSprite> AnimatedSprite;
+
 class Projectile
 {
 public:
-    Projectile(std::shared_ptr<ichi::graphics::AnimatedSprite> animation, float speed, ichi::datatypes::Point pos) : speed(speed)
+    Projectile(AnimatedSprite animation, float speed, ichi::datatypes::Point pos) : speed(speed)
     {
         this->animation = std::make_shared<ichi::graphics::AnimatedSprite>(*animation.get());
         this->animation.get()->setX(pos.X);
@@ -25,20 +27,20 @@ public:
     const ichi::datatypes::Hitbox &getHitbox() { return animation.get()->getHitbox(); }
 
 private:
-    std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
+    AnimatedSprite animation;
     float speed;
 };
 
 class ProjectileAttack : public Attack
 {
 public:
-    ProjectileAttack(std::shared_ptr<ichi::graphics::AnimatedSprite> pa, std::shared_ptr<ichi::graphics::AnimatedSprite> ca, float speed, float dmg, Uint32 cooldownTime)
-        : Attack(dmg), projectileAnimation(pa), characterAnimation(ca), speed(speed), cooldownTime(cooldownTime) {}
+    ProjectileAttack(AnimatedSprite paLeft, AnimatedSprite paRight, AnimatedSprite caLeft, AnimatedSprite caRight, float speed, float dmg, Uint32 cooldownTime)
+        : Attack(dmg, cooldownTime), leftProjectileAnimation(paLeft), rightProjectileAnimation(paRight), leftCharacterAnimation(caLeft), rightCharacterAnimation(caRight), speed(speed) {}
 
-    void draw() const override;
-    void update() override;
-    void reset(ichi::datatypes::Point) override;
-    bool isDone() override { return characterAnimation.get()->hasCompleatedALap(); }
+    void draw(bool) const override;
+    void update(ichi::datatypes::Point, bool) override;
+    void reset() override;
+    bool isDone() override { return leftCharacterAnimation.get()->hasCompleatedALap() || rightCharacterAnimation.get()->hasCompleatedALap(); }
 
     void spawnProjectile(bool isGoingRight, ichi::datatypes::Point p);
     float getDamage() { return damage; }
@@ -46,11 +48,11 @@ public:
 
 private:
     std::vector<Projectile> projectiles;
-    std::shared_ptr<ichi::graphics::AnimatedSprite> projectileAnimation;
-    std::shared_ptr<ichi::graphics::AnimatedSprite> characterAnimation;
+    AnimatedSprite leftProjectileAnimation;
+    AnimatedSprite rightProjectileAnimation;
+    AnimatedSprite leftCharacterAnimation;
+    AnimatedSprite rightCharacterAnimation;
     float speed;
-    Uint32 cooldownTime;
-    Uint32 lastSpawned = 0;
 };
 
 #endif

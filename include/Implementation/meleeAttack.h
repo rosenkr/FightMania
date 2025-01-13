@@ -10,19 +10,19 @@
 class MeleeAttack : public Attack
 {
 public:
-    MeleeAttack(float dmg, std::shared_ptr<ichi::graphics::AnimatedSprite> person, std::shared_ptr<ichi::graphics::AnimatedSprite> hitboxAnimation);
+    MeleeAttack(float dmg, Uint32 cooldown, std::shared_ptr<ichi::graphics::AnimatedSprite> leftPerson, std::shared_ptr<ichi::graphics::AnimatedSprite> rightPerson);
     ~MeleeAttack() = default;
 
-    void draw() const override;
-    void update() override;
-    void reset(ichi::datatypes::Point) override;
+    void draw(bool) const override;
+    void update(ichi::datatypes::Point, bool) override;
+    void reset() override;
     bool hits(Character c) override;
-    bool isDone() override { return animation.get()->hasCompleatedALap(); }
+    bool isDone() override { return left.get()->hasCompleatedALap() || right.get()->hasCompleatedALap(); }
 
 private:
-    std::shared_ptr<ichi::graphics::AnimatedSprite> animation;
+    std::shared_ptr<ichi::graphics::AnimatedSprite> left;
+    std::shared_ptr<ichi::graphics::AnimatedSprite> right;
     std::map<int, ichi::datatypes::Hitbox> hitboxes;
-    std::vector<ichi::datatypes::Point> getNonTransparentPixels(SDL_Surface *surface);
 };
 
 #endif
