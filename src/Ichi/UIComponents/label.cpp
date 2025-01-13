@@ -5,9 +5,19 @@
 namespace ichi::uicomponents
 {
 
-    Label::Label(datatypes::Point location, const std::string &s, TTF_Font *f, SDL_Color c) : UIComponent(datatypes::Hitbox(location, 0, 0, false))
+    Label::Label(datatypes::Point location, const std::string &s, TTF_Font *f, SDL_Color c) : UIComponent(datatypes::Hitbox(location, 0, 0, false)), font(f), color(c)
     {
-        SDL_Surface *surf = TTF_RenderText_Blended(f, s.c_str(), c);
+        updateText(s);
+    }
+
+    void Label::draw() const
+    {
+        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hitbox.getSDLRect());
+    }
+
+    void Label::updateText(std::string text)
+    {
+        SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), color);
 
         if (surf == nullptr)
         {
@@ -29,12 +39,7 @@ namespace ichi::uicomponents
         int textWidth, textHeight;
         SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
 
-        hitbox = datatypes::Hitbox(location, textWidth, textHeight, false);
-    }
-
-    void Label::draw() const
-    {
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hitbox.getSDLRect());
+        hitbox = datatypes::Hitbox(hitbox.getPos(), textWidth, textHeight, false);
     }
 
 } // namespace ichi::uicomponents

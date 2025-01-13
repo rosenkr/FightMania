@@ -23,8 +23,13 @@ namespace ichi::uicomponents
         void update() {}
         void draw() const;
 
+        void updateText(std::string);
+
     private:
         SDL_Texture *texture;
+
+        TTF_Font *font;
+        SDL_Color color;
     };
 
 } // namespace ichi::uicomponents
