@@ -68,12 +68,14 @@ namespace ichi::scene
         components.erase(components.begin() + index);
     }
 
-    void Scene::removeComponent(const std::shared_ptr<core::Component> &c)
+    void Scene::removeComponent(core::Component *c)
     {
-        auto it = std::find(components.begin(), components.end(), c);
+        auto it = std::find_if(components.begin(), components.end(),
+                               [c](const std::shared_ptr<core::Component> &com)
+                               { return com.get() == c; });
 
         if (it != components.end())
-            components.erase(it); // Remove the shared_ptr directly
+            components.erase(it);
         else
             ICHI_ERROR("Could not remove component from list");
     }

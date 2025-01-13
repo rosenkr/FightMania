@@ -29,7 +29,7 @@ namespace ichi::scene
 
         void addComponent(std::shared_ptr<core::Component> component);
         void removeComponent(size_t index);
-        void removeComponent(const std::shared_ptr<core::Component> &c);
+        void removeComponent(core::Component *c);
 
         ~Scene() = default;
 
