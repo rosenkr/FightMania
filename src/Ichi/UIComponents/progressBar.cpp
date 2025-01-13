@@ -7,7 +7,7 @@
 namespace ichi::uicomponents
 {
 
-    ProgressBar::ProgressBar(datatypes::Hitbox hb, graphics::Sprite s, std::string path) : UIComponent(hb), bar(s)
+    ProgressBar::ProgressBar(datatypes::Hitbox hb, graphics::Sprite s, std::string path, bool mirror = false) : UIComponent(hb), bar(s), isMirrored(mirror)
     {
         SDL_Surface *surf = IMG_Load(path.c_str());
 
@@ -27,6 +27,8 @@ namespace ichi::uicomponents
     void ProgressBar::draw() const
     {
         auto hb = datatypes::Hitbox(datatypes::Point(hitbox.getX(), hitbox.getY()), hitbox.getWidth() * procentageFilled, hitbox.getHeight(), false);
+        if (isMirrored)
+            hb.setX(hitbox.getX() - hb.getWidth());
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), color, NULL, hb.getSDLRect());
 
         bar.draw();
