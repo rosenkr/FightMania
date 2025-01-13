@@ -44,7 +44,7 @@ public:
 
     void spawnProjectile(bool isGoingRight, ichi::datatypes::Point p);
     float getDamage() { return damage; }
-    bool hits(Character c);
+    bool hits(const Character &c);
 
 private:
     std::vector<Projectile> projectiles;

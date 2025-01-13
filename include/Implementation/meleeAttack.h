@@ -16,7 +16,7 @@ public:
     void draw(bool) const override;
     void update(ichi::datatypes::Point, bool) override;
     void reset() override;
-    bool hits(Character c) override;
+    bool hits(const Character &c) override;
     bool isDone() override { return left.get()->hasCompleatedALap() || right.get()->hasCompleatedALap(); }
 
 private:

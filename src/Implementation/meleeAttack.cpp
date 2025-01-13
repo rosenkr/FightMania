@@ -36,9 +36,12 @@ void MeleeAttack::reset()
     right.get()->reset();
 }
 
-bool MeleeAttack::hits(Character c)
+bool MeleeAttack::hits(const Character &c)
 {
+    auto it = hitboxes.find(left.get()->getCurrentFrame());
+    if (it == hitboxes.end())
+        return false;
     if (c.isFacingRight())
-        return hitboxes.at(left.get()->getCurrentFrame()).isOverlapping(c.getHitbox());
-    return hitboxes.at(right.get()->getCurrentFrame()).isOverlapping(c.getHitbox());
+        return (*it).second.isOverlapping(c.getHitbox());
+    return (*it).second.isOverlapping(c.getHitbox());
 }

@@ -55,9 +55,8 @@ void ProjectileAttack::spawnProjectile(bool isGoingRight, ichi::datatypes::Point
         projectiles.push_back(Projectile(leftProjectileAnimation, -speed, p + ichi::datatypes::Point{60, 0}));
 }
 
-bool ProjectileAttack::hits(Character c)
+bool ProjectileAttack::hits(const Character &c)
 {
-
     for (size_t i = 0; i < projectiles.size(); i++)
     {
         if (projectiles.at(i).isOverlapping(c.getHitbox())) // Should be pixel detection for the future
