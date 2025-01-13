@@ -45,7 +45,7 @@ void SceneLoader::changeSceneToMain()
         ichi::scene::sceneManager::getActiveScene()->setPaused(false);
         for (auto c : scene::sceneManager::getActiveScene()->getComponents())
             if (auto ptr = std::dynamic_pointer_cast<Match>(c))
-                scene::sceneManager::getActiveScene()->removeComponent(ptr);
+                scene::sceneManager::getActiveScene()->removeComponent(ptr.get());
     }
 
     ichi::scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
@@ -109,11 +109,11 @@ void SceneLoader::changeSceneToDojo()
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
     {
         if (ptr->getSelected() == KENNY)
-            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID);
+            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID, true);
     }
 
     // placeholder for the dummy
-    dummy = createKenny(ProfileHandler::getProfile(blueProfile), redCharacterHitbox, controllerID);
+    dummy = createKenny(ProfileHandler::getProfile(blueProfile), redCharacterHitbox, controllerID, false);
 
     if (blueCharacter == nullptr || dummy == nullptr)
     {
@@ -121,7 +121,7 @@ void SceneLoader::changeSceneToDojo()
         return;
     }
 
-    auto m = std::make_shared<Match>(blueCharacter, dummy);
+    auto m = std::make_shared<Match>(blueCharacter, dummy, font);
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::DOJO));
     scene::sceneManager::getActiveScene()->addComponent(m);
@@ -168,13 +168,13 @@ void SceneLoader::changeSceneToCyberPunk()
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
     {
         if (ptr->getSelected() == KENNY)
-            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID);
+            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID, true);
     }
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(redCharacterDropdownHB.getPos())))
     {
         if (ptr->getSelected() == KENNY)
-            redCharacter = createKenny(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID);
+            redCharacter = createKenny(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID, false);
     }
 
     if (blueCharacter == nullptr || redCharacter == nullptr)
@@ -183,7 +183,7 @@ void SceneLoader::changeSceneToCyberPunk()
         return;
     }
 
-    auto m = std::make_shared<Match>(redCharacter, blueCharacter);
+    auto m = std::make_shared<Match>(redCharacter, blueCharacter, font);
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::CYBER_PUNK));
     scene::sceneManager::getActiveScene()->addComponent(m);
@@ -232,7 +232,7 @@ std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::H
     return std::make_shared<uicomponents::SlideBar>(hb, sprite, sliderWidth, sliderHeight, slider, focusedSlider, ptr);
 }
 
-std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID)
+std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID, bool facingRight)
 {
     datatypes::Hitbox slash(datatypes::Point(0, 0), 35, 70, false);
 
@@ -298,7 +298,7 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes:
         {Character::AttackType::NEUTRAL_HEAVY, neutralHeavy},
     };
 
-    return std::make_shared<Character>(hb, animations, p, attacks, controllerID);
+    return std::make_shared<Character>(hb, animations, p, attacks, facingRight, controllerID);
 }
 
 void SceneLoader::quitGame()
