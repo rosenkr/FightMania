@@ -410,13 +410,21 @@ void SceneLoader::createPopUpMenu()
 {
     datatypes::Hitbox popUpWindowHB(datatypes::Point(122, 50), 110, 140, false);
     datatypes::Hitbox returnToMainMenuHB(datatypes::Point(142, 150), 70, 20, false);
+    datatypes::Point sliderLblPt(142, 50);
+    datatypes::Hitbox sliderHb(datatypes::Point(142, 100), 70, 15, false);
 
     graphics::Sprite popUpWindowSprite(popUpWindowHB, UI_LAYER, POP_UP_MENU_PATH);
     graphics::Sprite popUpBackground(window, UI_LAYER, TRANSPARENT_BLACK_PATH);
 
     auto returnToMainMenuBtn = createButton(returnToMainMenuHB, "Main Menu", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToMain);
 
-    auto popUp = std::make_shared<scene::PopUpMenu>(std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnToMainMenuBtn}, popUpBackground, popUpWindowSprite);
+    auto volumeSlider = createSlideBar(sliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setVolume);
+
+    auto volume = std::make_shared<uicomponents::Label>(sliderLblPt, "volume: ", font, white);
+
+    auto pane = std::make_shared<uicomponents::Pane>(popUpWindowHB, std::vector<std::shared_ptr<uicomponents::UIComponent>>{volume, volumeSlider, returnToMainMenuBtn});
+
+    auto popUp = std::make_shared<scene::PopUpMenu>(std::vector<std::shared_ptr<uicomponents::UIComponent>>{pane}, popUpBackground, popUpWindowSprite);
 
     scene::sceneManager::setPopUpMenu(popUp);
 }
