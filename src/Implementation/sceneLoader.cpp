@@ -252,6 +252,9 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
     if (!facingRight)
         hb.setX(250);
 
+    auto blockLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_BLOCK_LEFT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
+    auto blockRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_BLOCK_RIGHT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
+
     auto walkLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_LEFT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
     auto walkRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_RIGHT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
 
@@ -265,11 +268,13 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
     auto jumpingRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_JUMPING_RIGHT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
 
     std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {
+        {Character::AnimationState::LEFT_BLOCKING, blockLeftAnimation},
         {Character::AnimationState::LEFT_WALKING, walkLeftAnimation},
         {Character::AnimationState::LEFT_IDLE, idleLeftAnimation},
         {Character::AnimationState::LEFT_FALLING, fallingLeftAnimation},
         {Character::AnimationState::LEFT_JUMPING, jumpingLeftAnimation},
 
+        {Character::AnimationState::RIGHT_BLOCKING, blockRightAnimation},
         {Character::AnimationState::RIGHT_WALKING, walkRightAnimation},
         {Character::AnimationState::RIGHT_IDLE, idleRightAnimation},
         {Character::AnimationState::RIGHT_FALLING, fallingRightAnimation},

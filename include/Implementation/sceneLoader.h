@@ -94,6 +94,9 @@ private:
     inline static const std::string KENNY_WALK_LEFT = constants::gResPath + "images/kenny/walk/left";
     inline static const std::string KENNY_WALK_RIGHT = constants::gResPath + "images/kenny/walk/right";
 
+    inline static const std::string KENNY_BLOCK_LEFT = constants::gResPath + "images/kenny/block/left";
+    inline static const std::string KENNY_BLOCK_RIGHT = constants::gResPath + "images/kenny/block/right";
+
     inline static const std::string KENNY_NEUTRAL_HEAVY_LEFT = constants::gResPath + "images/kenny/neutralHeavy/left";
     inline static const std::string KENNY_NEUTRAL_HEAVY_RIGHT = constants::gResPath + "images/kenny/neutralHeavy/right";
     inline static const std::string KENNY_SIDE_HEAVY_LEFT = constants::gResPath + "images/kenny/sideHeavy/left";
