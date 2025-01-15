@@ -172,6 +172,7 @@ namespace ichi::input
         return false;
     }
 
+    // negative numbers is left and positive is right
     float ControllerHandler::getTotalLeftStickX()
     {
         float total = 0;
@@ -182,6 +183,7 @@ namespace ichi::input
         return total;
     }
 
+    // negative numbers are up and positive is down
     float ControllerHandler::getTotalLeftStickY()
     {
         float total = 0;

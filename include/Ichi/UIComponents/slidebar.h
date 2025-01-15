@@ -1,8 +1,13 @@
 #ifndef SLIDEBAR_H
 #define SLIDEBAR_H
+
 #include "Ichi/UIComponents/uicomponent.h"
+
 #include "Ichi/Graphics/sprite.h"
 #include "Ichi/DataTypes/hitbox.h"
+
+#include <memory>
+
 namespace ichi::uicomponents
 {
     class SlideBar : public UIComponent
@@ -13,25 +18,19 @@ namespace ichi::uicomponents
         void draw() const;
         float getSliderValue() const;
 
-        ~SlideBar()
-        {
-            delete sliderSprite;
-            delete focusedSliderSprite;
-            delete sliderHitbox;
-            sliderHitbox = nullptr;
-            sliderSprite = nullptr;
-            focusedSliderSprite = nullptr;
-        }
+        bool isAtBegining() { return sliderSprite.get()->getX() == hitbox.getX(); }
+        bool isAtEnd() { return sliderSprite.get()->getX() == (hitbox.getX() + hitbox.getWidth() - sliderSprite->getWidth() / 2); }
 
     private:
         void updateNormalizedSliderValue();
         graphics::Sprite barSprite;
-        graphics::Sprite *sliderSprite;
-        graphics::Sprite *focusedSliderSprite;
-        datatypes::Hitbox *sliderHitbox;
+        std::unique_ptr<graphics::Sprite> sliderSprite;
+        std::unique_ptr<graphics::Sprite> focusedSliderSprite;
         std::function<void(float)> valueSetter;
         float sliderValue;
         bool isDragging;
+
+        const float CONTROLLER_SPEED = 1;
     };
 }
 

@@ -1,14 +1,24 @@
 
-#include "Ichi/UIComponents/slidebar.h"
-#include "Ichi/UIComponents/uicomponent.h"
-#include "Ichi/Graphics/sprite.h"
-#include "Ichi/DataTypes/hitbox.h"
-#include "Ichi/log.h"
-#include "Ichi/Input/mouse.h"
-#include "Ichi/Core/engine.h"
 #include "Ichi/Graphics/textureManager.h"
+
+#include "Ichi/UIComponents/uicomponent.h"
+#include "Ichi/UIComponents/slidebar.h"
+
+#include "Ichi/DataTypes/hitbox.h"
+
+#include "Ichi/Graphics/sprite.h"
+
+#include "Ichi/Input/controllerHandler.h"
+#include "Ichi/Input/mouse.h"
+
+#include "Ichi/Core/engine.h"
+
+#include "Ichi/log.h"
+
 #include <algorithm>
+
 using namespace ichi::datatypes;
+
 namespace ichi::uicomponents
 {
 
@@ -18,9 +28,9 @@ namespace ichi::uicomponents
         auto barCenter = Point(barSprite.getX() + barSprite.getWidth() / 2, barSprite.getY() + barSprite.getHeight() / 2);
         auto sliderCenter = Point(sliderWidth / 2, sliderHeight / 2);
 
-        sliderHitbox = new Hitbox(barCenter - sliderCenter, sliderWidth, sliderHeight, false);
-        sliderSprite = new graphics::Sprite(*sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, sliderPath);
-        focusedSliderSprite = new graphics::Sprite(*sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, focusedSliderPath);
+        Hitbox sliderHitbox(barCenter - sliderCenter, sliderWidth, sliderHeight, false);
+        sliderSprite = std::make_unique<graphics::Sprite>(sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, sliderPath);
+        focusedSliderSprite = std::make_unique<graphics::Sprite>(sliderHitbox, graphics::Sprite::Layer::UICOMPONENT, focusedSliderPath);
     }
 
     void SlideBar::update()
@@ -33,6 +43,16 @@ namespace ichi::uicomponents
             sliderSprite->setX(input::Mouse::getX() - sliderSprite->getWidth() / 2);
             focusedSliderSprite->setX(sliderSprite->getX());
         }
+
+        if (!focused || input::ControllerHandler::getTotalLeftStickX() == 0)
+        {
+            updateNormalizedSliderValue();
+            return;
+        }
+
+        auto value = sliderSprite.get()->getX() + static_cast<int>(input::ControllerHandler::getTotalLeftStickX() * CONTROLLER_SPEED);
+        sliderSprite->setX(std::clamp(value, hitbox.getX(), hitbox.getX() + hitbox.getWidth() - sliderSprite->getWidth() / 2));
+        focusedSliderSprite->setX(sliderSprite->getX());
 
         updateNormalizedSliderValue();
     }

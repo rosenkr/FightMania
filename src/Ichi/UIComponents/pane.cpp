@@ -1,6 +1,7 @@
 #include "Ichi/UIComponents/pane.h"
 
 #include "Ichi/UIComponents/textbox.h"
+#include "Ichi/UIComponents/slidebar.h"
 
 #include "Ichi/Input/controllerHandler.h"
 #include "Ichi/Input/keyboard.h"
@@ -67,9 +68,15 @@ namespace ichi::uicomponents
             {
                 auto it = uiComponents.find(focused);
                 if (it != uiComponents.end())
+                {
                     if (auto ptr = dynamic_cast<uicomponents::Textbox *>(it->second.get()))
                         if (left && ptr->canMoveCursorLeft())
                             return;
+
+                    if (auto ptr = dynamic_cast<uicomponents::SlideBar *>(it->second.get()))
+                        if (left && !ptr->isAtBegining())
+                            return;
+                }
                 focused = p;
             }
         }
@@ -81,9 +88,15 @@ namespace ichi::uicomponents
             {
                 auto it = uiComponents.find(focused);
                 if (it != uiComponents.end())
+                {
                     if (auto ptr = dynamic_cast<uicomponents::Textbox *>(it->second.get()))
                         if (right && ptr->canMoveCursorRight())
                             return;
+
+                    if (auto ptr = dynamic_cast<uicomponents::SlideBar *>(it->second.get()))
+                        if (right && !ptr->isAtEnd())
+                            return;
+                }
                 focused = p;
             }
         }
