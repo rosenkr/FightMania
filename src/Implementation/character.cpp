@@ -120,6 +120,9 @@ void Character::update()
 
 void Character::applyForce()
 {
+    if (currentAttack != AttackType::NONE) // player shouldnt move when attacking
+        return;
+
     // Applies gravity
     velocity.setY(gravity + velocity.getY());
 
@@ -131,8 +134,14 @@ void Character::applyForce()
 
     if (animations.find(activeState) != animations.end())
     {
-        animations.at(activeState).get()->setX(hitbox.getX());
-        animations.at(activeState).get()->setY(hitbox.getY());
+        if (facingRight)
+        {
+            animations.at(activeState).get()->setX(hitbox.getX() - facingRightDiff.X);
+            animations.at(activeState).get()->setY(hitbox.getY() - facingRightDiff.Y);
+            return;
+        }
+        animations.at(activeState).get()->setX(hitbox.getX() - facingLeftDiff.X);
+        animations.at(activeState).get()->setY(hitbox.getY() - facingLeftDiff.Y);
     }
     else
         ICHI_ERROR("Could not find animation for animation state with id: {}", static_cast<int>(activeState));
@@ -173,7 +182,7 @@ void Character::handleInput()
     if (grounded && profile->canTakeAction(Profile::Action::JUMP, controllerID))
         velocity.setY(jumpVelocity);
 
-    if (profile->canTakeAction(Profile::Action::LIGHT_ATTACK, controllerID))
+    if (grounded && profile->canTakeAction(Profile::Action::LIGHT_ATTACK, controllerID))
     {
         if (direciton == Direction::NEUTRAL && attacks.find(AttackType::NEUTRAL_LIGHT) != attacks.end())
             currentAttack = AttackType::NEUTRAL_LIGHT;
@@ -187,7 +196,7 @@ void Character::handleInput()
         return;
     }
 
-    if (profile->canTakeAction(Profile::Action::HEAVY_ATTACK, controllerID))
+    if (grounded && profile->canTakeAction(Profile::Action::HEAVY_ATTACK, controllerID))
     {
         if (direciton == Direction::NEUTRAL && attacks.find(AttackType::NEUTRAL_HEAVY) != attacks.end())
             currentAttack = AttackType::NEUTRAL_HEAVY;
@@ -284,6 +293,8 @@ void Character::updateAnimationState()
 
 void Character::setPosition(ichi::datatypes::Point pt)
 {
+    hitbox.setX(pt.X);
+    hitbox.setY(pt.Y);
     for (auto animation : animations)
     {
         animation.second.get()->setX(pt.X);
@@ -294,8 +305,13 @@ void Character::setPosition(ichi::datatypes::Point pt)
 void Character::checkForHit(Character &other)
 {
     for (auto attack : attacks)
+    {
+        if (static_cast<MeleeAttack *>(attack.second.get()))
+            if (currentAttack != attack.first)
+                continue;
         if (attack.second.get()->hits(other))
             other.takeDamage(attack.second.get()->getDamage());
+    }
 }
 
 void Character::checkGroundCollision()

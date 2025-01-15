@@ -54,7 +54,6 @@ public:
               const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks, bool facingRight, int id = -1)
         : Component(hitbox), facingRight(facingRight), animations(animations), profile(p), controllerID(id), attacks(attacks)
     {
-
         ichi::datatypes::Hitbox hb(ichi::datatypes::Point(10, 10), 70, 10, false);
         if (!facingRight)
             hb.setX(384 - 70 - 10);
@@ -62,34 +61,34 @@ public:
         ichi::graphics::Sprite s(hb, ichi::graphics::Sprite::Layer::UICOMPONENT, PROGRESS_BAR_PATH);
         healthBar = std::make_unique<ichi::uicomponents::ProgressBar>(hb, s, COLOR_GREEN_PATH, !facingRight);
 
-        ichi::datatypes::Hitbox winHb(ichi::datatypes::Point(10, 25), 10, 10, false);
+        ichi::datatypes::Hitbox winHb(ichi::datatypes::Point(hb.getX() + hb.getWidth() - 8, 20), 8, 8, false);
         if (facingRight)
         {
             win1 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, WIN_PATH);
             emptyWin1 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, EMPTY_WIN_PATH);
 
-            winHb += ichi::datatypes::Point(30, 0);
+            winHb -= ichi::datatypes::Point(20, 0);
 
             win2 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, WIN_PATH);
             emptyWin2 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, EMPTY_WIN_PATH);
 
-            winHb += ichi::datatypes::Point(30, 0);
+            winHb -= ichi::datatypes::Point(20, 0);
 
             win3 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, WIN_PATH);
             emptyWin3 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, EMPTY_WIN_PATH);
             return;
         }
-        winHb.setX(384 - 10 - 10);
+        winHb.setX(hb.getX());
 
         win1 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, WIN_PATH);
         emptyWin1 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, EMPTY_WIN_PATH);
 
-        winHb -= ichi::datatypes::Point(30, 0);
+        winHb += ichi::datatypes::Point(20, 0);
 
         win2 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, WIN_PATH);
         emptyWin2 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, EMPTY_WIN_PATH);
 
-        winHb -= ichi::datatypes::Point(30, 0);
+        winHb += ichi::datatypes::Point(20, 0);
 
         win3 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, WIN_PATH);
         emptyWin3 = std::make_unique<ichi::graphics::Sprite>(winHb, ichi::graphics::Sprite::Layer::UICOMPONENT, EMPTY_WIN_PATH);
@@ -124,6 +123,9 @@ private:
     const float speed = 1.f;
     const float jumpVelocity = -6.9f;
     const float gravity = 0.35f;
+
+    ichi::datatypes::Point facingRightDiff{32, 10};
+    ichi::datatypes::Point facingLeftDiff{100, 10};
 
     float hp = MAX_HP;
     int wins = 0;
