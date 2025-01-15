@@ -44,7 +44,8 @@ public:
     void draw(bool) const override;
     void update(ichi::datatypes::Point, bool) override;
     void reset() override;
-    bool isDone() override { return leftCharacterAnimation.get()->hasCompleatedALap() || rightCharacterAnimation.get()->hasCompleatedALap(); }
+    void prepareForAttack(bool) override;
+    bool isDone() override { return leftCharacterAnimation.get()->hasCompleatedALap() && rightCharacterAnimation.get()->hasCompleatedALap(); }
 
     void spawnProjectile(bool isGoingRight, ichi::datatypes::Point p);
     float getDamage() { return damage; }

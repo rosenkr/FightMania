@@ -7,6 +7,8 @@
 MeleeAttack::MeleeAttack(float dmg, Uint32 cooldown, std::shared_ptr<ichi::graphics::AnimatedSprite> leftPerson, std::shared_ptr<ichi::graphics::AnimatedSprite> rightPerson, std::map<int, ichi::datatypes::Hitbox> hitboxes)
     : Attack(dmg, cooldown), left(leftPerson), right(rightPerson), hitboxes(hitboxes)
 {
+    right->compleateLap();
+    left->compleateLap();
 }
 
 void MeleeAttack::draw(bool isRight) const
@@ -33,10 +35,16 @@ void MeleeAttack::update(ichi::datatypes::Point pt, bool isFacingRight)
 
 void MeleeAttack::reset()
 {
+    right->compleateLap();
+    left->compleateLap();
+}
+
+void MeleeAttack::prepareForAttack(bool isFacingRight)
+{
     hasHit = false;
     lastUsed = SDL_GetTicks();
-    left.get()->reset();
     right.get()->reset();
+    left.get()->reset();
 }
 
 bool MeleeAttack::hits(const Character &c)

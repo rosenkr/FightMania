@@ -42,8 +42,16 @@ void ProjectileAttack::draw(bool isFacingRight) const
 
 void ProjectileAttack::reset()
 {
-    leftCharacterAnimation.get()->reset();
-    rightCharacterAnimation.get()->reset();
+    rightCharacterAnimation->compleateLap();
+    leftCharacterAnimation->compleateLap();
+}
+
+void ProjectileAttack::prepareForAttack(bool isFacingRight)
+{
+    if (isFacingRight)
+        rightCharacterAnimation.get()->reset();
+    else
+        leftCharacterAnimation.get()->reset();
 }
 
 void ProjectileAttack::spawnProjectile(bool isGoingRight, ichi::datatypes::Point p)

@@ -108,7 +108,7 @@ public:
     void checkForHit(Character &);
 
     float getHp() const { return hp; }
-    void resetHp() { hp = MAX_HP; }
+    void reset();
     void takeDamage(float dmg) { hp = std::clamp(hp - dmg, .0f, MAX_HP); }
 
     inline static const float MAX_HP = 100;

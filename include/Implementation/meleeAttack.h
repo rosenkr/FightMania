@@ -16,6 +16,7 @@ public:
     void draw(bool) const override;
     void update(ichi::datatypes::Point, bool) override;
     void reset() override;
+    void prepareForAttack(bool isGoingRight) override;
     bool hits(const Character &c) override;
     bool isDone() override { return left.get()->hasCompleatedALap() || right.get()->hasCompleatedALap(); }
 

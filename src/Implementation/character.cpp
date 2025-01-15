@@ -238,7 +238,7 @@ void Character::startAttack()
         return;
     }
 
-    attack->reset();
+    attack->prepareForAttack(facingRight);
     if (auto ptr = dynamic_cast<ProjectileAttack *>(attack))
         ptr->spawnProjectile(facingRight, hitbox.getPos());
 }
@@ -300,6 +300,13 @@ void Character::setPosition(ichi::datatypes::Point pt)
         animation.second.get()->setX(pt.X);
         animation.second.get()->setY(pt.Y);
     }
+}
+
+void Character::reset()
+{
+    hp = MAX_HP;
+    for (auto pair : attacks)
+        pair.second.get()->reset();
 }
 
 void Character::checkForHit(Character &other)
