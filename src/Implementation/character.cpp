@@ -152,6 +152,19 @@ void Character::handleInput()
     if (currentAttack != AttackType::NONE)
         return;
 
+    if (profile->canTakeAction(Profile::Action::BLOCK, controllerID))
+    {
+        velocity.setX(0);
+        framesblocking++;
+        blocking = true;
+        return;
+    }
+    else
+    {
+        framesblocking = 0;
+        blocking = false;
+    }
+
     if (profile->canTakeAction(Profile::Action::UP, controllerID))
     {
         direciton = Direction::NEUTRAL;
@@ -209,11 +222,6 @@ void Character::handleInput()
         startAttack();
         return;
     }
-
-    if (profile->canTakeAction(Profile::Action::BLOCK, controllerID))
-        isBlocking = true;
-    else
-        isBlocking = false;
 }
 
 void Character::startAttack()
@@ -250,6 +258,11 @@ void Character::updateAnimationState()
 
     if (facingRight)
     {
+        if (blocking)
+        {
+            activeState = AnimationState::RIGHT_BLOCKING;
+            return;
+        }
 
         if (velocity.getY() < 0 && !grounded)
         {
@@ -268,6 +281,12 @@ void Character::updateAnimationState()
             return;
         }
         activeState = AnimationState::RIGHT_IDLE;
+        return;
+    }
+
+    if (blocking)
+    {
+        activeState = AnimationState::LEFT_BLOCKING;
         return;
     }
 
@@ -319,6 +338,19 @@ void Character::checkForHit(Character &other)
         if (attack.second.get()->hits(other))
             other.takeDamage(attack.second.get()->getDamage());
     }
+}
+
+void Character::takeDamage(float dmg)
+{
+    if (!blocking)
+    {
+        hp = std::clamp(hp - dmg, .0f, MAX_HP);
+        return;
+    }
+
+    if (framesblocking <= parryFrameWindow)
+        return;
+    hp = std::clamp(hp - (dmg * BLOCK_REDUCE), .0f, MAX_HP);
 }
 
 void Character::checkGroundCollision()

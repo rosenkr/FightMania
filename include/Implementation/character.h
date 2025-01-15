@@ -34,10 +34,12 @@ public:
         LEFT_WALKING,
         LEFT_JUMPING,
         LEFT_FALLING,
+        LEFT_BLOCKING,
         RIGHT_IDLE,
         RIGHT_WALKING,
         RIGHT_JUMPING,
         RIGHT_FALLING,
+        RIGHT_BLOCKING,
     };
 
     enum class AttackType
@@ -100,6 +102,7 @@ public:
 
     void setDirection(bool facingRight) { this->facingRight = facingRight; }
     bool isFacingRight() const { return facingRight; }
+    bool isBlocking() const { return blocking; }
 
     void setPosition(ichi::datatypes::Point pt);
 
@@ -109,7 +112,7 @@ public:
 
     float getHp() const { return hp; }
     void reset();
-    void takeDamage(float dmg) { hp = std::clamp(hp - dmg, .0f, MAX_HP); }
+    void takeDamage(float dmg);
 
     inline static const float MAX_HP = 100;
 
@@ -124,6 +127,10 @@ private:
     const float jumpVelocity = -6.9f;
     const float gravity = 0.35f;
 
+    const float BLOCK_REDUCE = 1 - 0.8f;
+    const int parryFrameWindow = 100;
+    int framesblocking = 0;
+
     ichi::datatypes::Point facingRightDiff{32, 10};
     ichi::datatypes::Point facingLeftDiff{100, 10};
 
@@ -132,7 +139,7 @@ private:
 
     bool facingRight;
     bool grounded = false;
-    bool isBlocking = false;
+    bool blocking = false;
 
     ichi::datatypes::Vector2D velocity{0, 0};
     Direction direciton = Direction::NEUTRAL;
