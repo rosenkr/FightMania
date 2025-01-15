@@ -35,7 +35,11 @@ class ProjectileAttack : public Attack
 {
 public:
     ProjectileAttack(AnimatedSprite paLeft, AnimatedSprite paRight, AnimatedSprite caLeft, AnimatedSprite caRight, float speed, float dmg, Uint32 cooldownTime)
-        : Attack(dmg, cooldownTime), leftProjectileAnimation(paLeft), rightProjectileAnimation(paRight), leftCharacterAnimation(caLeft), rightCharacterAnimation(caRight), speed(speed) {}
+        : Attack(dmg, cooldownTime), leftProjectileAnimation(paLeft), rightProjectileAnimation(paRight), leftCharacterAnimation(caLeft), rightCharacterAnimation(caRight), speed(speed)
+    {
+        caLeft.get()->compleateLap(); // to avoid the characters to be animated the first time
+        caRight.get()->compleateLap();
+    }
 
     void draw(bool) const override;
     void update(ichi::datatypes::Point, bool) override;
