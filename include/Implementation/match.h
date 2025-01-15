@@ -66,8 +66,9 @@ private:
     std::map<int, Uint32> redWinsTime = {{0, 1000}};
 
     // in milli sec
-    const Uint32 MAX_TIME = 300 * 1000;
-    Uint32 timeStarted = 0;
+    const Uint32 MAX_TIME = 100 * 1000;
+    Uint32 matchTime = 0;
+    Uint32 timeLastUpdated = 0;
 
     bool suddenDeathActive = false;
     bool end = false;

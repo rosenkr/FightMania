@@ -19,9 +19,8 @@ Match::Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red, TT
     redWinsSf = loadSoundEffect(SOUND_EFFECT_RED_WINS_PATH);
 
     startSet();
-    timeStarted = SDL_GetTicks();
 
-    time = std::make_unique<uicomponents::Label>(datatypes::Point(192, 10), "test", font, SDL_Color{255, 255, 0, 255});
+    time = std::make_unique<uicomponents::Label>(datatypes::Point(192, 10), "100", font, SDL_Color{255, 255, 0, 255});
 }
 
 void Match::draw() const
@@ -34,18 +33,29 @@ void Match::draw() const
 
 void Match::update()
 {
-    time.get()->updateText(std::to_string((MAX_TIME - SDL_GetTicks() + timeStarted) / 1000));
-
-    if (!suddenDeathActive && SDL_GetTicks() - timeStarted > MAX_TIME)
-    {
-        suddenDeathActive = true;
-        startSuddenDeath();
-        return;
-    }
-
     if (CutsceneHandler::isPlaying())
     {
         CutsceneHandler::update();
+        return;
+    }
+
+    if (timeLastUpdated == 0)
+        timeLastUpdated = SDL_GetTicks() - 166;
+
+    if (!suddenDeathActive)
+    {
+        matchTime += SDL_GetTicks() - timeLastUpdated;
+        time.get()->updateText(std::to_string((MAX_TIME - matchTime) / 1000));
+
+        timeLastUpdated = SDL_GetTicks();
+    }
+    else
+        time.get()->updateText("OVERTIME!");
+
+    if (!suddenDeathActive && matchTime > MAX_TIME)
+    {
+        suddenDeathActive = true;
+        startSuddenDeath();
         return;
     }
 
@@ -121,10 +131,11 @@ void Match::startSuddenDeath()
 
 void Match::startSet()
 {
+    timeLastUpdated = 0;
+    matchTime = 0;
     blueCharacter.get()->setPosition(datatypes::Point(50, 50));
     redCharacter.get()->setPosition(datatypes::Point(300, 50));
-    blueCharacter.get()->resetHp();
-    redCharacter.get()->resetHp();
-    timeStarted = SDL_GetTicks();
+    blueCharacter.get()->reset();
+    redCharacter.get()->reset();
     CutsceneHandler::addCutscene(start, startSf.get());
 }
