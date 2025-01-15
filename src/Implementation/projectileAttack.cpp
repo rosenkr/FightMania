@@ -52,7 +52,7 @@ void ProjectileAttack::spawnProjectile(bool isGoingRight, ichi::datatypes::Point
     if (isGoingRight)
         projectiles.push_back(Projectile(rightProjectileAnimation, speed, p + ichi::datatypes::Point{60, 0}));
     else
-        projectiles.push_back(Projectile(leftProjectileAnimation, -speed, p + ichi::datatypes::Point{60, 0}));
+        projectiles.push_back(Projectile(leftProjectileAnimation, -speed, p - ichi::datatypes::Point{60, 0}));
 }
 
 bool ProjectileAttack::hits(const Character &c)

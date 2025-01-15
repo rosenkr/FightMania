@@ -180,7 +180,7 @@ void SceneLoader::changeSceneToCyberPunk()
         return;
     }
 
-    auto m = std::make_shared<Match>(redCharacter, blueCharacter, font);
+    auto m = std::make_shared<Match>(blueCharacter, redCharacter, font);
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::CYBER_PUNK));
     scene::sceneManager::getActiveScene()->addComponent(m);

@@ -306,7 +306,7 @@ void Character::checkForHit(Character &other)
 {
     for (auto attack : attacks)
     {
-        if (static_cast<MeleeAttack *>(attack.second.get()))
+        if (dynamic_cast<MeleeAttack *>(attack.second.get()))
             if (currentAttack != attack.first)
                 continue;
         if (attack.second.get()->hits(other))
@@ -350,7 +350,7 @@ void Character::checkWallCollision()
         if (c.get()->isOverlapping(hitbox))
         {
             if (hitbox.getX() < c.get()->getX())
-                hitbox.setX(c.get()->getX() - hitbox.getHeight());
+                hitbox.setX(c.get()->getX() - hitbox.getWidth());
             else
                 hitbox.setX(c.get()->getX() + c.get()->getWidth());
 
