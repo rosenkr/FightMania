@@ -131,8 +131,9 @@ void Match::startSuddenDeath()
 
 void Match::startSet()
 {
-    timeLastUpdated = 0;
     matchTime = 0;
+    timeLastUpdated = 0;
+    suddenDeathActive = false;
     blueCharacter.get()->setPosition(datatypes::Point(50, 50));
     redCharacter.get()->setPosition(datatypes::Point(300, 50));
     blueCharacter.get()->reset();
