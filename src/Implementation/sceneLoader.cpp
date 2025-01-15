@@ -410,8 +410,8 @@ void SceneLoader::createPopUpMenu()
 {
     datatypes::Hitbox popUpWindowHB(datatypes::Point(122, 50), 110, 140, false);
     datatypes::Hitbox returnToMainMenuHB(datatypes::Point(142, 150), 70, 20, false);
-    datatypes::Point sliderLblPt(142, 50);
-    datatypes::Hitbox sliderHb(datatypes::Point(142, 100), 70, 15, false);
+    datatypes::Point sliderLblPt(142, 100);
+    datatypes::Hitbox sliderHb(datatypes::Point(142, 120), 70, 15, false);
 
     graphics::Sprite popUpWindowSprite(popUpWindowHB, UI_LAYER, POP_UP_MENU_PATH);
     graphics::Sprite popUpBackground(window, UI_LAYER, TRANSPARENT_BLACK_PATH);
