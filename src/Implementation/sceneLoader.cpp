@@ -77,9 +77,6 @@ void SceneLoader::changeSceneToSettings()
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::SETTINGS));
 }
 
-ichi::datatypes::Hitbox redCharacterHitbox(datatypes::Point(250, 0), 120, 120, true);
-ichi::datatypes::Hitbox blueCharacterHitbox(datatypes::Point(50, 0), 120, 120, true);
-
 void SceneLoader::changeSceneToDojo()
 {
     std::string blueProfile;
@@ -109,11 +106,11 @@ void SceneLoader::changeSceneToDojo()
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
     {
         if (ptr->getSelected() == KENNY)
-            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, controllerID, true);
+            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), controllerID, true);
     }
 
     // placeholder for the dummy
-    dummy = createKenny(ProfileHandler::getProfile(blueProfile), redCharacterHitbox, controllerID, false);
+    dummy = createKenny(ProfileHandler::getProfile(blueProfile), controllerID, false);
 
     if (blueCharacter == nullptr || dummy == nullptr)
     {
@@ -168,13 +165,13 @@ void SceneLoader::changeSceneToCyberPunk()
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueCharacterDropdownHB.getPos())))
     {
         if (ptr->getSelected() == KENNY)
-            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueCharacterHitbox, blueID, true);
+            blueCharacter = createKenny(ProfileHandler::getProfile(blueProfile), blueID, true);
     }
 
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(redCharacterDropdownHB.getPos())))
     {
         if (ptr->getSelected() == KENNY)
-            redCharacter = createKenny(ProfileHandler::getProfile(redProfile), redCharacterHitbox, redID, false);
+            redCharacter = createKenny(ProfileHandler::getProfile(redProfile), redID, false);
     }
 
     if (blueCharacter == nullptr || redCharacter == nullptr)
@@ -232,9 +229,28 @@ std::shared_ptr<uicomponents::SlideBar> SceneLoader::createSlideBar(datatypes::H
     return std::make_shared<uicomponents::SlideBar>(hb, sprite, sliderWidth, sliderHeight, slider, focusedSlider, ptr);
 }
 
-std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID, bool facingRight)
+std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int controllerID, bool facingRight)
 {
     datatypes::Hitbox slash(datatypes::Point(0, 0), 35, 70, false);
+    datatypes::Hitbox hb(datatypes::Point(50, 50), 180, 120, false);
+
+    std::map<int, ichi::datatypes::Hitbox> sideLigthHitboxes = {
+        {0, ichi::datatypes::Hitbox(ichi::datatypes::Point(23, 38), 60, 25, false)},
+        {1, ichi::datatypes::Hitbox(ichi::datatypes::Point(14, 40), 60, 25, false)},
+    };
+
+    std::map<int, ichi::datatypes::Hitbox> sideHeavyHitboxes = {
+        {0, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
+        {1, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
+        {2, ichi::datatypes::Hitbox(ichi::datatypes::Point(45, 0), 90, 50, false)},
+        {3, ichi::datatypes::Hitbox(ichi::datatypes::Point(26, 27), 64, 45, false)},
+        {4, ichi::datatypes::Hitbox(ichi::datatypes::Point(26, 59), 58, 15, false)},
+        {5, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
+        {6, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
+    };
+
+    if (!facingRight)
+        hb.setX(250);
 
     auto walkLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_LEFT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
     auto walkRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_WALK_RIGHT, KENNY_WALK_TIME.size(), KENNY_WALK_TIME);
@@ -279,11 +295,11 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes:
     auto leftSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_LEFT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
     auto rightSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_RIGHT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
 
-    auto sideLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation);
-    auto downLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation);
-    auto neutralLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation);
+    auto sideLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation, sideLigthHitboxes);
+    auto downLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation, sideLigthHitboxes);
+    auto neutralLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation, sideLigthHitboxes);
 
-    auto sideHeavy = std::make_shared<MeleeAttack>(10, 1000, leftSideHeavyAnimation, rightSideHeavyAnimation);
+    auto sideHeavy = std::make_shared<MeleeAttack>(10, 1000, leftSideHeavyAnimation, rightSideHeavyAnimation, sideHeavyHitboxes);
     auto downHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 1, 10, 2000);
     auto neutralHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 1, 10, 2000);
 
@@ -298,7 +314,15 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, datatypes:
         {Character::AttackType::NEUTRAL_HEAVY, neutralHeavy},
     };
 
-    return std::make_shared<Character>(hb, animations, p, attacks, facingRight, controllerID);
+    ichi::datatypes::Hitbox physicalHitbox = ichi::datatypes::Hitbox(hb.getPos() + ichi::datatypes::Point(32, 10), 50, 110, true);
+
+    if (!facingRight)
+    {
+        physicalHitbox.setX(physicalHitbox.getX() + 100);
+        physicalHitbox.setY(physicalHitbox.getX() + 10);
+    }
+
+    return std::make_shared<Character>(physicalHitbox, animations, p, attacks, facingRight, controllerID);
 }
 
 void SceneLoader::quitGame()

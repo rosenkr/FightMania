@@ -150,7 +150,7 @@ private:
     static std::shared_ptr<uicomponents::Textbox> createTextbox(datatypes::Hitbox &, const std::string &, const std::string &, int);
     static std::shared_ptr<uicomponents::Checkbox> createCheckbox(datatypes::Hitbox &);
     static std::shared_ptr<uicomponents::SlideBar> createSlideBar(datatypes::Hitbox &, const std::string &, int, int, const std::string &, const std::string &, std::function<void(float)>);
-    static std::shared_ptr<Character> createKenny(const Profile *p, datatypes::Hitbox &hb, int controllerID, bool facingRight);
+    static std::shared_ptr<Character> createKenny(const Profile *p, int controllerID, bool facingRight);
 
     static void createPopUpMenu();
     static void createMainMenu();
