@@ -26,6 +26,7 @@ namespace ichi::graphics
             lastUpdatedOn = 0;
         }
 
+        void compleateLap() { compleatedALap = true; }
         bool hasCompleatedALap() { return compleatedALap; }
 
         bool operator<(const AnimatedSprite &other) const { return paths < other.paths; }
