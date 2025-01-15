@@ -1,5 +1,6 @@
 #include "Ichi/UIComponents/pane.h"
 
+#include "Ichi/UIComponents/label.h"
 #include "Ichi/UIComponents/textbox.h"
 #include "Ichi/UIComponents/slidebar.h"
 
@@ -114,6 +115,9 @@ namespace ichi::uicomponents
 
         for (auto &c : uiComponents)
         {
+            if (dynamic_cast<uicomponents::Label *>(c.second.get()))
+                continue;
+
             bool isValidDirection = (deltaY == 0 || (deltaY < 0 && focused.Y < c.first.Y) || (deltaY > 0 && focused.Y > c.first.Y)) &&
                                     (deltaX == 0 || (deltaX < 0 && focused.X > c.first.X) || (deltaX > 0 && focused.X < c.first.X));
 
