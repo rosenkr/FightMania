@@ -34,8 +34,9 @@ private:
 class ProjectileAttack : public Attack
 {
 public:
-    ProjectileAttack(AnimatedSprite paLeft, AnimatedSprite paRight, AnimatedSprite caLeft, AnimatedSprite caRight, float speed, float dmg, Uint32 cooldownTime)
-        : Attack(dmg, cooldownTime), leftProjectileAnimation(paLeft), rightProjectileAnimation(paRight), leftCharacterAnimation(caLeft), rightCharacterAnimation(caRight), speed(speed)
+    ProjectileAttack(AnimatedSprite paLeft, AnimatedSprite paRight, AnimatedSprite caLeft, AnimatedSprite caRight, float speed, float dmg, ichi::datatypes::Vector2D force, Uint32 cooldownTime, Uint32 t)
+        : Attack(dmg, force, cooldownTime), leftProjectileAnimation(paLeft), rightProjectileAnimation(paRight), leftCharacterAnimation(caLeft), rightCharacterAnimation(caRight),
+          speed(speed), timeTillSpawn(t)
     {
         caLeft.get()->compleateLap(); // to avoid the characters to be animated the first time
         caRight.get()->compleateLap();
@@ -46,8 +47,7 @@ public:
     void reset() override;
     void prepareForAttack(bool) override;
     bool isDone() override { return leftCharacterAnimation.get()->hasCompleatedALap() && rightCharacterAnimation.get()->hasCompleatedALap(); }
-
-    void spawnProjectile(bool isGoingRight, ichi::datatypes::Point p);
+    void queueAttack(bool isGoingRight, ichi::datatypes::Point p);
     float getDamage() { return damage; }
     bool hits(const Character &c);
 
@@ -58,6 +58,14 @@ private:
     AnimatedSprite leftCharacterAnimation;
     AnimatedSprite rightCharacterAnimation;
     float speed;
+    Uint32 timeTillSpawn;
+
+    int projectilesQueued = 0;
+
+    bool attackShouldGoRight = false;
+    ichi::datatypes::Point attackSpawnPoint{0, 0};
+
+    void spawnProjectile();
 };
 
 #endif
