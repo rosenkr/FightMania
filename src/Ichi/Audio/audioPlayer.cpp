@@ -23,7 +23,8 @@ namespace ichi::audio
             return;
         }
         ICHI_INFO("SDL_mixer got initialized")
-        setVolume(80);
+        setMusicVolume(0.5f);
+        setSoundEffectVolume(0.5f);
     }
 
     void AudioPlayer::play(Mix_Chunk *chunk)
@@ -44,7 +45,7 @@ namespace ichi::audio
     void AudioPlayer::play(Mix_Music *m)
     {
         if (!Mix_PlayingMusic())
-            Mix_PlayMusic(m, 0);
+            Mix_PlayMusic(m, -1);
     }
 
 } // namespace ichi::audio
