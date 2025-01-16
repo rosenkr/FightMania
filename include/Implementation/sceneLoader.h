@@ -17,6 +17,10 @@
 
 #include "Implementation/character.h"
 
+#include "Ichi/log.h"
+
+#include "SDL2/SDL_mixer.h"
+
 #include <memory>
 
 using namespace ichi;
@@ -33,6 +37,15 @@ public:
         SETTINGS,
         DOJO,
         CYBER_PUNK,
+    };
+
+    struct MixMusicDeleter
+    {
+        void operator()(Mix_Music *music) const
+        {
+            if (music)
+                Mix_FreeMusic(music);
+        }
     };
 
     static bool init();
@@ -113,10 +126,14 @@ private:
     inline static const std::string SWORD_SLASH_RIGHT = constants::gResPath + "images/kenny/swordSlash/right";
 
     inline static const std::string DARK_BLUE_SCREEN_PATH = constants::gResPath + "images/BackGrounds/DarkBlueScreen.png";
+    inline static const std::string MAIN_MENU_PATH = constants::gResPath + "images/BackGrounds/MainMenu.png";
     inline static const std::string CHARACTER_SELECTION_PATH = constants::gResPath + "images/BackGrounds/CharcterSelection.png";
     inline static const std::string TRAINING_SELECTION_PATH = constants::gResPath + "images/BackGrounds/CharcterSelectionTraining.png";
     inline static const std::string DOJO_PATH = constants::gResPath + "images/BackGrounds/Dojo.png";
     inline static const std::string CP_PATH = constants::gResPath + "images/BackGrounds/Cyberpunk.png";
+
+    inline static const std::string MENU_MUSIC_PATH = constants::gResPath + "music/MenuSoundtrack.wav";
+    static std::unique_ptr<Mix_Music, MixMusicDeleter> menuMusic;
 
     // Character names
     inline static const std::string KENNY = "KENNY";
@@ -136,6 +153,7 @@ private:
 
     inline static const SDL_Color black{0, 0, 0, 255};
     inline static const SDL_Color white{255, 255, 255, 255};
+    inline static const SDL_Color yellow{255, 255, 0, 255};
 
     static TTF_Font *font;
 
@@ -168,6 +186,17 @@ private:
     static void createSettingMenu();
     static void createDojo();
     static void createCyberPunk();
+
+    static std::unique_ptr<Mix_Music, MixMusicDeleter> loadMusic(const std::string &path)
+    {
+        Mix_Music *music = Mix_LoadMUS(path.c_str());
+        if (!music)
+        {
+            ICHI_ERROR("Could not load music effect: {}", SDL_GetError());
+            return nullptr;
+        }
+        return std::unique_ptr<Mix_Music, MixMusicDeleter>(music);
+    }
 
     SceneLoader() = delete;
     ~SceneLoader() { TTF_CloseFont(font); }

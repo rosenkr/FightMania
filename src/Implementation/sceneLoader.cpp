@@ -9,10 +9,9 @@
 #include "Ichi/DataTypes/hitbox.h"
 #include "Ichi/Core/engine.h"
 
-#include "Ichi/log.h"
-
 datatypes::Hitbox SceneLoader::window = datatypes::Hitbox(datatypes::Point(0, 0), 384, 224, false);
 TTF_Font *SceneLoader::font = nullptr;
+std::unique_ptr<Mix_Music, SceneLoader::MixMusicDeleter> SceneLoader::menuMusic;
 
 bool SceneLoader::init()
 {
@@ -24,6 +23,8 @@ bool SceneLoader::init()
         return false;
     }
 
+    menuMusic = loadMusic(MENU_MUSIC_PATH);
+
     createPopUpMenu();
     createMainMenu();
     createLocalPlayMenu();
@@ -33,7 +34,9 @@ bool SceneLoader::init()
     createDojo();
     createCyberPunk();
 
-    scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
+    ichi::scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
+
+    ichi::audio::AudioPlayer::play(menuMusic.get());
 
     return font;
 }
@@ -49,10 +52,13 @@ void SceneLoader::changeSceneToMain()
     }
 
     ichi::scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
+
+    ichi::audio::AudioPlayer::play(menuMusic.get());
 }
 
 void SceneLoader::changeSceneToLocalPlayCharacterSelection()
 {
+    ichi::audio::AudioPlayer::play(menuMusic.get());
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION));
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
         ptr->updateItems(ProfileHandler::getNames());
@@ -62,6 +68,8 @@ void SceneLoader::changeSceneToLocalPlayCharacterSelection()
 
 void SceneLoader::changeSceneToTrainingCharacterSelection()
 {
+    ichi::audio::AudioPlayer::play(menuMusic.get());
+
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION));
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
         ptr->updateItems(ProfileHandler::getNames());
@@ -69,11 +77,15 @@ void SceneLoader::changeSceneToTrainingCharacterSelection()
 
 void SceneLoader::changeSceneToProfileEditor()
 {
+    ichi::audio::AudioPlayer::play(menuMusic.get());
+
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::PROFILE_EDITOR));
 }
 
 void SceneLoader::changeSceneToSettings()
 {
+    ichi::audio::AudioPlayer::play(menuMusic.get());
+
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::SETTINGS));
 }
 
@@ -191,7 +203,7 @@ std::shared_ptr<uicomponents::Button> SceneLoader::createButton(datatypes::Hitbo
     graphics::Sprite defaultSprite(hitbox, UI_LAYER, spritePath);
     graphics::Sprite focusedSprite(hitbox, UI_LAYER, focusedSpritePath);
 
-    return std::make_shared<uicomponents::Button>(hitbox, label, font, black, defaultSprite, focusedSprite, onClick);
+    return std::make_shared<uicomponents::Button>(hitbox, label, font, yellow, defaultSprite, focusedSprite, onClick);
 }
 
 std::shared_ptr<uicomponents::DropDownMenu> SceneLoader::createMenu(datatypes::Hitbox &hitbox, const std::vector<std::string> &items, const std::string &spritePath, const std::string &focusedSpritePath, const std::string &itemPath)
@@ -426,20 +438,24 @@ void SceneLoader::saveProfile()
 void SceneLoader::createPopUpMenu()
 {
     datatypes::Hitbox popUpWindowHB(datatypes::Point(122, 50), 110, 140, false);
+    datatypes::Point musicLblPt(142, 60);
+    datatypes::Hitbox musicSliderHb(datatypes::Point(142, 80), 70, 15, false);
+    datatypes::Point sfLblPt(142, 100);
+    datatypes::Hitbox sfSliderHb(datatypes::Point(142, 120), 70, 15, false);
     datatypes::Hitbox returnToMainMenuHB(datatypes::Point(142, 150), 70, 20, false);
-    datatypes::Point sliderLblPt(142, 100);
-    datatypes::Hitbox sliderHb(datatypes::Point(142, 120), 70, 15, false);
 
     graphics::Sprite popUpWindowSprite(popUpWindowHB, UI_LAYER, POP_UP_MENU_PATH);
     graphics::Sprite popUpBackground(window, UI_LAYER, TRANSPARENT_BLACK_PATH);
 
     auto returnToMainMenuBtn = createButton(returnToMainMenuHB, "Main Menu", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToMain);
 
-    auto volumeSlider = createSlideBar(sliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setVolume);
+    auto musicVolumeSlider = createSlideBar(musicSliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setMusicVolume);
+    auto sfVolumeSlider = createSlideBar(sfSliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setSoundEffectVolume);
 
-    auto volume = std::make_shared<uicomponents::Label>(sliderLblPt, "volume: ", font, white);
+    auto sf = std::make_shared<uicomponents::Label>(sfLblPt, "SFX: ", font, yellow);
+    auto music = std::make_shared<uicomponents::Label>(musicLblPt, "Music: ", font, yellow);
 
-    auto pane = std::make_shared<uicomponents::Pane>(popUpWindowHB, std::vector<std::shared_ptr<uicomponents::UIComponent>>{volume, volumeSlider, returnToMainMenuBtn});
+    auto pane = std::make_shared<uicomponents::Pane>(popUpWindowHB, std::vector<std::shared_ptr<uicomponents::UIComponent>>{musicVolumeSlider, sfVolumeSlider, sf, music, returnToMainMenuBtn});
 
     auto popUp = std::make_shared<scene::PopUpMenu>(std::vector<std::shared_ptr<uicomponents::UIComponent>>{pane}, popUpBackground, popUpWindowSprite);
 
@@ -448,24 +464,24 @@ void SceneLoader::createPopUpMenu()
 
 void SceneLoader::createMainMenu()
 {
-    datatypes::Hitbox hbLocalPlay(datatypes::Point(50, 60), 75, 20, false);
-    datatypes::Hitbox hbTraining(datatypes::Point(50, 90), 75, 20, false);
-    datatypes::Hitbox hbProfileEditor(datatypes::Point(50, 120), 75, 20, false);
-    datatypes::Hitbox hbSettings(datatypes::Point(50, 150), 75, 20, false);
-    datatypes::Hitbox hbExit(datatypes::Point(50, 180), 75, 20, false);
+    datatypes::Hitbox hbLocalPlay(datatypes::Point(50, 80), 75, 15, false);
+    datatypes::Hitbox hbTraining(datatypes::Point(50, 100), 75, 15, false);
+    datatypes::Hitbox hbProfileEditor(datatypes::Point(50, 120), 75, 15, false);
+    datatypes::Hitbox hbSettings(datatypes::Point(50, 140), 75, 15, false);
+    datatypes::Hitbox hbExit(datatypes::Point(50, 160), 75, 15, false);
 
-    auto darkBlueBackgroundMain = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
+    auto mainMenuSprite = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, MAIN_MENU_PATH);
 
     auto localPlay = createButton(hbLocalPlay, "Local Play", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToLocalPlayCharacterSelection);
     auto training = createButton(hbTraining, "Training", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToTrainingCharacterSelection);
-    auto profileEditor = createButton(hbProfileEditor, "Profile Editor", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToProfileEditor);
+    auto profileEditor = createButton(hbProfileEditor, "Profiles", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToProfileEditor);
     auto settings = createButton(hbSettings, "Settings", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToSettings);
     auto exit = createButton(hbExit, "Exit game", BUTTON_PATH, FOCUSED_BUTTON_PATH, quitGame);
 
     auto mainPane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{localPlay, training, profileEditor, settings, exit});
 
     std::shared_ptr<scene::Scene> mainScene = std::make_shared<scene::Scene>(
-        darkBlueBackgroundMain,
+        mainMenuSprite,
         std::vector<std::shared_ptr<core::Component>>{std::shared_ptr<core::Component>(mainPane)},
         false);
 
@@ -602,12 +618,20 @@ void SceneLoader::createProfileEditorMenu()
 
 void SceneLoader::createSettingMenu()
 {
-    datatypes::Hitbox sliderHb(datatypes::Point(120, 50), 70, 15, false);
+    datatypes::Point musicLblPt(142, 60);
+    datatypes::Hitbox musicSliderHb(datatypes::Point(142, 80), 70, 15, false);
+    datatypes::Point sfLblPt(142, 100);
+    datatypes::Hitbox sfSliderHb(datatypes::Point(142, 120), 70, 15, false);
 
     auto returnBtnS = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
-    auto volumeSlider = createSlideBar(sliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setVolume);
 
-    auto pane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnS, volumeSlider});
+    auto musicVolumeSlider = createSlideBar(musicSliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setMusicVolume);
+    auto sfVolumeSlider = createSlideBar(sfSliderHb, BAR_PATH, 5, 20, SLIDER_PATH, FOCUSED_SLIDER_PATH, audio::AudioPlayer::setSoundEffectVolume);
+
+    auto sf = std::make_shared<uicomponents::Label>(sfLblPt, "SFX: ", font, white);
+    auto music = std::make_shared<uicomponents::Label>(musicLblPt, "Music: ", font, white);
+
+    auto pane = std::make_shared<uicomponents::Pane>(window, std::vector<std::shared_ptr<uicomponents::UIComponent>>{returnBtnS, musicVolumeSlider, sfVolumeSlider, sf, music});
 
     auto darkBlueBackgroundS = std::make_shared<graphics::Sprite>(window, BACKGROUND_LAYER, DARK_BLUE_SCREEN_PATH);
 
