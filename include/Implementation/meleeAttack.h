@@ -10,7 +10,7 @@
 class MeleeAttack : public Attack
 {
 public:
-    MeleeAttack(float dmg, Uint32 cooldown, std::shared_ptr<ichi::graphics::AnimatedSprite> leftPerson, std::shared_ptr<ichi::graphics::AnimatedSprite> rightPerson, std::map<int, ichi::datatypes::Hitbox> hitboxes);
+    MeleeAttack(float dmg, ichi::datatypes::Vector2D force, Uint32 cooldown, std::shared_ptr<ichi::graphics::AnimatedSprite> leftPerson, std::shared_ptr<ichi::graphics::AnimatedSprite> rightPerson, std::map<int, ichi::datatypes::Hitbox> hitboxes);
     ~MeleeAttack() = default;
 
     void draw(bool) const override;
