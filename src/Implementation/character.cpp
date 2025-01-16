@@ -149,7 +149,7 @@ void Character::applyForce()
 
 void Character::handleInput()
 {
-    if (currentAttack != AttackType::NONE)
+    if (currentAttack != AttackType::NONE || stunned)
         return;
 
     if (profile->canTakeAction(Profile::Action::BLOCK, controllerID))
@@ -165,7 +165,7 @@ void Character::handleInput()
         blocking = false;
     }
 
-    if (profile->canTakeAction(Profile::Action::UP, controllerID))
+    if (profile->canTakeAction(Profile::Action::UP, controllerID) || !(profile->canTakeAction(Profile::Action::DOWN, controllerID) || profile->canTakeAction(Profile::Action::RIGHT, controllerID) || profile->canTakeAction(Profile::Action::LEFT, controllerID)))
     {
         direciton = Direction::NEUTRAL;
     }
@@ -179,17 +179,29 @@ void Character::handleInput()
     if (profile->canTakeAction(Profile::Action::RIGHT, controllerID))
     {
         direciton = Direction::SIDE;
-        velocity.setX(speed);
+        if (velocity.getX() < 0)
+            velocity += ichi::datatypes::Vector2D(friction, 0);
+        velocity.setX(std::clamp(velocity.getX() + acceleration, -MAX_SPEED, MAX_SPEED));
     }
     else if (profile->canTakeAction(Profile::Action::LEFT, controllerID))
     {
         direciton = Direction::SIDE;
-        velocity.setX(-speed);
+        if (velocity.getX() > 0)
+            velocity -= ichi::datatypes::Vector2D(friction, 0);
+        velocity.setX(std::clamp(velocity.getX() - acceleration, -MAX_SPEED, MAX_SPEED));
     }
     else
     {
-        direciton = Direction::NEUTRAL;
-        velocity.setX(0);
+        if (velocity.getX() != 0)
+        {
+            if (velocity.getX() > 0)
+                velocity -= ichi::datatypes::Vector2D(friction, 0);
+            else
+                velocity += ichi::datatypes::Vector2D(friction, 0);
+
+            if ((velocity.getX() > 0 && velocity.getX() < friction) || (velocity.getX() < 0 && velocity.getX() > -friction))
+                velocity.setX(0);
+        }
     }
 
     if (grounded && profile->canTakeAction(Profile::Action::JUMP, controllerID))
@@ -248,7 +260,12 @@ void Character::startAttack()
 
     attack->prepareForAttack(facingRight);
     if (auto ptr = dynamic_cast<ProjectileAttack *>(attack))
-        ptr->spawnProjectile(facingRight, hitbox.getPos());
+    {
+        if (facingRight)
+            ptr->queueAttack(facingRight, hitbox.getPos() + ichi::datatypes::Point(hitbox.getWidth(), 0));
+        else
+            ptr->queueAttack(facingRight, hitbox.getPos());
+    }
 }
 
 void Character::updateAnimationState()
@@ -258,6 +275,12 @@ void Character::updateAnimationState()
 
     if (facingRight)
     {
+        if (stunned)
+        {
+            activeState = AnimationState::RIGHT_STUNNED;
+            return;
+        }
+
         if (blocking)
         {
             activeState = AnimationState::RIGHT_BLOCKING;
@@ -281,6 +304,12 @@ void Character::updateAnimationState()
             return;
         }
         activeState = AnimationState::RIGHT_IDLE;
+        return;
+    }
+
+    if (stunned)
+    {
+        activeState = AnimationState::LEFT_STUNNED;
         return;
     }
 
@@ -323,6 +352,7 @@ void Character::setPosition(ichi::datatypes::Point pt)
 
 void Character::reset()
 {
+    velocity = ichi::datatypes::Vector2D(0, 0);
     hp = MAX_HP;
     for (auto pair : attacks)
         pair.second.get()->reset();
@@ -336,14 +366,19 @@ void Character::checkForHit(Character &other)
             if (currentAttack != attack.first)
                 continue;
         if (attack.second.get()->hits(other))
-            other.takeDamage(attack.second.get()->getDamage());
+            other.takeDamage(attack.second.get()->getDamage(), attack.second->getForce());
     }
 }
 
-void Character::takeDamage(float dmg)
+void Character::takeDamage(float dmg, ichi::datatypes::Vector2D force)
 {
     if (!blocking)
     {
+        force.setX(std::abs(force.getX())); // if forces x value is positive then the character is sent to the right
+        if (facingRight)                    // if the character is facing to the right it should be sent to the left
+            force.setX(-force.getX());
+        stunned = true;
+        velocity = force;
         hp = std::clamp(hp - dmg, .0f, MAX_HP);
         return;
     }
@@ -366,12 +401,14 @@ void Character::checkGroundCollision()
         {
             hitbox.setY(c.get()->getY() - hitbox.getHeight());
             velocity.setY(0);
+            stunned = false;
             grounded = true;
             return;
         }
 
         if (c.get()->isOverlapping(hitbox + ichi::datatypes::Point(0, 1)))
         {
+            stunned = false;
             grounded = true;
             return;
         }

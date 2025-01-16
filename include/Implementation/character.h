@@ -35,11 +35,13 @@ public:
         LEFT_JUMPING,
         LEFT_FALLING,
         LEFT_BLOCKING,
+        LEFT_STUNNED,
         RIGHT_IDLE,
         RIGHT_WALKING,
         RIGHT_JUMPING,
         RIGHT_FALLING,
         RIGHT_BLOCKING,
+        RIGHT_STUNNED,
     };
 
     enum class AttackType
@@ -110,9 +112,9 @@ public:
 
     void checkForHit(Character &);
 
+    void takeDamage(float dmg, ichi::datatypes::Vector2D force);
     float getHp() const { return hp; }
     void reset();
-    void takeDamage(float dmg);
 
     inline static const float MAX_HP = 100;
 
@@ -123,9 +125,11 @@ private:
     const std::string WIN_PATH = constants::gResPath + "images/UIComponents/Win.png";
     const std::string EMPTY_WIN_PATH = constants::gResPath + "images/UIComponents/EmptyWin.png";
 
-    const float speed = 1.f;
-    const float jumpVelocity = -6.9f;
-    const float gravity = 0.35f;
+    const float MAX_SPEED = 2.f;
+    const float acceleration = 0.3f;
+    const float friction = 0.5f;
+    const float jumpVelocity = -6.0f;
+    const float gravity = 0.4f;
 
     const float BLOCK_REDUCE = 1 - 0.8f;
     const int parryFrameWindow = 100;
@@ -140,6 +144,7 @@ private:
     bool facingRight;
     bool grounded = false;
     bool blocking = false;
+    bool stunned = false;
 
     ichi::datatypes::Vector2D velocity{0, 0};
     Direction direciton = Direction::NEUTRAL;
