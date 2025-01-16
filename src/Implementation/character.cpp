@@ -1,13 +1,21 @@
 #include "Implementation/character.h"
+
 #include "Ichi/Core/component.h"
-#include "Ichi/Graphics/textureManager.h"
 #include "Ichi/Core/engine.h"
+
+#include "Ichi/Graphics/textureManager.h"
+#include "Ichi/Graphics/sprite.h"
+
 #include "Ichi/Input/keyboard.h"
 #include "Ichi/Input/controllerHandler.h"
+
 #include "Ichi/Scene/sceneManager.h"
-#include "Ichi/Graphics/sprite.h"
+
+#include "Ichi/Audio/audioPlayer.h"
+
 #include "Implementation/meleeAttack.h"
 #include "Implementation/projectileAttack.h"
+
 #include "Ichi/log.h"
 
 #include <algorithm>
@@ -231,6 +239,7 @@ void Character::handleInput()
 
         if (direciton == Direction::SIDE && attacks.find(AttackType::SIDE_HEAVY) != attacks.end())
             currentAttack = AttackType::SIDE_HEAVY;
+        ichi::audio::AudioPlayer::play(swordSwooshSf.get());
         startAttack();
         return;
     }
@@ -381,11 +390,16 @@ void Character::takeDamage(float dmg, ichi::datatypes::Vector2D force)
         stunned = true;
         velocity = force;
         hp = std::clamp(hp - dmg, .0f, MAX_HP);
+        ichi::audio::AudioPlayer::play(hitSf.get());
         return;
     }
 
     if (framesblocking <= parryFrameWindow)
+    {
+        ichi::audio::AudioPlayer::play(parrySf.get());
         return;
+    }
+    ichi::audio::AudioPlayer::play(blockSf.get());
     hp = std::clamp(hp - (dmg * BLOCK_REDUCE), .0f, MAX_HP);
 }
 

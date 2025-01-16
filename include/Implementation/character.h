@@ -9,7 +9,10 @@
 
 #include "Implementation/attack.h"
 #include "Implementation/profile.h"
+#include "Ichi/log.h"
 #include "Constants.h"
+
+#include "SDL2/SDL_mixer.h"
 
 #include <map>
 #include <memory>
@@ -19,7 +22,14 @@ class Attack;
 
 class Character : public ichi::core::Component
 {
-
+    struct MixChunkDeleter
+    {
+        void operator()(Mix_Chunk *chunk) const
+        {
+            if (chunk)
+                Mix_FreeChunk(chunk);
+        }
+    };
     enum class Direction
     {
         NEUTRAL,
@@ -58,6 +68,15 @@ public:
               const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks, bool facingRight, int id = -1)
         : Component(hitbox), facingRight(facingRight), animations(animations), profile(p), controllerID(id), attacks(attacks)
     {
+        footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_0_PATH));
+        footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_1_PATH));
+        footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_2_PATH));
+        footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_3_PATH));
+        swordSwooshSf = loadSoundEffect(SOUND_EFFECT_SWORD_SWOOSH_PATH);
+        hitSf = loadSoundEffect(SOUND_EFFECT_HIT_PATH);
+        blockSf = loadSoundEffect(SOUND_EFFECT_BLOCK_PATH);
+        parrySf = loadSoundEffect(SOUND_EFFECT_PARRY_PATH);
+
         ichi::datatypes::Hitbox hb(ichi::datatypes::Point(10, 10), 70, 10, false);
         if (!facingRight)
             hb.setX(384 - 70 - 10);
@@ -171,5 +190,31 @@ private:
     void checkWallCollision();
     void checkGroundCollision();
     void startAttack();
+
+    const std::string SOUND_EFFECT_FOOT_STEPS_0_PATH = constants::gResPath + "sounds/footSteps0.wav";
+    const std::string SOUND_EFFECT_FOOT_STEPS_1_PATH = constants::gResPath + "sounds/footSteps1.wav";
+    const std::string SOUND_EFFECT_FOOT_STEPS_2_PATH = constants::gResPath + "sounds/footSteps2.wav";
+    const std::string SOUND_EFFECT_FOOT_STEPS_3_PATH = constants::gResPath + "sounds/footSteps3.wav";
+    const std::string SOUND_EFFECT_PARRY_PATH = constants::gResPath + "sounds/parry.wav";
+    const std::string SOUND_EFFECT_BLOCK_PATH = constants::gResPath + "sounds/block.wav";
+    const std::string SOUND_EFFECT_HIT_PATH = constants::gResPath + "sounds/hit.wav";
+    const std::string SOUND_EFFECT_SWORD_SWOOSH_PATH = constants::gResPath + "sounds/swordSwoosh.wav";
+
+    std::vector<std::unique_ptr<Mix_Chunk, MixChunkDeleter>> footStepsSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> swordSwooshSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> hitSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> blockSf;
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> parrySf;
+
+    std::unique_ptr<Mix_Chunk, MixChunkDeleter> loadSoundEffect(const std::string &path)
+    {
+        Mix_Chunk *chunk = Mix_LoadWAV(path.c_str());
+        if (!chunk)
+        {
+            ICHI_ERROR("Could not load sound effect: {}", SDL_GetError());
+            return nullptr;
+        }
+        return std::unique_ptr<Mix_Chunk, MixChunkDeleter>(chunk);
+    }
 };
 #endif
