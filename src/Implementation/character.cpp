@@ -352,6 +352,7 @@ void Character::setPosition(ichi::datatypes::Point pt)
 
 void Character::reset()
 {
+    stunned = false;
     velocity = ichi::datatypes::Vector2D(0, 0);
     hp = MAX_HP;
     for (auto pair : attacks)

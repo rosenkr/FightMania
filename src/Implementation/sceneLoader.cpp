@@ -239,6 +239,13 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
         {1, ichi::datatypes::Hitbox(ichi::datatypes::Point(14, 40), 60, 25, false)},
     };
 
+    std::map<int, ichi::datatypes::Hitbox> downLightHitboxes = {
+        {0, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
+        {1, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
+        {2, ichi::datatypes::Hitbox(ichi::datatypes::Point(19, 54), 65, 45, false)},
+        {3, ichi::datatypes::Hitbox(ichi::datatypes::Point(15, 18), 65, 50, false)},
+    };
+
     std::map<int, ichi::datatypes::Hitbox> sideHeavyHitboxes = {
         {0, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
         {1, ichi::datatypes::Hitbox(ichi::datatypes::Point(0, 0), 0, 0, false)},
@@ -251,6 +258,9 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
 
     if (!facingRight)
         hb.setX(250);
+
+    auto stunnedLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_STUNNED_LEFT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
+    auto stunnedRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_STUNNED_RIGHT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
 
     auto blockLeftAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_BLOCK_LEFT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
     auto blockRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_BLOCK_RIGHT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
@@ -268,12 +278,14 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
     auto jumpingRightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_JUMPING_RIGHT, SINGLE_FRAME_TIME.size(), SINGLE_FRAME_TIME);
 
     std::map<Character::AnimationState, std::shared_ptr<graphics::AnimatedSprite>> animations = {
+        {Character::AnimationState::LEFT_STUNNED, stunnedLeftAnimation},
         {Character::AnimationState::LEFT_BLOCKING, blockLeftAnimation},
         {Character::AnimationState::LEFT_WALKING, walkLeftAnimation},
         {Character::AnimationState::LEFT_IDLE, idleLeftAnimation},
         {Character::AnimationState::LEFT_FALLING, fallingLeftAnimation},
         {Character::AnimationState::LEFT_JUMPING, jumpingLeftAnimation},
 
+        {Character::AnimationState::RIGHT_STUNNED, stunnedRightAnimation},
         {Character::AnimationState::RIGHT_BLOCKING, blockRightAnimation},
         {Character::AnimationState::RIGHT_WALKING, walkRightAnimation},
         {Character::AnimationState::RIGHT_IDLE, idleRightAnimation},
@@ -282,7 +294,7 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
     };
 
     auto leftSideLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
-    auto leftDownLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto leftDownLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_DOWN_LIGHT_LEFT, KENNY_DOWN_LIGHT_TIME.size(), KENNY_DOWN_LIGHT_TIME);
     auto leftNeutralLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_LEFT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
 
     auto leftSideHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_LEFT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
@@ -290,7 +302,7 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
     auto leftNeutralHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_NEUTRAL_HEAVY_LEFT, KENNY_NEUTRAL_HEAVY_TIME.size(), KENNY_NEUTRAL_HEAVY_TIME);
 
     auto rightSideLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_RIGHT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
-    auto rightDownLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_RIGHT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
+    auto rightDownLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_DOWN_LIGHT_RIGHT, KENNY_DOWN_LIGHT_TIME.size(), KENNY_DOWN_LIGHT_TIME);
     auto rightNeutralLightAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_LIGHT_RIGHT, KENNY_SIDE_LIGHT_TIME.size(), KENNY_SIDE_LIGHT_TIME);
 
     auto rightSideHeavyAnimation = std::make_shared<ichi::graphics::AnimatedSprite>(hb, FOREGROUND_LAYER, KENNY_SIDE_HEAVY_RIGHT, KENNY_SIDE_HEAVY_TIME.size(), KENNY_SIDE_HEAVY_TIME);
@@ -300,13 +312,13 @@ std::shared_ptr<Character> SceneLoader::createKenny(const Profile *p, int contro
     auto leftSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_LEFT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
     auto rightSwordSlash = std::make_shared<ichi::graphics::AnimatedSprite>(slash, FOREGROUND_LAYER, SWORD_SLASH_RIGHT, SWORD_SLASH_TIME.size(), SWORD_SLASH_TIME);
 
-    auto sideLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation, sideLigthHitboxes);
-    auto downLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation, sideLigthHitboxes);
-    auto neutralLight = std::make_shared<MeleeAttack>(10, 500, leftSideLightAnimation, rightSideLightAnimation, sideLigthHitboxes);
+    auto sideLight = std::make_shared<MeleeAttack>(10, ichi::datatypes::Vector2D(2, 0), 1000, leftSideLightAnimation, rightSideLightAnimation, sideLigthHitboxes);
+    auto downLight = std::make_shared<MeleeAttack>(10, ichi::datatypes::Vector2D(0, -8), 1000, leftDownLightAnimation, rightDownLightAnimation, downLightHitboxes);
+    auto neutralLight = std::make_shared<MeleeAttack>(10, ichi::datatypes::Vector2D(1, 0), 1000, leftNeutralLightAnimation, rightNeutralLightAnimation, sideLigthHitboxes);
 
-    auto sideHeavy = std::make_shared<MeleeAttack>(10, 1000, leftSideHeavyAnimation, rightSideHeavyAnimation, sideHeavyHitboxes);
-    auto downHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 1, 10, 2000);
-    auto neutralHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 1, 10, 2000);
+    auto sideHeavy = std::make_shared<MeleeAttack>(30, ichi::datatypes::Vector2D(3, -1), 1500, leftSideHeavyAnimation, rightSideHeavyAnimation, sideHeavyHitboxes);
+    auto downHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 2, 20, ichi::datatypes::Vector2D(0, 0), 2000, 500);
+    auto neutralHeavy = std::make_shared<ProjectileAttack>(leftSwordSlash, rightSwordSlash, leftNeutralHeavyAnimation, rightNeutralHeavyAnimation, 2, 10, ichi::datatypes::Vector2D(3, -2), 2000, 500);
 
     std::map<Character::AttackType, std::shared_ptr<Attack>> attacks = {
         {Character::AttackType::SIDE_LIGHT, sideLight},

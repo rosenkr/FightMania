@@ -60,10 +60,10 @@ private:
     const std::string RED_WINS_PATH = constants::gResPath + "images/CutScenes/RedWins.png";
 
     std::map<int, Uint32> startTime = {{0, 1000}, {1, 1000}, {2, 1000}, {3, 500}};
-    std::map<int, Uint32> KOTime = {{0, 1000}};
-    std::map<int, Uint32> perfectTime = {{0, 1000}};
-    std::map<int, Uint32> blueWinsTime = {{0, 1000}};
-    std::map<int, Uint32> redWinsTime = {{0, 1000}};
+    std::map<int, Uint32> KOTime = {{0, 3000}};
+    std::map<int, Uint32> perfectTime = {{0, 2000}};
+    std::map<int, Uint32> blueWinsTime = {{0, 4000}};
+    std::map<int, Uint32> redWinsTime = {{0, 4000}};
 
     // in milli sec
     const Uint32 MAX_TIME = 100 * 1000;

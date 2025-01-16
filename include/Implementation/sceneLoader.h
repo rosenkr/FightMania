@@ -81,6 +81,7 @@ private:
     inline static std::map<int, Uint32> KENNY_NEUTRAL_HEAVY_TIME = {{0, 100}, {1, 200}, {2, 100}, {3, 100}, {4, 200}};
     inline static std::map<int, Uint32> KENNY_SIDE_HEAVY_TIME = {{0, 100}, {1, 200}, {2, 100}, {3, 200}, {4, 100}, {5, 100}, {6, 100}};
     inline static std::map<int, Uint32> KENNY_SIDE_LIGHT_TIME = {{0, 300}, {1, 300}};
+    inline static std::map<int, Uint32> KENNY_DOWN_LIGHT_TIME = {{0, 100}, {1, 100}, {2, 100}, {3, 200}};
 
     inline static std::map<int, Uint32> SWORD_SLASH_TIME = {{0, 150}, {1, 150}, {2, 150}};
 
@@ -88,6 +89,8 @@ private:
     inline static const std::string KENNY_FALLING_RIGHT = constants::gResPath + "images/kenny/falling/right";
     inline static const std::string KENNY_JUMPING_LEFT = constants::gResPath + "images/kenny/jumping/left";
     inline static const std::string KENNY_JUMPING_RIGHT = constants::gResPath + "images/kenny/jumping/right";
+    inline static const std::string KENNY_STUNNED_LEFT = constants::gResPath + "images/kenny/stunned/left";
+    inline static const std::string KENNY_STUNNED_RIGHT = constants::gResPath + "images/kenny/stunned/right";
 
     inline static const std::string KENNY_IDLE_LEFT = constants::gResPath + "images/kenny/idle/left";
     inline static const std::string KENNY_IDLE_RIGHT = constants::gResPath + "images/kenny/idle/right";
@@ -103,6 +106,8 @@ private:
     inline static const std::string KENNY_SIDE_HEAVY_RIGHT = constants::gResPath + "images/kenny/sideHeavy/right";
     inline static const std::string KENNY_SIDE_LIGHT_LEFT = constants::gResPath + "images/kenny/sideLight/left";
     inline static const std::string KENNY_SIDE_LIGHT_RIGHT = constants::gResPath + "images/kenny/sideLight/right";
+    inline static const std::string KENNY_DOWN_LIGHT_LEFT = constants::gResPath + "images/kenny/downLight/left";
+    inline static const std::string KENNY_DOWN_LIGHT_RIGHT = constants::gResPath + "images/kenny/downLight/right";
 
     inline static const std::string SWORD_SLASH_LEFT = constants::gResPath + "images/kenny/swordSlash/left";
     inline static const std::string SWORD_SLASH_RIGHT = constants::gResPath + "images/kenny/swordSlash/right";

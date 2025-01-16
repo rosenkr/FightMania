@@ -82,11 +82,10 @@ void Match::update()
 
     if (blueCharacter.get()->getHp() <= 0)
     {
+        CutsceneHandler::addCutscene(KO, KOSf.get());
 
         if (redCharacter.get()->getHp() == Character::MAX_HP)
             CutsceneHandler::addCutscene(perfect, perfectSf.get());
-        else
-            CutsceneHandler::addCutscene(KO, KOSf.get());
 
         if (redCharacter.get()->addWin())
         {
@@ -101,10 +100,10 @@ void Match::update()
     if (redCharacter.get()->getHp() <= 0)
     {
 
+        CutsceneHandler::addCutscene(KO, KOSf.get());
+
         if (blueCharacter.get()->getHp() == Character::MAX_HP)
             CutsceneHandler::addCutscene(perfect, perfectSf.get());
-        else
-            CutsceneHandler::addCutscene(KO, KOSf.get());
 
         if (blueCharacter.get()->addWin())
         {
@@ -124,8 +123,8 @@ void Match::startSuddenDeath()
 {
     blueCharacter.get()->setPosition(datatypes::Point(50, 50));
     redCharacter.get()->setPosition(datatypes::Point(300, 50));
-    blueCharacter.get()->takeDamage(blueCharacter.get()->getHp() - 1); // sets the hp to 1
-    redCharacter.get()->takeDamage(redCharacter.get()->getHp() - 1);
+    blueCharacter.get()->takeDamage(blueCharacter.get()->getHp() - 1, datatypes::Vector2D(0, 0)); // sets the hp to 1
+    redCharacter.get()->takeDamage(redCharacter.get()->getHp() - 1, datatypes::Vector2D(0, 0));
     CutsceneHandler::addCutscene(start, startSf.get());
 }
 

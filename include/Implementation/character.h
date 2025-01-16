@@ -129,7 +129,7 @@ private:
     const float acceleration = 0.3f;
     const float friction = 0.5f;
     const float jumpVelocity = -6.0f;
-    const float gravity = 0.4f;
+    const float gravity = 0.37f;
 
     const float BLOCK_REDUCE = 1 - 0.8f;
     const int parryFrameWindow = 100;
