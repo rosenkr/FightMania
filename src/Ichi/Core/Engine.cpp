@@ -37,6 +37,7 @@ namespace ichi::core
         // init std::rand
         std::srand(static_cast<unsigned>(std::time(nullptr)));
         // init managers
+        window.init();
         ichi::input::Mouse::init();
         ichi::input::Keyboard::init();
         ichi::audio::AudioPlayer::init(2);
@@ -60,8 +61,6 @@ namespace ichi::core
             if (1000 / FPS > frameTime)
                 SDL_Delay((1000 / FPS) - frameTime);
         }
-
-        shutdown();
     }
 
     void Engine::shutdown()
@@ -71,9 +70,12 @@ namespace ichi::core
         isRunning = false;
 
         // shutdown Everything exept logmanager
+        window.shutDown();
         ichi::input::ControllerHandler::shutdown();
         ichi::audio::AudioPlayer::shutdown();
+        ichi::graphics::TextureManager::shutDown();
 
+        TTF_Quit();
         SDL_Quit();
 
         logManager.shutdown();

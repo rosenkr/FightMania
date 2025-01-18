@@ -17,9 +17,7 @@ namespace ichi::uicomponents
         : UIComponent(hb), items(items), font(f), textColor(c), menu(m), focusedMenu(fm), itemSprite(item)
     {
 
-        for (auto s : items)
-            addTextureFor(s);
-        addTextureFor(NONE_SELECTED);
+        updateItems(items);
     }
 
     void DropDownMenu::update()
@@ -62,7 +60,8 @@ namespace ichi::uicomponents
         else
             menu.draw();
 
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), itemTextures.at(selected), NULL, hitbox.getSDLRect());
+        auto selectedTexture = graphics::TextureManager::getTextTextureFor(selected, font, textColor);
+        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), selectedTexture, NULL, hitbox.getSDLRect());
 
         if (!isExpanded)
             return;
@@ -70,10 +69,11 @@ namespace ichi::uicomponents
         datatypes::Hitbox hb(datatypes::Point(hitbox.getX(), hitbox.getY() + hitbox.getHeight()), itemSprite.getWidth(), itemSprite.getHeight(), false);
         for (auto s : items)
         {
-            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), graphics::TextureManager::getTextureFor(itemSprite), NULL, hb.getSDLRect());
+            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), graphics::TextureManager::getTextureFor(itemSprite.getPath()), NULL, hb.getSDLRect());
 
             int textWidth, textHeight;
-            SDL_QueryTexture(itemTextures.at(s), nullptr, nullptr, &textWidth, &textHeight);
+            auto texture = graphics::TextureManager::getTextTextureFor(s, font, textColor);
+            SDL_QueryTexture(texture, nullptr, nullptr, &textWidth, &textHeight);
 
             int diff = (hb.getWidth() - textWidth) / 2;
 
@@ -82,7 +82,7 @@ namespace ichi::uicomponents
             if (textWidth > hb.getWidth())
                 rect = SDL_Rect{hb.getX(), hb.getY(), textWidth, hb.getHeight()};
 
-            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), itemTextures.at(s), NULL, &rect);
+            SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, &rect);
 
             hb += datatypes::Point(0, itemSprite.getHeight());
         }
@@ -91,38 +91,10 @@ namespace ichi::uicomponents
     void DropDownMenu::updateItems(std::vector<std::string> items)
     {
         this->items = items;
-        for (auto &pair : itemTextures)
-            if (pair.second)
-            {
-                SDL_DestroyTexture(pair.second);
-                pair.second = nullptr;
-            }
-        itemTextures.clear();
-
+        
         for (auto s : items)
-            addTextureFor(s);
-        addTextureFor(NONE_SELECTED);
+            graphics::TextureManager::addTextTextureFor(s, font, textColor);
+        graphics::TextureManager::addTextTextureFor(NONE_SELECTED, font, textColor);
     }
 
-    void DropDownMenu::addTextureFor(std::string s)
-    {
-        SDL_Surface *surf = TTF_RenderText_Blended(font, s.c_str(), textColor);
-
-        if (surf == nullptr)
-        {
-            ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
-            return;
-        }
-
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-        SDL_FreeSurface(surf);
-
-        if (texture == nullptr)
-        {
-            ICHI_ERROR("Could not create texture for label");
-            return;
-        }
-
-        itemTextures[s] = texture;
-    }
 } // namespace ichi::uicomponents

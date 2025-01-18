@@ -28,6 +28,48 @@ public:
     void update();
     void startSet();
     void startSuddenDeath();
+    void shutDown() override {
+        if(fightSf){
+            auto rawPtr = fightSf.release();
+            fightSf.get_deleter()(rawPtr);
+        }
+        if(round1Sf){
+            auto rawPtr = round1Sf.release();
+            round1Sf.get_deleter()(rawPtr);
+        }
+        if(round2Sf){
+            auto rawPtr = round2Sf.release();
+            round2Sf.get_deleter()(rawPtr);
+        }
+        if(round3Sf){
+            auto rawPtr = round3Sf.release();
+            round3Sf.get_deleter()(rawPtr);
+        }
+        if(round4Sf){
+            auto rawPtr = round4Sf.release();
+            round4Sf.get_deleter()(rawPtr);
+        }
+        if(round5Sf){
+            auto rawPtr = round5Sf.release();
+            round5Sf.get_deleter()(rawPtr);
+        }
+        if(KOSf){
+            auto rawPtr = KOSf.release();
+            KOSf.get_deleter()(rawPtr);
+        }
+        if(perfectSf){
+            auto rawPtr = perfectSf.release();
+            perfectSf.get_deleter()(rawPtr);
+        }
+        if(blueWinsSf){
+            auto rawPtr = blueWinsSf.release();
+            blueWinsSf.get_deleter()(rawPtr);
+        }
+        if(redWinsSf){
+            auto rawPtr = redWinsSf.release();
+            redWinsSf.get_deleter()(rawPtr);
+        }
+    }
 
 private:
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> loadSoundEffect(const std::string &path)

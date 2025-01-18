@@ -18,6 +18,10 @@ int main(int argc, char *argv[])
 	}
 
 	instance->run();
+	SceneLoader::shutdown();
+	instance->shutdown();
+	ichi::core::Engine::cleanup();
+
 
 	return 0;
 }

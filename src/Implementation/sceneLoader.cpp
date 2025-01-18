@@ -15,7 +15,7 @@ std::unique_ptr<Mix_Music, SceneLoader::MixMusicDeleter> SceneLoader::menuMusic;
 
 bool SceneLoader::init()
 {
-    font = TTF_OpenFont(FONT_PATH.c_str(), 8);
+    font = TTF_OpenFont(FONT_PATH.c_str(), 10);
 
     if (!ProfileHandler::init())
     {

@@ -13,17 +13,16 @@ namespace ichi::uicomponents
     {
     public:
         Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, std::function<void()> ptr);
-        ~Button()
-        {
-            if (text != nullptr)
-                SDL_DestroyTexture(text);
-        }
+        ~Button(){}
 
         void draw() const;
         void update();
 
     private:
-        SDL_Texture *text;
+        std::string t;
+        TTF_Font* f;
+        SDL_Color c;
+        //SDL_Texture *text;
         graphics::Sprite sprite;
         graphics::Sprite focusedSprite;
         std::function<void()> funcPtr;

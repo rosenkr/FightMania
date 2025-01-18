@@ -4,41 +4,20 @@
 #include "Ichi/Input/keyboard.h"
 #include "Ichi/Input/mouse.h"
 #include "Ichi/Input/controllerHandler.h"
+#include "Ichi/Graphics/textureManager.h"
 
 using namespace ichi::input;
 
 namespace ichi::uicomponents
 {
-    Button::Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, std::function<void()> ptr) : UIComponent(hb), sprite(s), focusedSprite(fs), funcPtr(ptr)
+    Button::Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, std::function<void()> ptr) : UIComponent(hb), t(btnLabel),f(f), c(c), sprite(s), focusedSprite(fs), funcPtr(ptr) 
     {
-        if (btnLabel.empty())
-        {
-            text = nullptr;
-            return;
-        }
-
-        SDL_Surface *surf = TTF_RenderText_Blended(f, btnLabel.c_str(), c);
-
-        if (surf == nullptr)
-        {
-            ICHI_ERROR("Could not create surface for button label: {}", SDL_GetError());
-            return;
-        }
-
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-        SDL_FreeSurface(surf);
-
-        if (texture == nullptr)
-        {
-            ICHI_ERROR("Could not create texture for button label", SDL_GetError());
-            return;
-        }
-
-        text = texture;
+        ichi::graphics::TextureManager::addTextTextureFor(t, f, c);
     }
 
     void Button::draw() const
     {
+        auto text = graphics::TextureManager::getTextTextureFor(t,f,c);
         if (focused)
             focusedSprite.draw();
         else

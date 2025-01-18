@@ -13,6 +13,12 @@ namespace ichi::scene::sceneManager
 
     static std::shared_ptr<PopUpMenu> popUpMenu;
 
+    void shutDown(){
+        for(auto pair : scenes){
+            pair.second.get()->shutDown();
+        }
+    }
+
     // Succesfully adds a scene if the key does not already have an associated scene
     bool addScene(int key, std::shared_ptr<Scene> scene)
     {

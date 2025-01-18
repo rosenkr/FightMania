@@ -48,6 +48,12 @@ public:
         }
     };
 
+    static void shutdown() { 
+        if(font){
+            TTF_CloseFont(font); 
+            font = nullptr;
+        }
+    }
     static bool init();
 
 private:
@@ -199,7 +205,7 @@ private:
     }
 
     SceneLoader() = delete;
-    ~SceneLoader() { TTF_CloseFont(font); }
+    ~SceneLoader() = delete; 
 };
 
 #endif // SCENE_LOADER_H

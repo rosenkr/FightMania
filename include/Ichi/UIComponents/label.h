@@ -14,23 +14,20 @@ namespace ichi::uicomponents
     {
     public:
         Label(datatypes::Point location, const std::string &s, TTF_Font *f, SDL_Color c);
-        ~Label()
-        {
-            SDL_DestroyTexture(texture);
-            texture = nullptr;
-        }
+        ~Label(){}
 
         void update() {}
         void draw() const;
 
+        
         void updateText(std::string);
 
     private:
-        SDL_Texture *texture;
-
+        std::string str;
         TTF_Font *font;
         SDL_Color color;
     };
+
 
 } // namespace ichi::uicomponents
 

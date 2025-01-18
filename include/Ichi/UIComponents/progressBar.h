@@ -10,21 +10,17 @@ namespace ichi::uicomponents
     class ProgressBar : public UIComponent
     {
     public:
-        ProgressBar(datatypes::Hitbox, graphics::Sprite, std::string, bool);
+        ProgressBar(datatypes::Hitbox, graphics::Sprite, graphics::Sprite, bool);
 
         void update() {}
         void draw() const;
         void setProcentageFilled(float);
 
-        ~ProgressBar()
-        {
-            SDL_DestroyTexture(color);
-            color = nullptr;
-        };
+        ~ProgressBar(){}
 
     private:
         graphics::Sprite bar;
-        SDL_Texture *color;
+        graphics::Sprite color;
         float procentageFilled = 1; // 0-1 is the range
         bool isMirrored = false;
     };

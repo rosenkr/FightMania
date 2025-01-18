@@ -7,73 +7,87 @@
 
 namespace ichi::graphics
 {
-    std::map<Sprite, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> TextureManager::spriteMap;
-    std::map<AnimatedSprite, std::map<int, std::unique_ptr<SDL_Texture, SDLTextureDeleter>>> TextureManager::animatedSpriteMap;
+    std::map<std::string, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> TextureManager::textures;
 
-    SDL_Texture *TextureManager::getTextureFor(const Sprite &s)
+    std::map<std::string, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> TextureManager::textTextures;
+
+ 
+
+    SDL_Texture *TextureManager::getTextureFor(const std::string &s)
     {
-        auto it = spriteMap.find(s);
+        auto it = textures.find(s);
 
-        if (it == spriteMap.end())
+        if (it == textures.end())
         {
-            ICHI_ERROR("Could not find sprite in texturemap")
+            ICHI_ERROR("Could not find path in texturemap")
             return nullptr;
         }
 
         return it->second.get();
     }
 
-    void TextureManager::dropTextureFor(const Sprite &s)
+    void TextureManager::dropTextureFor(const std::string &s)
     {
-        spriteMap.erase(s);
+        textures.erase(s);
     }
 
-    void TextureManager::addTextureFor(const Sprite &s, const std::string &str)
+    void TextureManager::addTextureFor(const std::string &str)
     {
-        if (auto texture = getTexture(str))
-            spriteMap[s] = std::move(texture);
+        if (textures.find(str) != textures.end())
+            return;
+
+        if (auto texture = createTexture(str))
+            textures[str] = std::move(texture);
     }
 
-    SDL_Texture *TextureManager::getTextureFor(const AnimatedSprite &as, int index)
+    void TextureManager::addTexturesFor(const std::vector<std::string> &paths)
     {
-        auto it = animatedSpriteMap.find(as);
+        for (auto p : paths)
+            addTextureFor(p);
+    }
+    
+    void TextureManager::addTextTextureFor(const std::string str, TTF_Font* font, SDL_Color color){
+        if (str.empty())
+            return;
 
-        if (it == animatedSpriteMap.end())
+        if (textTextures.find(str) != textTextures.end())
+            return;
+
+        if (auto texture = createTextTexture(str,font,color))
+            textTextures.insert({str, std::move(texture)});   
+    }
+
+    SDL_Texture* TextureManager::getTextTextureFor(const std::string str, TTF_Font* font, SDL_Color color) {
+        if (textTextures.find(str) == textTextures.end())
+            return nullptr;
+        return textTextures.at(str).get();
+    }
+
+    std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::createTextTexture(const std::string str, TTF_Font* font, SDL_Color color){
+
+        SDL_Surface *surf = TTF_RenderText_Blended(font, str.c_str(), color);
+
+        if (surf == nullptr)
         {
-            ICHI_ERROR("Could not find animated sprite in texturemap")
+
+            ICHI_ERROR("Error on getting text texture with text: {} sdlerrror: {}", str, SDL_GetError());
+            return nullptr;
+        }
+        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
+
+        SDL_FreeSurface(surf);
+
+        if (texture == nullptr)
+        {
+            ICHI_ERROR("Could not create texture for sprite: {}", SDL_GetError());
             return nullptr;
         }
 
-        if (it->second[index].get() == nullptr)
-            ICHI_ERROR("Could not find frame {} in animatedTexturemap", index)
-
-        return it->second[index].get();
+        return std::unique_ptr<SDL_Texture, SDLTextureDeleter>(texture);
     }
 
-    void TextureManager::dropTexturesFor(const AnimatedSprite &as)
-    {
-        animatedSpriteMap.erase(as);
-    }
 
-    void TextureManager::addTexturesFor(const AnimatedSprite &as, const std::vector<std::string> &paths)
-    {
-        std::map<int, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> map;
-
-        int i = 0;
-        for (auto path : paths)
-        {
-            if (auto texture = getTexture(path))
-            {
-                map[i++] = std::move(texture);
-            }
-            else
-                ICHI_ERROR("Failed to add path {} with index: {}", path, i - 1)
-        }
-
-        animatedSpriteMap[as] = std::move(map);
-    }
-
-    std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::getTexture(const std::string &path)
+    std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::createTexture(const std::string &path)
     {
 
         SDL_Surface *surf = IMG_Load(path.c_str());

@@ -51,6 +51,7 @@ namespace ichi::graphics
         void setY(int i);
         int getX() const { return hitbox.getX(); };
         int getY() const { return hitbox.getY(); };
+        std::string getPath() const { return path; } 
 
     protected:
         Sprite(datatypes::Hitbox h, Layer l) : hitbox(h), layer(l)

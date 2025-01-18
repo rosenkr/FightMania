@@ -12,6 +12,7 @@ namespace ichi::core
         virtual void draw() const = 0;
         virtual void handleinput() {};
         virtual ~Component() = default;
+        virtual void shutDown() {};
 
         const datatypes::Hitbox &getHitbox() const { return hitbox; } // Getter in case we want to draw textures based on hitbox size
 

@@ -13,12 +13,26 @@ namespace ichi::core
     {
     public:
         // Singleton instance
-        static Engine *getInstance() { return instance = (instance != nullptr) ? instance : new Engine(); }
+        static Engine *getInstance() { 
+            if (instance)
+                return instance;
+            
+            instance = new Engine();
+            return instance;
+        }
+
         SDL_Renderer *getRenderer() const { return window.getRenderer(); }
         void quit() { isRunning = false; }
         void run();
         bool init();
         void shutdown();
+        static void cleanup()
+        {
+            if (instance) {
+                delete instance;
+                instance = nullptr;
+            }
+        }
 
     private:
         Window window;
@@ -28,7 +42,7 @@ namespace ichi::core
         static Engine *instance;
 
         Engine() = default;
-        ~Engine() = default;
+        ~Engine(){}
     };
 }
 #endif

@@ -23,31 +23,17 @@ namespace ichi::uicomponents
         std::string getSelected() const { return selected; }
         void updateItems(std::vector<std::string> items);
 
-        ~DropDownMenu()
-        {
-            for (auto &pair : itemTextures)
-                if (pair.second)
-                {
-                    SDL_DestroyTexture(pair.second);
-                    pair.second = nullptr;
-                }
-            itemTextures.clear();
-        }
-
     private:
         const std::string NONE_SELECTED = "NONE SELECTED";
         std::string selected = NONE_SELECTED;
         bool isExpanded = false;
 
         std::vector<std::string> items;
-        std::map<std::string, SDL_Texture *> itemTextures;
         TTF_Font *font;
         SDL_Color textColor;
         graphics::Sprite menu;
         graphics::Sprite focusedMenu;
         graphics::Sprite itemSprite;
-
-        void addTextureFor(std::string s);
     };
 } // namespace ichi::uicomponents
 

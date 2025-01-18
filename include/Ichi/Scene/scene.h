@@ -31,6 +31,11 @@ namespace ichi::scene
         void removeComponent(size_t index);
         void removeComponent(core::Component *c);
 
+        void shutDown(){
+            for(auto component : components){
+                component->shutDown();
+            }
+        }
         ~Scene() = default;
 
     protected:

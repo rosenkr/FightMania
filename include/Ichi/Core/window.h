@@ -12,20 +12,22 @@ namespace ichi::core
     class Window
     {
     public:
-        Window();
-        ~Window();
+        Window() = default;
+        ~Window() = default;
 
+        void init();
         void handleEvents();
         void draw();
         void update();
+        void shutDown();
 
         SDL_Renderer *getRenderer() const { return renderer; }
 
         const int SCALE = 3;
 
     private:
-        SDL_Window *window;
-        SDL_Renderer *renderer;
+        SDL_Window *window = nullptr;
+        SDL_Renderer *renderer = nullptr;
     };
 
 } // namespace ichi::core

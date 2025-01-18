@@ -15,6 +15,8 @@ namespace ichi::scene::sceneManager
     void setActiveScene(int key);
     void setPopUpMenu(std::shared_ptr<PopUpMenu>);
 
+    void shutDown();
+
     Scene *getActiveScene();
     Scene *getScene(int key);
 }

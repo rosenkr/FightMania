@@ -1,5 +1,6 @@
 #include "Ichi/UIComponents/progressBar.h"
 #include "Ichi/Core/engine.h"
+#include "Ichi/Graphics/textureManager.h"
 #include "SDL2/SDL_image.h"
 
 #include <algorithm>
@@ -7,21 +8,8 @@
 namespace ichi::uicomponents
 {
 
-    ProgressBar::ProgressBar(datatypes::Hitbox hb, graphics::Sprite s, std::string path, bool mirror = false) : UIComponent(hb), bar(s), isMirrored(mirror)
+    ProgressBar::ProgressBar(datatypes::Hitbox hb, graphics::Sprite s, graphics::Sprite c, bool mirror = false) : UIComponent(hb), bar(s), color(c), isMirrored(mirror)
     {
-        SDL_Surface *surf = IMG_Load(path.c_str());
-
-        if (surf == nullptr)
-            return;
-
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-
-        SDL_FreeSurface(surf);
-
-        if (texture == nullptr)
-            return;
-
-        color = texture;
     }
 
     void ProgressBar::draw() const
@@ -29,7 +17,8 @@ namespace ichi::uicomponents
         auto hb = datatypes::Hitbox(datatypes::Point(hitbox.getX(), hitbox.getY()), hitbox.getWidth() * procentageFilled, hitbox.getHeight(), false);
         if (isMirrored)
             hb.setX(hitbox.getX() + (hitbox.getWidth() - hb.getWidth()));
-        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), color, NULL, hb.getSDLRect());
+        auto texture = graphics::TextureManager::getTextureFor(color.getPath());
+        SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), texture, NULL, hb.getSDLRect());
 
         bar.draw();
     }
