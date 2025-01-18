@@ -8,6 +8,7 @@ Makefile
 # Build
 build/
 # Code to not be pushed
+include/Constants.h
 randomcode/
 resources/Profiles.txt
 
