@@ -55,12 +55,12 @@ void SceneLoader::changeSceneToMain()
 
     ichi::scene::sceneManager::setActiveScene(static_cast<int>(SceneName::MAIN));
 
+    ichi::audio::AudioPlayer::stop();
     ichi::audio::AudioPlayer::play(menuMusic.get());
 }
 
 void SceneLoader::changeSceneToLocalPlayCharacterSelection()
 {
-    ichi::audio::AudioPlayer::play(menuMusic.get());
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::LOCAL_PLAY_CHARACTER_SELECTION));
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
         ptr->updateItems(ProfileHandler::getNames());
@@ -70,8 +70,6 @@ void SceneLoader::changeSceneToLocalPlayCharacterSelection()
 
 void SceneLoader::changeSceneToTrainingCharacterSelection()
 {
-    ichi::audio::AudioPlayer::play(menuMusic.get());
-
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::TRAINING_CHARACTER_SELECTION));
     if (auto ptr = dynamic_cast<uicomponents::DropDownMenu *>(scene::sceneManager::getActiveScene()->getComponent(blueProfileDropdownHB.getPos())))
         ptr->updateItems(ProfileHandler::getNames());
@@ -79,14 +77,12 @@ void SceneLoader::changeSceneToTrainingCharacterSelection()
 
 void SceneLoader::changeSceneToProfileEditor()
 {
-    ichi::audio::AudioPlayer::play(menuMusic.get());
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::PROFILE_EDITOR));
 }
 
 void SceneLoader::changeSceneToSettings()
 {
-    ichi::audio::AudioPlayer::play(menuMusic.get());
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::SETTINGS));
 }
@@ -198,6 +194,7 @@ void SceneLoader::changeSceneToCyberPunk()
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::CYBER_PUNK));
     scene::sceneManager::getActiveScene()->addComponent(m);
+    ichi::audio::AudioPlayer::stop();
     ichi::audio::AudioPlayer::play(fightMusic.get());
 }
 

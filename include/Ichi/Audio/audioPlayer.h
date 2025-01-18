@@ -18,6 +18,7 @@ namespace ichi::audio
         static void play(Mix_Chunk *);
         static void play(const std::vector<Mix_Chunk *> &);
         static void play(Mix_Music *);
+        static void stop();
 
     private:
         AudioPlayer() = default;

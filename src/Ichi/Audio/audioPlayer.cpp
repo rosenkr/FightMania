@@ -48,4 +48,9 @@ namespace ichi::audio
             Mix_PlayMusic(m, -1);
     }
 
+    void AudioPlayer::stop()
+    {
+        Mix_HaltMusic();
+    }
+
 } // namespace ichi::audio
