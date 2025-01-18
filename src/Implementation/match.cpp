@@ -28,7 +28,7 @@ Match::Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red, TT
     blueWinsSf = loadSoundEffect(SOUND_EFFECT_BLUE_WINS_PATH);
     redWinsSf = loadSoundEffect(SOUND_EFFECT_RED_WINS_PATH);
 
-    startSet();
+    startRound();
 
     time = std::make_unique<uicomponents::Label>(datatypes::Point(192, 10), "100", font, SDL_Color{255, 255, 0, 255});
 }
@@ -104,7 +104,7 @@ void Match::update()
             end = true;
         }
         else
-            startSet();
+            startRound();
         return;
     }
 
@@ -122,7 +122,7 @@ void Match::update()
             end = true;
         }
         else
-            startSet();
+            startRound();
         return;
     }
 
@@ -139,9 +139,8 @@ void Match::startSuddenDeath()
     CutsceneHandler::addCutscene(fight, fightSf.get());
 }
 
-void Match::startSet()
+void Match::startRound()
 {
-    round = 1;
     matchTime = 0;
     timeLastUpdated = 0;
     suddenDeathActive = false;

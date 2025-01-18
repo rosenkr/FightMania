@@ -26,7 +26,7 @@ public:
 
     void draw() const;
     void update();
-    void startSet();
+    void startRound();
     void startSuddenDeath();
     void shutDown() override {
         if(fightSf){

@@ -19,6 +19,8 @@ namespace ichi::uicomponents
 
     void Label::updateText(std::string text)
     {
+        str = text;
+        
         graphics::TextureManager::addTextTextureFor(str, font, color);
 
         auto texture = graphics::TextureManager::getTextTextureFor(str, font, color);
