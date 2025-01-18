@@ -38,7 +38,6 @@ class Character : public ichi::core::Component
     };
 
 public:
-
     enum class AnimationState
     {
         LEFT_IDLE,
@@ -69,10 +68,10 @@ public:
               const Profile *p, std::map<AttackType, std::shared_ptr<Attack>> attacks, bool facingRight, int id = -1)
         : Component(hitbox), facingRight(facingRight), animations(animations), profile(p), controllerID(id), attacks(attacks)
     {
-        //footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_0_PATH));
-        //footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_1_PATH));
-        //footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_2_PATH));
-        //footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_3_PATH));
+        // footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_0_PATH));
+        // footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_1_PATH));
+        // footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_2_PATH));
+        // footStepsSf.push_back(loadSoundEffect(SOUND_EFFECT_FOOT_STEPS_3_PATH));
         swordSwooshSf = loadSoundEffect(SOUND_EFFECT_SWORD_SWOOSH_PATH);
         hitSf = loadSoundEffect(SOUND_EFFECT_HIT_PATH);
         blockSf = loadSoundEffect(SOUND_EFFECT_BLOCK_PATH);
@@ -136,28 +135,33 @@ public:
     void takeDamage(float dmg, ichi::datatypes::Vector2D force);
     float getHp() const { return hp; }
     void reset();
-    void shutDown() override {
-        if(swordSwooshSf){
+    void shutDown() override
+    {
+        if (swordSwooshSf)
+        {
             auto rawPtr = swordSwooshSf.release();
             swordSwooshSf.get_deleter()(rawPtr);
         }
-        if(blockSf){
+        if (blockSf)
+        {
             auto rawPtr = blockSf.release();
             blockSf.get_deleter()(rawPtr);
         }
-        if(hitSf){
+        if (hitSf)
+        {
             auto rawPtr = hitSf.release();
             hitSf.get_deleter()(rawPtr);
         }
-        if(parrySf){
+        if (parrySf)
+        {
             auto rawPtr = parrySf.release();
             parrySf.get_deleter()(rawPtr);
         }
-            /*std::vector<std::unique_ptr<Mix_Chunk, MixChunkDeleter>> footStepsSf;
-    std::unique_ptr<Mix_Chunk, MixChunkDeleter> swordSwooshSf;
-    std::unique_ptr<Mix_Chunk, MixChunkDeleter> hitSf;
-    std::unique_ptr<Mix_Chunk, MixChunkDeleter> blockSf;
-    std::unique_ptr<Mix_Chunk, MixChunkDeleter> parrySf;*/
+        /*std::vector<std::unique_ptr<Mix_Chunk, MixChunkDeleter>> footStepsSf;
+std::unique_ptr<Mix_Chunk, MixChunkDeleter> swordSwooshSf;
+std::unique_ptr<Mix_Chunk, MixChunkDeleter> hitSf;
+std::unique_ptr<Mix_Chunk, MixChunkDeleter> blockSf;
+std::unique_ptr<Mix_Chunk, MixChunkDeleter> parrySf;*/
     }
     inline static const float MAX_HP = 100;
 
@@ -175,7 +179,7 @@ private:
     const float gravity = 0.37f;
 
     const float BLOCK_REDUCE = 1 - 0.8f;
-    const int parryFrameWindow = 100;
+    const int parryFrameWindow = 50;
     int framesblocking = 0;
 
     ichi::datatypes::Point facingRightDiff{32, 10};
@@ -224,7 +228,7 @@ private:
     const std::string SOUND_EFFECT_HIT_PATH = constants::gResPath + "sounds/hit.wav";
     const std::string SOUND_EFFECT_SWORD_SWOOSH_PATH = constants::gResPath + "sounds/swordSwoosh.wav";
 
-    //std::vector<std::unique_ptr<Mix_Chunk, MixChunkDeleter>> footStepsSf;
+    // std::vector<std::unique_ptr<Mix_Chunk, MixChunkDeleter>> footStepsSf;
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> swordSwooshSf;
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> hitSf;
     std::unique_ptr<Mix_Chunk, MixChunkDeleter> blockSf;
