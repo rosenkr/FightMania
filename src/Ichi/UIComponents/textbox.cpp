@@ -3,6 +3,7 @@
 #include "Ichi/Input/keyboard.h"
 #include "Ichi/Input/mouse.h"
 #include "Ichi/log.h"
+#include "Ichi/Graphics/textureManager.h"
 
 using namespace ichi::input;
 
@@ -18,6 +19,7 @@ namespace ichi::uicomponents
         else
             sprite.draw();
 
+        auto texture = graphics::TextureManager::getTextTextureFor(text,font,color);
         if (texture == nullptr)
             return;
 
@@ -96,7 +98,9 @@ namespace ichi::uicomponents
 
     void Textbox::clear()
     {
+        ichi::graphics::TextureManager::dropTextTextureFor(text);
         text = "";
+        cursor = 0;
         updateTextTexture();
     }
 
@@ -106,36 +110,14 @@ namespace ichi::uicomponents
 
     void Textbox::updateTextTexture()
     {
-        if (texture)
-        {
-            SDL_DestroyTexture(texture);
-            texture = nullptr;
-        }
-
+        if (text.empty())
+            return;
         std::string temp = text;
         if (focused)
             temp.insert(temp.begin() + cursor, '|');
 
-        if (temp.empty())
-            return;
+        ichi::graphics::TextureManager::addTextTextureFor(text, font, color);
 
-        SDL_Surface *surf = TTF_RenderText_Blended(font, temp.c_str(), color);
-
-        if (surf == nullptr)
-        {
-            ICHI_ERROR("Could not create surface for label: {}", SDL_GetError());
-            return;
-        }
-
-        texture = SDL_CreateTextureFromSurface(core::Engine::getInstance()->getRenderer(), surf);
-
-        SDL_FreeSurface(surf);
-
-        if (texture == nullptr)
-        {
-            ICHI_ERROR("Could not create texture for label");
-            return;
-        }
     }
 
 } // namespace ichi::uicomponents

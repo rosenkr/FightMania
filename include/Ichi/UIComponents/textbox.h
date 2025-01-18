@@ -42,8 +42,6 @@ namespace ichi::uicomponents
         int maxLetterCap;
         int cursor = 0;
 
-        SDL_Texture *texture = nullptr;
-
         void updateTextTexture();
 
         bool wasFocused = false;
