@@ -239,7 +239,6 @@ void Character::handleInput()
 
         if (direciton == Direction::SIDE && attacks.find(AttackType::SIDE_HEAVY) != attacks.end())
             currentAttack = AttackType::SIDE_HEAVY;
-        ichi::audio::AudioPlayer::play(swordSwooshSf.get());
         startAttack();
         return;
     }
@@ -266,6 +265,9 @@ void Character::startAttack()
         currentAttack = AttackType::NONE;
         return;
     }
+
+    if (currentAttack == AttackType::DOWN_HEAVY || currentAttack == AttackType::SIDE_HEAVY || currentAttack == AttackType::NEUTRAL_HEAVY)
+        ichi::audio::AudioPlayer::play(swordSwooshSf.get());
 
     attack->prepareForAttack(facingRight);
     if (auto ptr = dynamic_cast<ProjectileAttack *>(attack))
