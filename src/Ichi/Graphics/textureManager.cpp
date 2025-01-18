@@ -57,6 +57,10 @@ namespace ichi::graphics
             textTextures.insert({str, std::move(texture)});   
     }
 
+    void TextureManager::dropTextTextureFor(const std::string str){
+        textTextures.erase(str);
+    }
+
     SDL_Texture* TextureManager::getTextTextureFor(const std::string str, TTF_Font* font, SDL_Color color) {
         if (textTextures.find(str) == textTextures.end())
             return nullptr;
