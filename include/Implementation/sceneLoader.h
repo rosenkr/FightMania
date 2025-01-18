@@ -48,9 +48,11 @@ public:
         }
     };
 
-    static void shutdown() { 
-        if(font){
-            TTF_CloseFont(font); 
+    static void shutdown()
+    {
+        if (font)
+        {
+            TTF_CloseFont(font);
             font = nullptr;
         }
     }
@@ -139,7 +141,9 @@ private:
     inline static const std::string CP_PATH = constants::gResPath + "images/BackGrounds/Cyberpunk.png";
 
     inline static const std::string MENU_MUSIC_PATH = constants::gResPath + "music/MenuSoundtrack.wav";
+    inline static const std::string FIGHT_MUSIC_PATH = constants::gResPath + "music/FightMusic.wav";
     static std::unique_ptr<Mix_Music, MixMusicDeleter> menuMusic;
+    static std::unique_ptr<Mix_Music, MixMusicDeleter> fightMusic;
 
     // Character names
     inline static const std::string KENNY = "KENNY";
@@ -205,7 +209,7 @@ private:
     }
 
     SceneLoader() = delete;
-    ~SceneLoader() = delete; 
+    ~SceneLoader() = delete;
 };
 
 #endif // SCENE_LOADER_H

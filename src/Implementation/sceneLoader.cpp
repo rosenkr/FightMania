@@ -12,6 +12,7 @@
 datatypes::Hitbox SceneLoader::window = datatypes::Hitbox(datatypes::Point(0, 0), 384, 224, false);
 TTF_Font *SceneLoader::font = nullptr;
 std::unique_ptr<Mix_Music, SceneLoader::MixMusicDeleter> SceneLoader::menuMusic;
+std::unique_ptr<Mix_Music, SceneLoader::MixMusicDeleter> SceneLoader::fightMusic;
 
 bool SceneLoader::init()
 {
@@ -24,6 +25,7 @@ bool SceneLoader::init()
     }
 
     menuMusic = loadMusic(MENU_MUSIC_PATH);
+    fightMusic = loadMusic(FIGHT_MUSIC_PATH);
 
     createPopUpMenu();
     createMainMenu();
@@ -196,6 +198,7 @@ void SceneLoader::changeSceneToCyberPunk()
 
     scene::sceneManager::setActiveScene(static_cast<int>(SceneName::CYBER_PUNK));
     scene::sceneManager::getActiveScene()->addComponent(m);
+    ichi::audio::AudioPlayer::play(fightMusic.get());
 }
 
 std::shared_ptr<uicomponents::Button> SceneLoader::createButton(datatypes::Hitbox &hitbox, const std::string &label, const std::string &spritePath, const std::string &focusedSpritePath, const std::function<void()> &onClick)
