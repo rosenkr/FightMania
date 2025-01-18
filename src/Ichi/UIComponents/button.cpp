@@ -10,14 +10,14 @@ using namespace ichi::input;
 
 namespace ichi::uicomponents
 {
-    Button::Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, std::function<void()> ptr) : UIComponent(hb), t(btnLabel),f(f), c(c), sprite(s), focusedSprite(fs), funcPtr(ptr) 
+    Button::Button(datatypes::Hitbox hb, std::string btnLabel, TTF_Font *f, SDL_Color c, graphics::Sprite s, graphics::Sprite fs, std::function<void()> ptr) : UIComponent(hb), t(btnLabel), f(f), c(c), sprite(s), focusedSprite(fs), funcPtr(ptr)
     {
         ichi::graphics::TextureManager::addTextTextureFor(t, f, c);
     }
 
     void Button::draw() const
     {
-        auto text = graphics::TextureManager::getTextTextureFor(t,f,c);
+        auto text = graphics::TextureManager::getTextTextureFor(t, f, c);
         if (focused)
             focusedSprite.draw();
         else
@@ -29,9 +29,10 @@ namespace ichi::uicomponents
         int textWidth, textHeight;
         SDL_QueryTexture(text, nullptr, nullptr, &textWidth, &textHeight);
 
-        int diff = (hitbox.getWidth() - textWidth) / 2;
+        int xDiff = (hitbox.getWidth() - textWidth) / 2;
+        int yDiff = (hitbox.getHeight() - textHeight) / 2;
 
-        auto rect = SDL_Rect{hitbox.getX() + diff, hitbox.getY(), textWidth, textHeight};
+        auto rect = SDL_Rect{hitbox.getX() + xDiff, hitbox.getY() + yDiff, textWidth, textHeight};
 
         SDL_RenderCopy(core::Engine::getInstance()->getRenderer(), text, NULL, &rect);
     }
