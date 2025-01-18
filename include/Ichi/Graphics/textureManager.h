@@ -31,9 +31,11 @@ namespace ichi::graphics
         static void addTextureFor(const std::string &path);
         static void addTexturesFor(const std::vector<std::string> &paths);
 
+
         // Texture for text
         static void addTextTextureFor(const std::string, TTF_Font*, SDL_Color);
         //static void dropTextTextureFor(const std::string, TTF_Font*, SDL_Color);
+        static void dropTextTextureFor(const std::string);
         
         // Perhaps for progress bar too
 
