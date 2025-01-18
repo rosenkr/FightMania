@@ -15,7 +15,7 @@ std::unique_ptr<Mix_Music, SceneLoader::MixMusicDeleter> SceneLoader::menuMusic;
 
 bool SceneLoader::init()
 {
-    font = TTF_OpenFont(FONT_PATH.c_str(), 10);
+    font = TTF_OpenFont(FONT_PATH.c_str(), 8);
 
     if (!ProfileHandler::init())
     {
@@ -490,16 +490,16 @@ void SceneLoader::createMainMenu()
 
 datatypes::Hitbox SceneLoader::returnHB(datatypes::Point(0, 0), 30, 30, false);
 datatypes::Hitbox SceneLoader::blueProfileDropdownHB(datatypes::Point(30, 60), 50, 15, false);
-datatypes::Hitbox SceneLoader::blueCharacterDropdownHB(datatypes::Point(30, 90), 50, 15, false);
+datatypes::Hitbox SceneLoader::blueCharacterDropdownHB(datatypes::Point(90, 60), 50, 15, false);
 datatypes::Hitbox SceneLoader::redProfileDropdownHB(datatypes::Point(220, 60), 50, 15, false);
-datatypes::Hitbox SceneLoader::redCharacterDropdownHB(datatypes::Point(220, 90), 50, 15, false);
+datatypes::Hitbox SceneLoader::redCharacterDropdownHB(datatypes::Point(280, 60), 50, 15, false);
 
 void SceneLoader::createLocalPlayMenu()
 {
-    datatypes::Hitbox startMatchHb(datatypes::Point(160, 110), 70, 15, false);
+    datatypes::Hitbox startMatchHb(datatypes::Point(160, 140), 70, 15, false);
 
     auto returnBtn = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
-    auto startMatchBtn = createButton(startMatchHb, "Start Match", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToCyberPunk);
+    auto startMatchBtn = createButton(startMatchHb, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToCyberPunk);
 
     auto redProfileMenu = createMenu(redProfileDropdownHB, {"TestRed"}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
     auto redCharacterMenu = createMenu(redCharacterDropdownHB, {KENNY}, DROP_DOWN_MENU_PATH, FOCUSED_DROP_DOWN_MENU_PATH, ITEM_PATH);
@@ -521,7 +521,7 @@ void SceneLoader::createLocalPlayMenu()
 
 void SceneLoader::createTrainingMenu()
 {
-    datatypes::Hitbox hbStartTraining(datatypes::Point(160, 110), 70, 15, false);
+    datatypes::Hitbox hbStartTraining(datatypes::Point(160, 140), 70, 15, false);
 
     auto returnBtnT = createButton(returnHB, "", RETURN_BTN_PATH, FOCUSED_RETURN_BTN_PATH, changeSceneToMain);
     auto startTrainingBtn = createButton(hbStartTraining, "Start", BUTTON_PATH, FOCUSED_BUTTON_PATH, changeSceneToDojo);
