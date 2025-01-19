@@ -93,7 +93,8 @@ void ProfileHandler::addToVector(string name, bool isController, vector<string> 
         map<ichi::input::ControllerHandler::ControllerButton, Profile::Action> btnMap;
         map<ichi::input::ControllerHandler::Joystick, Profile::Action> joystickMap;
         int action = static_cast<int>(Profile::Action::LIGHT_ATTACK);
-        for (auto key : list)
+        vector<string> copy(list.begin() + 4, list.end());
+        for (auto key : copy)
         {
             if (joystickStrings.find(key) != joystickStrings.end())
                 joystickMap[joystickStrings[key]] = static_cast<Profile::Action>(action);
@@ -123,9 +124,6 @@ void ProfileHandler::addToVector(vector<string> list, bool isController)
 {
     string name = list[0];
     vector<string> copy(list.begin() + 1, list.end());
-
-    if (isController)
-        copy = vector<string>(copy.begin() + 4, copy.end());
 
     addToVector(name, isController, copy);
 }

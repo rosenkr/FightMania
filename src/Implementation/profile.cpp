@@ -38,6 +38,14 @@ const std::vector<std::string> Profile::getKeybinds() const
 {
     std::vector<std::string> actions;
 
+    if (usingController)
+    {
+        actions.push_back("joystick");
+        actions.push_back("joystick");
+        actions.push_back("joystick");
+        actions.push_back("joystick");
+    }
+
     for (int i = static_cast<int>(Action::UP); i <= static_cast<int>(Action::END); i++)
     {
         for (auto c : controllerButtons)
