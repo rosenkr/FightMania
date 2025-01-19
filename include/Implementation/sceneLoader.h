@@ -152,6 +152,10 @@ private:
     inline static const graphics::Sprite::Layer BACKGROUND_LAYER = ichi::graphics::Sprite::Layer::BACKGROUND;
     inline static const graphics::Sprite::Layer FOREGROUND_LAYER = ichi::graphics::Sprite::Layer::FOREGROUND;
 
+    inline static const graphics::AnimatedSprite::Layer UI_LAYER_AS = graphics::AnimatedSprite::Layer::UICOMPONENT;
+    inline static const graphics::AnimatedSprite::Layer BACKGROUND_LAYER_AS = ichi::graphics::AnimatedSprite::Layer::BACKGROUND;
+    inline static const graphics::AnimatedSprite::Layer FOREGROUND_LAYER_AS = ichi::graphics::AnimatedSprite::Layer::FOREGROUND;
+
     static datatypes::Hitbox window;
     static datatypes::Hitbox hbName;
 
