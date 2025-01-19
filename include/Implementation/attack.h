@@ -9,6 +9,9 @@ class Character; // Forward delcalration
 class Attack
 {
 public:
+    virtual ~Attack() {}
+    Attack(const Attack &) = delete;
+    Attack &operator=(const Attack &) = delete;
     virtual void draw(bool) const = 0;
     virtual void update(ichi::datatypes::Point, bool) = 0;
     virtual void reset() = 0;
@@ -21,7 +24,6 @@ public:
 
 protected:
     Attack(float dmg, ichi::datatypes::Vector2D force, Uint32 cooldown) : damage(dmg), force(force), cooldownTime(cooldown) {}
-    ~Attack() = default;
 
     float damage;
     ichi::datatypes::Vector2D force;

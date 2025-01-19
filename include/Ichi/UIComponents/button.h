@@ -22,7 +22,6 @@ namespace ichi::uicomponents
         std::string t;
         TTF_Font* f;
         SDL_Color c;
-        //SDL_Texture *text;
         graphics::Sprite sprite;
         graphics::Sprite focusedSprite;
         std::function<void()> funcPtr;
