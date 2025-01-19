@@ -79,6 +79,7 @@ namespace ichi::core
         ICHI_INFO("Ichi-Engine got shutdown");
 
         logManager.shutdown();
+        ICHI_INFO("Ichi-Engine got shutdown");
     }
 
 } // namespace ichi::core
