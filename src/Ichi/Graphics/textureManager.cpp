@@ -11,8 +11,6 @@ namespace ichi::graphics
 
     std::map<std::string, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> TextureManager::textTextures;
 
- 
-
     SDL_Texture *TextureManager::getTextureFor(const std::string &s)
     {
         auto it = textures.find(s);
@@ -28,7 +26,16 @@ namespace ichi::graphics
 
     void TextureManager::dropTextureFor(const std::string &s)
     {
-        textures.erase(s);
+        auto it = textures.find(s);
+        if (it != textures.end())
+        {
+            textures.erase(it);
+            ICHI_DEBUG("Texture dropped for key: {}", s);
+        }
+        else
+        {
+            ICHI_WARNING("Attempted to drop non-existent texture: {}", s);
+        }
     }
 
     void TextureManager::addTextureFor(const std::string &str)
@@ -37,7 +44,7 @@ namespace ichi::graphics
             return;
 
         if (auto texture = createTexture(str))
-            textures[str] = std::move(texture);
+            textures.emplace(str, std::move(texture));
     }
 
     void TextureManager::addTexturesFor(const std::vector<std::string> &paths)
@@ -45,29 +52,42 @@ namespace ichi::graphics
         for (auto p : paths)
             addTextureFor(p);
     }
-    
-    void TextureManager::addTextTextureFor(const std::string str, TTF_Font* font, SDL_Color color){
+
+    void TextureManager::addTextTextureFor(const std::string str, TTF_Font *font, SDL_Color color)
+    {
         if (str.empty())
             return;
 
         if (textTextures.find(str) != textTextures.end())
             return;
 
-        if (auto texture = createTextTexture(str,font,color))
-            textTextures.insert({str, std::move(texture)});   
+        if (auto texture = createTextTexture(str, font, color))
+            textTextures.insert({str, std::move(texture)});
     }
 
-    void TextureManager::dropTextTextureFor(const std::string str){
-        textTextures.erase(str);
+    void TextureManager::dropTextTextureFor(const std::string str)
+    {
+        auto it = textTextures.find(str);
+        if (it != textTextures.end())
+        {
+            textTextures.erase(it);
+            ICHI_DEBUG("Texture dropped for key: {}", str);
+        }
+        else
+        {
+            ICHI_WARNING("Attempted to drop non-existent texture: {}", str);
+        }
     }
 
-    SDL_Texture* TextureManager::getTextTextureFor(const std::string str, TTF_Font* font, SDL_Color color) {
+    SDL_Texture *TextureManager::getTextTextureFor(const std::string str, TTF_Font *font, SDL_Color color)
+    {
         if (textTextures.find(str) == textTextures.end())
             return nullptr;
         return textTextures.at(str).get();
     }
 
-    std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::createTextTexture(const std::string str, TTF_Font* font, SDL_Color color){
+    std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::createTextTexture(const std::string str, TTF_Font *font, SDL_Color color)
+    {
 
         SDL_Surface *surf = TTF_RenderText_Blended(font, str.c_str(), color);
 
@@ -89,7 +109,6 @@ namespace ichi::graphics
 
         return std::unique_ptr<SDL_Texture, SDLTextureDeleter>(texture);
     }
-
 
     std::unique_ptr<SDL_Texture, SDLTextureDeleter> TextureManager::createTexture(const std::string &path)
     {
