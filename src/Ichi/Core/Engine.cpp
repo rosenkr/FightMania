@@ -65,18 +65,18 @@ namespace ichi::core
 
     void Engine::shutdown()
     {
-        ICHI_INFO("Ichi-Engine got shutdown");
-
         isRunning = false;
 
         // shutdown Everything exept logmanager
-        window.shutDown();
         ichi::input::ControllerHandler::shutdown();
-        ichi::audio::AudioPlayer::shutdown();
         ichi::graphics::TextureManager::shutDown();
+        window.shutDown();
 
+        Mix_Quit();
         TTF_Quit();
         SDL_Quit();
+
+        ICHI_INFO("Ichi-Engine got shutdown");
 
         logManager.shutdown();
     }
