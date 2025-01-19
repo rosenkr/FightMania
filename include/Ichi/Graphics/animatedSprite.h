@@ -1,18 +1,30 @@
 #ifndef ANIMATED_SPRITE_H
 #define ANIMATED_SPRITE_H
 
-#include "Ichi/Graphics/sprite.h"
-
 #include <vector>
 #include <map>
+#include "Ichi/DataTypes/hitbox.h"
+
+#include <string>
 
 namespace ichi::graphics
 {
-    class AnimatedSprite : public Sprite
+    class AnimatedSprite
     {
     public:
-        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime);
-        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime);
+
+        enum class Layer
+        {
+            BACKGROUND = 0,
+            MIDGROUND = 1,
+            FOREGROUND = 2,
+            DETAILS = 3,
+            EFFECTS = 4,
+            COLOR_ADJUSTMENT = 5,
+            UICOMPONENT = 6,
+        };
+        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, unsigned int> frameTime);
+        AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, unsigned int> frameTime);
 
         int getCurrentFrame() const { return currentFrame; }
         int getFrameCount() { return (int)frameTime.size(); }
@@ -31,7 +43,7 @@ namespace ichi::graphics
 
         bool operator<(const AnimatedSprite &other) const { return paths < other.paths; }
 
-        AnimatedSprite(const AnimatedSprite &as) : Sprite(as.hitbox, as.layer), frameTime(as.frameTime), paths(as.paths) {}
+        AnimatedSprite(const AnimatedSprite &as) : hitbox(as.hitbox), layer(as.layer), frameTime(as.frameTime), paths(as.paths) {}
         AnimatedSprite &operator=(const AnimatedSprite &other)
         {
             if (this == &other)
@@ -46,12 +58,21 @@ namespace ichi::graphics
             return *this;
         }
 
+        int getHeight() const { return hitbox.getHeight(); }
+        int getWidth() const { return hitbox.getWidth(); }
+        const datatypes::Hitbox &getHitbox() const {return hitbox;}
+        void setX(int i);
+        void setY(int i);
+        int getX() const { return hitbox.getX(); };
+        int getY() const { return hitbox.getY(); };
         ~AnimatedSprite() = default;
 
     private:
         // in milliseconds
-        Uint32 lastUpdatedOn = 0;
-        std::map<int, Uint32> frameTime;
+        datatypes::Hitbox hitbox;
+        Layer layer;
+        unsigned int lastUpdatedOn = 0;
+        std::map<int, unsigned int> frameTime;
         std::vector<std::string> paths;
 
         int currentFrame = 0;

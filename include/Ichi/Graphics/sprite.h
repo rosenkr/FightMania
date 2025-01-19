@@ -24,7 +24,7 @@ namespace ichi::graphics
         Sprite(datatypes::Hitbox &, Layer, std::string);
 
         void draw() const;
-        virtual void update() {};
+        void update() {};
 
         int getHeight() const { return hitbox.getHeight(); }
         int getWidth() const { return hitbox.getWidth(); }
@@ -43,7 +43,7 @@ namespace ichi::graphics
             return *this;
         }
 
-        virtual ~Sprite() = default;
+        ~Sprite() = default;
 
         const datatypes::Hitbox &getHitbox() const;
 

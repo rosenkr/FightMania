@@ -23,9 +23,9 @@ namespace ichi::core
 
         SDL_Renderer *getRenderer() const { return renderer; }
 
-        const int SCALE = 3;
 
     private:
+        const int SCALE = 3;
         SDL_Window *window = nullptr;
         SDL_Renderer *renderer = nullptr;
     };

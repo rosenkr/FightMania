@@ -5,14 +5,14 @@
 
 namespace ichi::graphics
 {
-    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime)
+    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::string path, int textureCount, std::map<int, unsigned int> frameTime) : hitbox(hb), layer(l), frameTime(frameTime)
     {
         for (int i = 0; i < textureCount; i++)
             paths.push_back(path + std::to_string(i) + ".png");
 
         TextureManager::addTexturesFor(paths);
     }
-    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, Uint32> frameTime) : Sprite(hb, l), frameTime(frameTime), paths(paths)
+    AnimatedSprite::AnimatedSprite(datatypes::Hitbox hb, Layer l, std::vector<std::string> paths, std::map<int, unsigned int> frameTime) : hitbox(hb), layer(l), frameTime(frameTime), paths(paths)
     {
         TextureManager::addTexturesFor(this->paths);
     }
@@ -44,5 +44,15 @@ namespace ichi::graphics
         {
             ICHI_INFO("SDL_RenderCopy failed: {}", SDL_GetError());
         }
+    }
+
+    void AnimatedSprite::setX(int i)
+    {
+        hitbox.setX(i);
+    }
+
+    void AnimatedSprite::setY(int i)
+    {
+        hitbox.setY(i);
     }
 } // namespace ichi::graphics

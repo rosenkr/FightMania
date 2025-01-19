@@ -5,16 +5,16 @@
 
 Match::Match(std::shared_ptr<Character> blue, std::shared_ptr<Character> red, TTF_Font *font)
     : core::Component(datatypes::Hitbox(datatypes::Point(0, 0), 384, 224, false)), blueCharacter(std::move(blue)), redCharacter(std::move(red)),
-      fight(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {FIGHT_PATH}, fightTime)),
-      round1(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {ROUND_1_PATH}, roundTime)),
-      round2(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {ROUND_2_PATH}, roundTime)),
-      round3(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {ROUND_3_PATH}, roundTime)),
-      round4(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {ROUND_4_PATH}, roundTime)),
-      round5(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {ROUND_5_PATH}, roundTime)),
-      KO(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {KO_PATH}, KOTime)),
-      perfect(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {PERFECT_PATH}, perfectTime)),
-      blueWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {BLUE_WINS_PATH}, blueWinsTime)),
-      redWins(ichi::graphics::AnimatedSprite(hitbox, graphics::Sprite::Layer::FOREGROUND, {RED_WINS_PATH}, redWinsTime))
+      fight(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {FIGHT_PATH}, fightTime)),
+      round1(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {ROUND_1_PATH}, roundTime)),
+      round2(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {ROUND_2_PATH}, roundTime)),
+      round3(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {ROUND_3_PATH}, roundTime)),
+      round4(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {ROUND_4_PATH}, roundTime)),
+      round5(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {ROUND_5_PATH}, roundTime)),
+      KO(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {KO_PATH}, KOTime)),
+      perfect(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {PERFECT_PATH}, perfectTime)),
+      blueWins(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {BLUE_WINS_PATH}, blueWinsTime)),
+      redWins(ichi::graphics::AnimatedSprite(hitbox, graphics::AnimatedSprite::Layer::FOREGROUND, {RED_WINS_PATH}, redWinsTime))
 {
 
     fightSf = loadSoundEffect(SOUND_EFFECT_FIGHT_PATH);

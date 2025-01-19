@@ -157,11 +157,6 @@ public:
             auto rawPtr = parrySf.release();
             parrySf.get_deleter()(rawPtr);
         }
-        /*std::vector<std::unique_ptr<Mix_Chunk, MixChunkDeleter>> footStepsSf;
-std::unique_ptr<Mix_Chunk, MixChunkDeleter> swordSwooshSf;
-std::unique_ptr<Mix_Chunk, MixChunkDeleter> hitSf;
-std::unique_ptr<Mix_Chunk, MixChunkDeleter> blockSf;
-std::unique_ptr<Mix_Chunk, MixChunkDeleter> parrySf;*/
     }
     inline static const float MAX_HP = 100;
 

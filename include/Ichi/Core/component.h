@@ -14,9 +14,7 @@ namespace ichi::core
         virtual ~Component() = default;
         virtual void shutDown() {};
 
-        const datatypes::Hitbox &getHitbox() const { return hitbox; } // Getter in case we want to draw textures based on hitbox size
-
-        // Prefer newer idiom of public + delete over making these private
+        const datatypes::Hitbox &getHitbox() const { return hitbox; } 
         Component(const Component &) = delete;
         Component &operator=(const Component &) = delete;
 
