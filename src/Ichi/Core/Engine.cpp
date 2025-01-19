@@ -65,7 +65,6 @@ namespace ichi::core
 
     void Engine::shutdown()
     {
-        ICHI_INFO("Ichi-Engine got shutdown");
 
         isRunning = false;
 
@@ -79,6 +78,7 @@ namespace ichi::core
         SDL_Quit();
 
         logManager.shutdown();
+        ICHI_INFO("Ichi-Engine got shutdown");
     }
 
 } // namespace ichi::core

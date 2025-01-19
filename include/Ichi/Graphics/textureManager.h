@@ -6,8 +6,6 @@
 
 #include "SDL2/SDL_ttf.h"
 
-#include "Ichi/log.h"
-
 #include <map>
 #include <memory>
 #include <vector>
@@ -27,33 +25,29 @@ namespace ichi::graphics
     {
     public:
         static SDL_Texture *getTextureFor(const std::string &s);
-        static SDL_Texture *getTextTextureFor(const std::string str, TTF_Font *font, SDL_Color color);
+        static SDL_Texture* getTextTextureFor(const std::string str, TTF_Font* font, SDL_Color color);
         static void dropTextureFor(const std::string &s);
-
+        
         static void addTextureFor(const std::string &path);
         static void addTexturesFor(const std::vector<std::string> &paths);
 
+
         // Texture for text
-        static void addTextTextureFor(const std::string, TTF_Font *, SDL_Color);
-        // static void dropTextTextureFor(const std::string, TTF_Font*, SDL_Color);
+        static void addTextTextureFor(const std::string, TTF_Font*, SDL_Color);
+        //static void dropTextTextureFor(const std::string, TTF_Font*, SDL_Color);
         static void dropTextTextureFor(const std::string);
+        
+        // Perhaps for progress bar too
 
-        static void shutDown()
-        {
-            for (auto &entry : textures)
-            {
-                ICHI_DEBUG("Destroying texture for key: {}", entry.first);
-                entry.second.reset(); // Explicitly release texture
-            }
+        static void shutDown() {
             textures.clear();
-
-            textTextures.clear();
         }
 
     private:
         static std::unique_ptr<SDL_Texture, SDLTextureDeleter> createTexture(const std::string &path);
 
-        static std::unique_ptr<SDL_Texture, SDLTextureDeleter> createTextTexture(const std::string, TTF_Font *, SDL_Color);
+        static std::unique_ptr<SDL_Texture, SDLTextureDeleter> createTextTexture(const std::string, TTF_Font*, SDL_Color);
+
 
         static std::map<std::string, std::unique_ptr<SDL_Texture, SDLTextureDeleter>> textures;
 
