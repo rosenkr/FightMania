@@ -19,7 +19,10 @@ namespace ichi::uicomponents
         else
             sprite.draw();
 
-        auto texture = graphics::TextureManager::getTextTextureFor(text,font,color);
+        auto texture = graphics::TextureManager::getTextTextureFor(text, font, color);
+        if (focused)
+            texture = graphics::TextureManager::getTextTextureFor(cursorText, font, color);
+
         if (texture == nullptr)
             return;
 
@@ -99,6 +102,7 @@ namespace ichi::uicomponents
     void Textbox::clear()
     {
         ichi::graphics::TextureManager::dropTextTextureFor(text);
+        ichi::graphics::TextureManager::dropTextTextureFor(cursorText);
         text = "";
         cursor = 0;
         updateTextTexture();
@@ -111,13 +115,17 @@ namespace ichi::uicomponents
     void Textbox::updateTextTexture()
     {
         if (text.empty())
+        {
+            cursorText = "|";
+            ichi::graphics::TextureManager::addTextTextureFor(cursorText, font, color);
             return;
-        std::string temp = text;
+        }
+        cursorText = text;
         if (focused)
-            temp.insert(temp.begin() + cursor, '|');
+            cursorText.insert(cursorText.begin() + cursor, '|');
 
+        ichi::graphics::TextureManager::addTextTextureFor(cursorText, font, color);
         ichi::graphics::TextureManager::addTextTextureFor(text, font, color);
-
     }
 
 } // namespace ichi::uicomponents

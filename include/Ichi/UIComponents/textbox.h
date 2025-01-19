@@ -34,6 +34,7 @@ namespace ichi::uicomponents
 
     private:
         std::string text = "";
+        std::string cursorText = "";
         TTF_Font *font;
         SDL_Color color;
         graphics::Sprite sprite;
